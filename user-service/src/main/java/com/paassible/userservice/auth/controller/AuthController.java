@@ -1,0 +1,44 @@
+package com.paassible.userservice.auth.controller;
+
+import com.paassible.common.response.ApiResponse;
+import com.paassible.common.response.SuccessCode;
+import com.paassible.common.security.dto.UserJwtDto;
+import com.paassible.userservice.auth.dto.TokenResponse;
+import com.paassible.userservice.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/auth")
+@RequiredArgsConstructor
+@Tag(name = "Auth API", description = "토큰 재발급, 로그아웃")
+public class AuthController {
+
+    private final AuthService authService;
+
+    @PostMapping("/reissue")
+    @Operation(summary = "토큰 재발급", description = "현재 가진 토큰을 이용해 엑세스 토큰을 재발급합니다.")
+    public ResponseEntity<ApiResponse<TokenResponse>> reissueToken(
+            HttpServletRequest request, HttpServletResponse response) {
+        TokenResponse tokens = authService.refreshAccessToken(request, response);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, tokens));
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "사용자가 로그아웃합니다.")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @AuthenticationPrincipal UserJwtDto user, HttpServletResponse response) {
+        authService.logout(user.getUserId(), response);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.LOGOUT));
+    }
+}
