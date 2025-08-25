@@ -8,6 +8,7 @@ COPY build.gradle* build.gradle*
 
 COPY user-service user-service
 
+RUN chmod +x gradlew && sed -i 's/\r$//' gradlew
 RUN ./gradlew :user-service:bootJar -x test
 
 FROM eclipse-temurin:17-jdk-alpine
