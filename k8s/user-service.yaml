@@ -25,6 +25,9 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: prod
+          envFrom:
+            - secretRef:
+                name: user-service-secret
 
 ---
 apiVersion: v1
