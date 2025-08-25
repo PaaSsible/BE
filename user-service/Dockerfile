@@ -7,6 +7,7 @@ COPY settings.gradle* .
 COPY build.gradle* .
 
 COPY user-service user-service
+COPY common common
 
 RUN chmod +x ./gradlew && sed -i 's/\r$//' ./gradlew
 
