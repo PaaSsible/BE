@@ -28,6 +28,8 @@ spec:
           envFrom:
             - secretRef:
                 name: user-service-secret
+            - secretRef:
+                name: user-db-secret
 
 ---
 apiVersion: v1
