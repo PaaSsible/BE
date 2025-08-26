@@ -20,15 +20,21 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .components(
-                        new Components()
-                                .addSecuritySchemes(
-                                        "access-token",
-                                        new SecurityScheme()
-                                                .type(SecurityScheme.Type.HTTP)
-                                                .scheme("bearer")
-                                                .bearerFormat("JWT")))
+                .components(new Components()
+                        // JWT 토큰 인증
+                        .addSecuritySchemes("access-token",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT"))
+                        // Basic Auth 인증
+                        .addSecuritySchemes("basicAuth",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("basic"))
+                )
                 .addSecurityItem(new SecurityRequirement().addList("access-token"))
+                .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
                 .info(info());
     }
 }
