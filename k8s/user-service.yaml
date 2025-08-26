@@ -19,7 +19,7 @@ spec:
       containers:
         - name: user-service
           image: gyurihwang/contest-18-image-user:1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
