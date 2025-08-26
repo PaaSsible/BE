@@ -3,6 +3,8 @@ package com.paassible.userservice.user.controller;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
+import com.paassible.common.security.jwt.JwtUtil;
+import com.paassible.common.security.jwt.Role;
 import com.paassible.userservice.user.dto.UserResponse;
 import com.paassible.userservice.user.service.UserService;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -20,9 +22,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @GetMapping("/me")
-    @Operation(summary = "유저 정보 조회(테스트)", description = "로그인 한 유저 정보를 조회한다.")
+    @Operation(summary = "유저 정보 조회", description = "로그인 한 유저 정보를 조회한다.")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
             @AuthenticationPrincipal UserJwtDto user) {
         UserResponse response = userService.getUserInfo(user.getUserId());
@@ -54,5 +57,12 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
         UserResponse response = userService.getUserInfo(userId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/test")
+    @Operation(summary = "유저 엑세스 토큰 발급(테스트용)")
+    public ResponseEntity<String> getCurrentUser() {
+        String accessToken = jwtUtil.createAccessToken(1L, Role.MEMBER);
+        return ResponseEntity.ok(accessToken);
     }
 }
