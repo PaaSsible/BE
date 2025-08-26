@@ -1,0 +1,30 @@
+name: Deploy to NHN
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'user-service/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Detect changed paths
+        id: changes
+        run: |
+          echo "CHANGED_PATHS=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+
+      - name: Call NHN Pipeline API (User Service)
+        if: contains(env.CHANGED_PATHS, 'user-service/')
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-NHN-REGION: KR1" \
+            -H "X-NHN-APPKEY: ${{ secrets.NHN_APPKEY }}" \
+            -H "X-TC-AUTHENTICATION-ID: ${{ secrets.NHN_ACCESS_KEY }}" \
+            -H "X-TC-AUTHENTICATION-SECRET: ${{ secrets.NHN_SECRET_KEY }}" \
+            "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-pipeline/execute"
