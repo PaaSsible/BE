@@ -33,7 +33,7 @@ public class SwaggerConfig {
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("basic"))
                 )
-                //.addSecurityItem(new SecurityRequirement().addList("access-token"))
+                .addSecurityItem(new SecurityRequirement().addList("access-token"))
                 .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
                 .info(info());
     }
