@@ -4,6 +4,7 @@ import com.paassible.common.security.jwt.JwtAuthenticationFilter;
 import com.paassible.common.security.jwt.JwtUtil;
 import com.paassible.userservice.auth.oauth.CustomOAuth2UserService;
 import com.paassible.userservice.auth.oauth.OAuth2SuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,13 @@ public class SecurityConfig {
                 // 세션 사용 안 함 (JWT 기반)
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                        })
+                )
                 /*
                 .exceptionHandling(
                         exceptionHandler ->
