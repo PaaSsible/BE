@@ -3,12 +3,12 @@ entries:
   paassible-service:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2025-08-28T07:00:29.005450079Z"
+    created: "2025-08-28T07:10:35.724756118Z"
     description: Helm chart for Paassible microservices
-    digest: 10b3e592d73f402332f74f4c114be8c6124a728a72a309186ea0b8be962ec639
+    digest: 1b37b923d5cf2a89ce6afc99759d2c7f56f06cbb4dbcf10c99dc6a6edd5c4eb6
     name: paassible-service
     type: application
     urls:
     - https://paassible.github.io/BE1/paassible-service-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-28T07:00:29.004773548Z"
+generated: "2025-08-28T07:10:35.724422756Z"
