@@ -21,23 +21,15 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .components(new Components()
-                        // JWT 토큰 인증 (Authorization: Bearer <token>)
                         .addSecuritySchemes("access-token",
                                 new SecurityScheme()
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT"))
-
-                        // BasicAuth 대신 커스텀 헤더 사용 (X-Basic-Auth)
-                        .addSecuritySchemes("basicAuth",
-                                new SecurityScheme()
-                                        .type(SecurityScheme.Type.APIKEY)
-                                        .in(SecurityScheme.In.HEADER)
-                                        .name("X-Basic-Auth"))
                 )
                 .addSecurityItem(new SecurityRequirement()
                         .addList("access-token")
-                        .addList("basicAuth"))
+                )
                 .info(info());
     }
 

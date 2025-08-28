@@ -36,13 +36,6 @@ public class SecurityConfig {
                 // 세션 사용 안 함 (JWT 기반)
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
-                        })
-                )
                 /*
                 .exceptionHandling(
                         exceptionHandler ->
@@ -60,7 +53,6 @@ public class SecurityConfig {
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new CustomBasicAuthFilter(), JwtAuthenticationFilter.class)
 
                 // OAuth2 설정
                 .oauth2Login(
