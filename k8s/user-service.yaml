@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: gyurihwang/contest-18-image-user:1.0
+          image: gyurihwang/contest-18-image-user:{BUILD_DATE_TIME}
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
