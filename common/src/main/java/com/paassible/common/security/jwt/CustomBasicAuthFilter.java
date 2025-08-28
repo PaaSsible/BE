@@ -27,7 +27,10 @@ public class CustomBasicAuthFilter extends OncePerRequestFilter {
         String xBasicAuth = request.getHeader("X-Basic-Auth");
 
         if (xBasicAuth == null || xBasicAuth.isBlank()) {
-            throw new CustomException(ErrorCode.BASIC_AUTH_FAILED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\":\"Basic Auth 실패\"}");
+            return;
         }
 
         try {
@@ -36,17 +39,26 @@ public class CustomBasicAuthFilter extends OncePerRequestFilter {
 
             String[] parts = decodedString.split(":", 2);
             if (parts.length != 2) {
-                throw new CustomException(ErrorCode.BASIC_AUTH_FAILED);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\":\"Basic Auth 실패\"}");
+                return;
             }
 
             String username = parts[0];
             String password = parts[1];
 
             if (!VALID_USERNAME.equals(username) || !VALID_PASSWORD.equals(password)) {
-                throw new CustomException(ErrorCode.BASIC_AUTH_FAILED);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\":\"Basic Auth 실패\"}");
+                return;
             }
         } catch (IllegalArgumentException e) {
-            throw new CustomException(ErrorCode.BASIC_AUTH_FAILED);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().write("{\"error\":\"Basic Auth 실패\"}");
+            return;
         }
 
         filterChain.doFilter(request, response);
