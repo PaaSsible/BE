@@ -6,6 +6,7 @@ image:
   tag: "{BUILD_DATE_TIME}"
   pullPolicy: Always
 
+
 service:
   type: ClusterIP
   port: 80
