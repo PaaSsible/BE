@@ -37,4 +37,4 @@ jobs:
             -H "X-NHN-APPKEY: ${{ secrets.NHN_APPKEY }}" \
             -H "X-TC-AUTHENTICATION-ID: ${{ secrets.NHN_ACCESS_KEY }}" \
             -H "X-TC-AUTHENTICATION-SECRET: ${{ secrets.NHN_SECRET_KEY }}" \
-            "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-board-pipeline/execute"
+            "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-board-pipeline-2/execute"
