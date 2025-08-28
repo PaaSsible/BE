@@ -1,0 +1,22 @@
+namespace: user-service
+replicaCount: 2
+
+image:
+  repository: gyurihwang/contest-18-image-user
+  tag: "{BUILD_DATE_TIME}"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: prod
+
+envFrom:
+  - secretRef:
+      name: user-service-secret
+  - secretRef:
+      name: user-db-secret
