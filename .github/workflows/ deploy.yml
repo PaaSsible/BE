@@ -13,13 +13,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Detect changed paths
-        id: changes
-        run: |
-          echo "CHANGED_PATHS=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
-
       - name: Call NHN Pipeline API (User Service)
-        if: contains(env.CHANGED_PATHS, 'user-service/')
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
