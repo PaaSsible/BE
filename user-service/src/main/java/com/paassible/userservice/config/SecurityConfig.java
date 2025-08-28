@@ -31,7 +31,7 @@ public class SecurityConfig {
                 // 기본 보안 설정 OFF
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
+                //.httpBasic(AbstractHttpConfigurer::disable)
 
                 // 세션 사용 안 함 (JWT 기반)
                 .sessionManagement(
