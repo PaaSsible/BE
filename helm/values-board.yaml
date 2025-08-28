@@ -1,8 +1,8 @@
-namespace: user-service
+namespace: board-service
 replicaCount: 2
 
 image:
-  repository: gyurihwang/contest-18-image-user
+  repository: gyurihwang/contest-18-image-board
   tag: "{BUILD_DATE_TIME}"
   pullPolicy: Always
 
@@ -17,6 +17,6 @@ env:
 
 envFrom:
   - secretRef:
-      name: user-service-secret
+      name: boardr-service-secret
   - secretRef:
-      name: user-db-secret
+      name: board-db-secret
