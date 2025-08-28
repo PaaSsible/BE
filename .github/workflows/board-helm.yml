@@ -1,11 +1,13 @@
-name: Release Helm Chart
+name: Release Helm Chart (Board)
 
 on:
   push:
-    paths:
-      - "helm/**"   # helm/ 폴더 안 변경 있을 때만
     branches:
       - main
+    paths:
+      - "helm/templates/**"
+      - "helm/values-board.yaml"
+      - "helm/Chart.yaml"
 
 jobs:
   release:
