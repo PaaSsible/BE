@@ -1,5 +1,6 @@
 package com.paassible.userservice.config;
 
+import com.paassible.common.security.jwt.CustomBasicAuthFilter;
 import com.paassible.common.security.jwt.JwtAuthenticationFilter;
 import com.paassible.common.security.jwt.JwtUtil;
 import com.paassible.userservice.auth.oauth.CustomOAuth2UserService;
@@ -59,6 +60,7 @@ public class SecurityConfig {
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CustomBasicAuthFilter(), JwtAuthenticationFilter.class)
 
                 // OAuth2 설정
                 .oauth2Login(
