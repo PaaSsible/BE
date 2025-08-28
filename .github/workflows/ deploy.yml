@@ -25,7 +25,7 @@ jobs:
             -H "X-NHN-APPKEY: ${{ secrets.NHN_APPKEY }}" \
             -H "X-TC-AUTHENTICATION-ID: ${{ secrets.NHN_ACCESS_KEY }}" \
             -H "X-TC-AUTHENTICATION-SECRET: ${{ secrets.NHN_SECRET_KEY }}" \
-            "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-user-pipeline/execute"
+            "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-user-pipeline-1/execute"
 
       # Board Service 파이프라인 호출
       - name: Call NHN Pipeline API (Board Service)
