@@ -15,9 +15,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Detect changed paths
+        id: changes
+        run: |
+          echo "CHANGED_PATHS=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+
       # User Service 파이프라인 호출
       - name: Call NHN Pipeline API (User Service)
-        if: contains(github.event.head_commit.message, '[user]') || contains(github.event.head_commit.message, '[common]')
+        if: contains(env.CHANGED_PATHS, 'user-service/') || contains(env.CHANGED_PATHS, 'common/')
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
@@ -29,7 +34,7 @@ jobs:
 
       # Board Service 파이프라인 호출
       - name: Call NHN Pipeline API (Board Service)
-        if: contains(github.event.head_commit.message, '[board]') || contains(github.event.head_commit.message, '[common]')
+        if: contains(env.CHANGED_PATHS, 'board-service/') || contains(env.CHANGED_PATHS, 'common/')
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
