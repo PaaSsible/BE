@@ -17,7 +17,7 @@ spec:
         app: board-service
     spec:
       containers:
-        - name: user-service
+        - name: board-service
           image: gyurihwang/contest-18-image-board:{BUILD_DATE_TIME}
           imagePullPolicy: Always
           ports:
@@ -44,4 +44,4 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-  type: ClusterIP
+  type: LoadBalancer
