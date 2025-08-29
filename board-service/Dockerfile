@@ -6,12 +6,15 @@ COPY gradle gradle
 COPY settings.gradle* .
 COPY build.gradle* .
 
+RUN chmod +x ./gradlew && sed -i 's/\r$//' ./gradlew
+
+RUN ./gradlew dependencies --no-daemon || return 0
+
 COPY board-service board-service
 COPY common common
 
-RUN chmod +x ./gradlew && sed -i 's/\r$//' ./gradlew
+RUN ./gradlew :board-service:bootJar -x test --no-daemon
 
-RUN ./gradlew :board-service:bootJar -x test
 
 
 FROM eclipse-temurin:17-jdk-alpine
