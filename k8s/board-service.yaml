@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: board-service
+  namespace: board-service
+  labels:
+    app: board-service
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 300
+  selector:
+    matchLabels:
+      app: board-service
+  template:
+    metadata:
+      labels:
+        app: board-service
+    spec:
+      containers:
+        - name: user-service
+          image: gyurihwang/contest-18-image-board:{BUILD_DATE_TIME}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+          envFrom:
+            - secretRef:
+                name: board-service-secret
+            - secretRef:
+                name: board-db-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: board-service
+  namespace: board-service
+spec:
+  selector:
+    app: board-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
