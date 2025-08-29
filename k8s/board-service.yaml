@@ -44,4 +44,24 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-  type: LoadBalancer
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: board-ingress
+  namespace: board-service
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /board
+            pathType: Prefix
+            backend:
+              service:
+                name: board-service
+                port:
+                  number: 8080
