@@ -3,3 +3,4 @@ rootProject.name = 'paassible'
 include("common")
 include("user-service")
 include("board-service")
+include("recruit-service")
