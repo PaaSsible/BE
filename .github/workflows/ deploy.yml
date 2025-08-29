@@ -9,20 +9,29 @@ on:
       - 'common/**'
 
 jobs:
-  deploy:
+  detect-changes:
     runs-on: ubuntu-latest
+    outputs:
+      changed-paths: ${{ steps.detect.outputs.paths }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Detect changed paths
-        id: changes
+        id: detect
         run: |
-          echo "CHANGED_PATHS=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+          CHANGED_PATHS=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "paths=$CHANGED_PATHS" >> $GITHUB_OUTPUT
+          echo "Changed paths: $CHANGED_PATHS"
 
-      # User Service 파이프라인 호출
+  user-service:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: contains(needs.detect-changes.outputs.changed-paths, 'user-service/') || contains(needs.detect-changes.outputs.changed-paths, 'common/')
+    steps:
       - name: Call NHN Pipeline API (User Service)
-        if: contains(env.CHANGED_PATHS, 'user-service/') || contains(env.CHANGED_PATHS, 'common/')
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
@@ -32,9 +41,12 @@ jobs:
             -H "X-TC-AUTHENTICATION-SECRET: ${{ secrets.NHN_SECRET_KEY }}" \
             "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-user-pipeline-1/execute"
 
-      # Board Service 파이프라인 호출
+  board-service:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: contains(needs.detect-changes.outputs.changed-paths, 'board-service/') || contains(needs.detect-changes.outputs.changed-paths, 'common/')
+    steps:
       - name: Call NHN Pipeline API (Board Service)
-        if: contains(env.CHANGED_PATHS, 'board-service/') || contains(env.CHANGED_PATHS, 'common/')
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
