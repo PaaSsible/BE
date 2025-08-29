@@ -1,11 +1,9 @@
 package com.paassible.userservice.config;
 
-import com.paassible.common.security.jwt.CustomBasicAuthFilter;
 import com.paassible.common.security.jwt.JwtAuthenticationFilter;
 import com.paassible.common.security.jwt.JwtUtil;
 import com.paassible.userservice.auth.oauth.CustomOAuth2UserService;
 import com.paassible.userservice.auth.oauth.OAuth2SuccessHandler;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
