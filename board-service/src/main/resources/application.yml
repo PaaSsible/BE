@@ -26,9 +26,9 @@ server:
 
 springdoc:
   api-docs:
-    path: /user/v3/api-docs
+    path: /board/v3/api-docs
   swagger-ui:
-    path: /user/swagger-ui.html
+    path: /board/swagger-ui.html
 
 jwt:
   secret: ${JWT_SECRET}
