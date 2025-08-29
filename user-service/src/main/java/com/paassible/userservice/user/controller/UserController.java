@@ -50,7 +50,6 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.success(CommonSuccessCode.OK, response));
     }
-
      */
 
     @Hidden
