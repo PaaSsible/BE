@@ -6,7 +6,7 @@ metadata:
   labels:
     app: user-service
 spec:
-  replicas: 2
+  replicas: 1
   progressDeadlineSeconds: 300
   selector:
     matchLabels:
@@ -42,6 +42,6 @@ spec:
     app: user-service
   ports:
     - protocol: TCP
-      port: 80
+      port: 8080
       targetPort: 8080
   type: ClusterIP
