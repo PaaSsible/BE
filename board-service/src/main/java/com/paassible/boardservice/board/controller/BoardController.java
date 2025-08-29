@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping("/board")
 @RequiredArgsConstructor
 @Tag(name = "보드 API", description = "보드 목록 조회, 상세 조회, 생성, 삭제")
 public class BoardController {
