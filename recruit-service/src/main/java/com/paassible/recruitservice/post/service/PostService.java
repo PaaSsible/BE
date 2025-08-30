@@ -2,6 +2,8 @@ package com.paassible.recruitservice.post.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
+import com.paassible.recruitservice.client.UserClient;
+import com.paassible.recruitservice.client.UserResponse;
 import com.paassible.recruitservice.position.entity.Position;
 import com.paassible.recruitservice.position.repositoty.PositionRepository;
 import com.paassible.recruitservice.post.dto.*;
@@ -25,6 +27,7 @@ public class PostService {
     private final PositionRepository positionRepository;
     private final StackRepository stackRepository;
     private final RecruitmentRepository recruitmentRepository;
+    private final UserClient userClient;
 
     @Transactional(readOnly = true)
     public PostDetailResponse getPostDetail(Long postId) {
@@ -34,6 +37,8 @@ public class PostService {
         );
 
         List<Recruitment> recs = recruitmentRepository.findByPostId(postId);
+
+        UserResponse user = userClient.getUser(post.getWriterId());
 
         List<RecruitmentInfo> recruitmentInfos = recs.stream()
                 .collect(Collectors.groupingBy(
@@ -51,6 +56,7 @@ public class PostService {
                 post.getDeadline(),
                 post.getMonths(),
                 post.getWriterId(),
+                user.getNickname(),
                 recruitmentInfos
         );
     }
@@ -70,12 +76,12 @@ public class PostService {
         request.recruitment()
                 .forEach(r->{
                     Position position = positionRepository.findById(r.position()).orElseThrow(
-                            ()-> new CustomException(ErrorCode.INVALID_INPUT));
+                            ()-> new CustomException(ErrorCode.INVALID_POSITION));
 
                     r.stacks()
                             .forEach(s->{
                                 Stack stack = stackRepository.findById(s)
-                                        .orElseThrow(()->new CustomException(ErrorCode.INVALID_INPUT));
+                                        .orElseThrow(()->new CustomException(ErrorCode.INVALID_STACK));
 
                                 Recruitment recruitment = Recruitment.create(
                                         savedPost.getId(),
@@ -104,11 +110,11 @@ public class PostService {
         if(request.recruitment() != null) {
             request.recruitment().forEach(r->{
                 Position position = positionRepository.findById(r.position()).orElseThrow(
-                        () -> new CustomException(ErrorCode.INVALID_INPUT)
+                        () -> new CustomException(ErrorCode.INVALID_POSITION)
                 );
                 r.stacks().forEach(s->{
                     Stack stack = stackRepository.findById(s).orElseThrow(
-                            () -> new CustomException(ErrorCode.INVALID_INPUT)
+                            () -> new CustomException(ErrorCode.INVALID_STACK)
                     );
                     Recruitment recruitment = Recruitment.create(post.getId(), position.getId(), stack.getId());
                     recruitmentRepository.save(recruitment);

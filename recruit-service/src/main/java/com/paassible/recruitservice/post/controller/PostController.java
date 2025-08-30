@@ -2,12 +2,14 @@ package com.paassible.recruitservice.post.controller;
 
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
+import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.recruitservice.post.dto.*;
 import com.paassible.recruitservice.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,8 +30,8 @@ public class PostController {
     @PostMapping
     @Operation(summary = "게시판 글 작성", description = "팀원 모집 게시판에 글을 작성합니다.")
     public ApiResponse<PostCreateResponse> createPost(
-            @RequestParam Long writerId, @RequestBody  @Valid PostCreateRequest request) {
-        PostCreateResponse response = postService.createPost(request,writerId);
+            @AuthenticationPrincipal UserJwtDto user, @RequestBody  @Valid PostCreateRequest request) {
+        PostCreateResponse response = postService.createPost(request, user.getUserId());
         return ApiResponse.success(SuccessCode.CREATED, response);
     }
 
@@ -37,18 +39,18 @@ public class PostController {
     @PutMapping("/{postId}")
     @Operation(summary = "게시판 글 수정")
     public ApiResponse<PostUpdateResponse> updatePost(
-            @RequestParam Long postId, @RequestBody  @Valid PostUpdateRequest request, @RequestParam Long userId
+            @RequestParam Long postId, @RequestBody  @Valid PostUpdateRequest request, @AuthenticationPrincipal UserJwtDto user
     ){
-        PostUpdateResponse response = postService.updatePost(postId,request,userId);
+        PostUpdateResponse response = postService.updatePost(postId,request, user.getUserId());
         return ApiResponse.success(SuccessCode.OK,response);
     }
 
     @DeleteMapping("/{postId}")
     @Operation(summary = "게시판 글 삭제")
     public ApiResponse<Void> deletePost(
-            @RequestParam Long postId, @RequestParam Long userId
+            @RequestParam Long postId,@AuthenticationPrincipal UserJwtDto user
     ){
-        postService.deletePost(postId,userId);
+        postService.deletePost(postId,user.getUserId());
         return ApiResponse.success(SuccessCode.OK);
     }
 

@@ -1,6 +1,5 @@
 package com.paassible.recruitservice.post.dto;
 
-import com.paassible.recruitservice.post.entity.Post;
 import com.paassible.recruitservice.post.entity.ProjectDuration;
 
 import java.time.LocalDate;
@@ -13,6 +12,7 @@ public record PostDetailResponse (
         LocalDate deadline,
         ProjectDuration projectDuration,
         Long writerId,
+        String writerName,
         List<RecruitmentInfo> recruitment
 ){
 }

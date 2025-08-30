@@ -32,7 +32,10 @@ public enum ErrorCode implements BaseResponseCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "존재하지 않는 사용자입니다."),
 
     //recruit
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 게시물입니다.");
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 게시물입니다."),
+    INVALID_POSITION(HttpStatus.BAD_REQUEST, "R002", "잘못된 포지션 입력입니다."),
+    INVALID_STACK(HttpStatus.BAD_REQUEST, "R003", "잘못된 스택 입력입니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
