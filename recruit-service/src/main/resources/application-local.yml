@@ -1,7 +1,0 @@
-server:
-  port: 8083
-
-user-service:
-  url: http://localhost:8080
-board-service:
-  url: http://localhost:8082
