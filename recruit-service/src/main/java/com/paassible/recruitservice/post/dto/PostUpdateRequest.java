@@ -1,0 +1,18 @@
+package com.paassible.recruitservice.post.dto;
+
+import com.paassible.recruitservice.post.entity.ProjectDuration;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public record PostUpdateRequest(
+        @NotBlank String title,
+        @NotBlank String content,
+        @NotNull @FutureOrPresent LocalDate deadline,
+        @NotNull ProjectDuration projectDuration,
+        @NotNull List<RecruitmentInfo> recruitment
+        ) {
+}
