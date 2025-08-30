@@ -1,0 +1,8 @@
+server:
+  port: 8081
+
+board-service:
+  url: http://localhost:8082
+recruit-service:
+  url : http://localhost:8083
+

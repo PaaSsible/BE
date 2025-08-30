@@ -1,0 +1,7 @@
+server:
+  port: 8082
+
+user-service:
+  url: http://localhost:8081
+recruit-service:
+  url : http://localhost:8083
