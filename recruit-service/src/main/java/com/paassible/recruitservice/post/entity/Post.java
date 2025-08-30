@@ -2,13 +2,17 @@ package com.paassible.recruitservice.post.entity;
 
 import com.paassible.common.entity.BaseEntity;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "post")
 public class Post extends BaseEntity{
+
+    @Getter
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long id;
 
     private String title;
     private Long writerId;
@@ -39,4 +43,5 @@ public class Post extends BaseEntity{
         this.deadline = deadline;
         this.months = months;
     }
+
 }
