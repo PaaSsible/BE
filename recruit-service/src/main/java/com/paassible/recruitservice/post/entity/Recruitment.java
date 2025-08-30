@@ -1,9 +1,11 @@
 package com.paassible.recruitservice.post.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Table(name = "recruitment")
+@Getter
 public class Recruitment {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,12 +8,12 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "post")
+@Getter
 public class Post extends BaseEntity{
 
-    @Getter
+
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String title;
     private Long writerId;
     private String content;

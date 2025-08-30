@@ -2,8 +2,7 @@ package com.paassible.recruitservice.post.controller;
 
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
-import com.paassible.recruitservice.post.dto.PostCreateRequest;
-import com.paassible.recruitservice.post.dto.PostCreateResponse;
+import com.paassible.recruitservice.post.dto.*;
 import com.paassible.recruitservice.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +18,13 @@ public class PostController {
 
     private final PostService postService;
 
+    @GetMapping("/{postId}")
+    @Operation(summary = "게시판 글 상세조회")
+    public ApiResponse<PostDetailResponse> getPost(@PathVariable Long postId) {
+        PostDetailResponse postDetailResponse = postService.getPostDetail(postId);
+        return ApiResponse.success(SuccessCode.OK, postDetailResponse);
+    }
+
     @PostMapping
     @Operation(summary = "게시판 글 작성", description = "팀원 모집 게시판에 글을 작성합니다.")
     public ApiResponse<PostCreateResponse> createPost(
@@ -26,5 +32,26 @@ public class PostController {
         PostCreateResponse response = postService.createPost(request,writerId);
         return ApiResponse.success(SuccessCode.CREATED, response);
     }
+
+
+    @PutMapping("/{postId}")
+    @Operation(summary = "게시판 글 수정")
+    public ApiResponse<PostUpdateResponse> updatePost(
+            @RequestParam Long postId, @RequestBody  @Valid PostUpdateRequest request, @RequestParam Long userId
+    ){
+        PostUpdateResponse response = postService.updatePost(postId,request,userId);
+        return ApiResponse.success(SuccessCode.OK,response);
+    }
+
+    @DeleteMapping("/{postId}")
+    @Operation(summary = "게시판 글 삭제")
+    public ApiResponse<Void> deletePost(
+            @RequestParam Long postId, @RequestParam Long userId
+    ){
+        postService.deletePost(postId,userId);
+        return ApiResponse.success(SuccessCode.OK);
+    }
+
+
 
 }
