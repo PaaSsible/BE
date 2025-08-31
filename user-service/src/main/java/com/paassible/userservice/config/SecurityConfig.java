@@ -1,5 +1,6 @@
 package com.paassible.userservice.config;
 
+import com.paassible.common.security.exception.CustomAuthenticationEntryPoint;
 import com.paassible.common.security.jwt.JwtAuthenticationFilter;
 import com.paassible.common.security.jwt.JwtUtil;
 import com.paassible.userservice.auth.oauth.CustomOAuth2UserService;
@@ -22,6 +23,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtUtil jwtUtil;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,18 +36,24 @@ public class SecurityConfig {
                 // 세션 사용 안 함 (JWT 기반)
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                /*
+
+                // 인증 실패 시
                 .exceptionHandling(
                         exceptionHandler ->
                                 exceptionHandler.authenticationEntryPoint(
-                                        new CustomAuthenticationEntryPoint()))
-
-                                   .accessDeniedHandler(new CustomAccessDeniedHandler()))
-
-                */
+                                        customAuthenticationEntryPoint))
 
                 // 인가 설정
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/user/swagger-ui/**",
+                                "/user/v3/api-docs/**",
+                                "/user/test",
+                                "/user/internal/**"
+                        ).permitAll()
+                        .requestMatchers("/user/**").authenticated()
+                        .anyRequest().permitAll()
+                )
 
                 // JWT 필터 등록
                 .addFilterBefore(
