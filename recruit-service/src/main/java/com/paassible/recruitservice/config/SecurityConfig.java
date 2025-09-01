@@ -1,5 +1,6 @@
 package com.paassible.recruitservice.config;
 
+import com.paassible.common.security.exception.CustomAuthenticationEntryPoint;
 import com.paassible.common.security.jwt.JwtAuthenticationFilter;
 import com.paassible.common.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -30,7 +32,19 @@ public class SecurityConfig {
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .exceptionHandling(
+                        exceptionHandler ->
+                                exceptionHandler.authenticationEntryPoint(
+                                        customAuthenticationEntryPoint))
+
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/recruit/swagger-ui/**",
+                                "/recruit/v3/api-docs/**"
+                        ).permitAll()
+                        .requestMatchers("/recruit/**").authenticated()
+                        .anyRequest().permitAll()
+                )
 
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),

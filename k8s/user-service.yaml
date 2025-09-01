@@ -56,7 +56,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - http:
+    - host: api.paassible.kro.kr
+      http:
         paths:
           - path: /user
             pathType: Prefix
