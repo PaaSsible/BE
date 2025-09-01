@@ -61,14 +61,14 @@ spec:
     - host: api.paassible.kro.kr
       http:
         paths:
-          - path: /user(/oauth2/.*)
+          - path: /user
             pathType: Prefix
             backend:
               service:
                 name: user-service
                 port:
                   number: 8080
-          - path: /user
+          - path: /oauth2
             pathType: Prefix
             backend:
               service:
