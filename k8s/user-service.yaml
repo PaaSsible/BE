@@ -52,6 +52,8 @@ kind: Ingress
 metadata:
   name: user-ingress
   namespace: user-service
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 
 spec:
   ingressClassName: nginx
@@ -59,6 +61,13 @@ spec:
     - host: api.paassible.kro.kr
       http:
         paths:
+          - path: /user(/oauth2/.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 8080
           - path: /user
             pathType: Prefix
             backend:
