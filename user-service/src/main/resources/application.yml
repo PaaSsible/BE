@@ -46,3 +46,16 @@ jwt:
   secret: ${JWT_SECRET}
   access-expiration: ${JWT_ACCESS_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+
+board-service:
+  url: http://board-service.board-service:8080
+
+chat-service:
+  url: http://chat-service.chat-servicee:8080
+
+meet-service:
+  url: http://meet-service.meet-service:8080
+
+recruit-service:
+  url: http://recruit-service.recruit-service:8080
