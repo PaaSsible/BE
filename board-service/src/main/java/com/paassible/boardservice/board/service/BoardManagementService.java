@@ -1,6 +1,7 @@
 package com.paassible.boardservice.board.service;
 
 
+import com.paassible.boardservice.client.ChatClient;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.client.UserResponse;
 import com.paassible.boardservice.board.dto.BoardMemberResponse;
@@ -23,12 +24,15 @@ public class BoardManagementService {
     private final BoardService boardService;
     private final UserBoardService userBoardService;
     private final UserClient userClient;
+    private final ChatClient chatClient;
 
     // 보드 생성(생성한 사람을 owner로 설정)
     @Transactional
     public void createBoardWithOwner(Long userId, BoardRequest boardRequest) {
         Board board = boardService.createBoard(boardRequest);
         userBoardService.registerOwner(userId, board.getId());
+
+        chatClient.createBoardChatRoom(userId, board.getId());
     }
 
     // 보드 수락 시 해당 보드에 참여자 추가
@@ -38,6 +42,7 @@ public class BoardManagementService {
             throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
         }
         userBoardService.assignUserToBoard(userId, boardId);
+        chatClient.addParticipant(userId, boardId);
     }
 
     // 특정 보드의 유저 목록 조회
