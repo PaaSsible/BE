@@ -35,7 +35,10 @@ public enum ErrorCode implements BaseResponseCode {
     //recruit
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 게시물입니다."),
     INVALID_POSITION(HttpStatus.BAD_REQUEST, "R002", "잘못된 포지션 입력입니다."),
-    INVALID_STACK(HttpStatus.BAD_REQUEST, "R003", "잘못된 스택 입력입니다.");
+    INVALID_STACK(HttpStatus.BAD_REQUEST, "R003", "잘못된 스택 입력입니다."),
+
+    // chat
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CR001", "존재하지 않는 채팅방입니다.");
 
 
     private final HttpStatus httpStatus;

@@ -1,11 +1,11 @@
 spring:
   application:
-    name: board-service
+    name: chat-service
   datasource:
-    url: ${BOARD_DB_URL}
+    url: ${CHAT_DB_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${BOARD_DB_USERNAME}
-    password: ${BOARD_DB_PASSWORD}
+    username: ${CHAT_DB_USERNAME}
+    password: ${CHAT_DB_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,9 +26,9 @@ server:
 
 springdoc:
   api-docs:
-    path: /board/v3/api-docs
+    path: /chat/v3/api-docs
   swagger-ui:
-    path: /board/swagger-ui.html
+    path: /chat/swagger-ui.html
 
 jwt:
   secret: ${JWT_SECRET}
@@ -38,5 +38,3 @@ jwt:
 user-service:
   url: http://localhost:8080
 
-chat-service:
-  url: http://localhost:8085

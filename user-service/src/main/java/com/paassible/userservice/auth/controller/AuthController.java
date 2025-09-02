@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("user/auth")
 @RequiredArgsConstructor
 @Tag(name = "Auth API", description = "토큰 재발급, 로그아웃")
 public class AuthController {
