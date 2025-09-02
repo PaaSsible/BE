@@ -36,5 +36,13 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 user-service:
-  url: http://localhost:8080
+  url: http://user-service.user-service:8080
 
+meet-service:
+  url: http://meet-service.meet-service:8080
+
+board-service:
+  url: http://board-service.board-service:8080
+
+recruit-service:
+  url: http://recruit-service.recruit-service:8080
