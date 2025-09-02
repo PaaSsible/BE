@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: meet-service
+  datasource:
+    url: ${MEET_DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${MEET_DB_USERNAME}
+    password: ${MEET_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    redis:
+      host: ${REDIS_URL}
+      port: ${REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+      timeout: 6000
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    path: /meet/v3/api-docs
+  swagger-ui:
+    path: /meet/swagger-ui.html
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: ${JWT_ACCESS_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}

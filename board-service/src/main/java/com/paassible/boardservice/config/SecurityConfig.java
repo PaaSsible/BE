@@ -23,29 +23,35 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         return http
+                // 기본 보안 설정 OFF
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
+                // 세션 사용 안 함 (JWT 기반)
                 .sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                // 인증 실패 시
                 .exceptionHandling(
                         exceptionHandler ->
                                 exceptionHandler.authenticationEntryPoint(
                                         customAuthenticationEntryPoint))
 
+                // 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/board/swagger-ui/**",
-                                "/board/v3/api-docs/**"
+                                "/board/v3/api-docs/**",
+                                "/board/test",             // 있으면 내부 테스트용
+                                "/board/internal/**"       // 내부 호출은 전부 허용
                         ).permitAll()
                         .requestMatchers("/board/**").authenticated()
                         .anyRequest().permitAll()
                 )
 
+                // JWT 필터 등록
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)

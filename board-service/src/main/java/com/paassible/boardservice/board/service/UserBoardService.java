@@ -2,7 +2,9 @@ package com.paassible.boardservice.board.service;
 
 import com.paassible.boardservice.board.entity.ProjectRole;
 import com.paassible.boardservice.board.entity.UserBoard;
+import com.paassible.boardservice.board.exception.BoardException;
 import com.paassible.boardservice.board.repository.UserBoardRepository;
+import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +44,11 @@ public class UserBoardService {
         return userBoardRepository.findByUserId(userId)
                 .stream()
                 .toList();
+    }
+
+    public void validateUserInBoard(Long boardId, Long userId) {
+        if (! userBoardRepository.existsByUserIdAndBoardId(userId, boardId)){
+            throw new BoardException(ErrorCode.BOARD_USER_NOT_FOUND);
+        }
     }
 }
