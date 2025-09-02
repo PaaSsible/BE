@@ -37,3 +37,6 @@ jwt:
 
 user-service:
   url: http://localhost:8080
+
+chat-service:
+  url: http://localhost:8085
