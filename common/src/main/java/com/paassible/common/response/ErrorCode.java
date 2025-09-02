@@ -27,6 +27,7 @@ public enum ErrorCode implements BaseResponseCode {
 
     // board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "B001", "존재하지 않는 보드입니다."),
+    BOARD_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "B002", "해당 보드에 없는 사용자입니다."),
 
     // user
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "존재하지 않는 사용자입니다."),

@@ -5,9 +5,11 @@ import com.paassible.boardservice.board.dto.BoardRequest;
 import com.paassible.boardservice.board.dto.UserBoardResponse;
 import com.paassible.boardservice.board.service.BoardManagementService;
 import com.paassible.boardservice.board.service.BoardService;
+import com.paassible.boardservice.board.service.UserBoardService;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final UserBoardService userBoardService;
     private final BoardManagementService boardManagementService;
 
     @PostMapping
@@ -57,4 +60,18 @@ public class BoardController {
         List<UserBoardResponse> response = boardManagementService.getBoardsByUser(user.getUserId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
+
+    @Hidden
+    @GetMapping("/internal/{boardId}/exists")
+    public void validateBoard(@PathVariable Long boardId) {
+        boardService.validateBoard(boardId);
+    }
+
+    @Hidden
+    @GetMapping("/internal/{boardId}/user/{userId}/exists")
+    public void existUserInBoard(@PathVariable Long boardId, @PathVariable Long userId) {
+        userBoardService.validateUserInBoard(boardId,userId);
+    }
+
+
 }
