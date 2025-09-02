@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: chat-service
+  datasource:
+    url: ${CHAT_DB_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${CHAT_DB_USERNAME}
+    password: ${CHAT_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+  data:
+    redis:
+      host: ${REDIS_URL}
+      port: ${REDIS_PORT}
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+      timeout: 6000
+
+server:
+  port: 8085
+
+springdoc:
+  api-docs:
+    path: /chat/v3/api-docs
+  swagger-ui:
+    path: /chat/swagger-ui.html
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: ${JWT_ACCESS_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+user-service:
+  url: http://localhost:8080
+
