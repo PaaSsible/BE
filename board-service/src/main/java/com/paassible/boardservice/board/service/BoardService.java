@@ -43,4 +43,14 @@ public class BoardService {
     public boolean exists(Long boardId) {
         return boardRepository.existsById(boardId);
     }
+
+    public void validateBoard(Long boardId) {
+
+        if(!boardRepository.existsById(boardId)) {
+            throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
+        }
+
+    }
+
+
 }
