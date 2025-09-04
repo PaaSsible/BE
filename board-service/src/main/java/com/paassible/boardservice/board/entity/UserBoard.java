@@ -1,5 +1,6 @@
 package com.paassible.boardservice.board.entity;
 
+import com.paassible.boardservice.board.entity.enums.ProjectRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,9 +15,9 @@ public class UserBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private long userId;
+    private Long userId;
 
-    private long boardId;
+    private Long boardId;
 
     @Enumerated(EnumType.STRING)
     private ProjectRole role;

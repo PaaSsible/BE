@@ -8,5 +8,6 @@ import lombok.Getter;
 public class BoardMemberResponse {
     private Long userId;
     private String userName;
+    private String profileImageUrl;
     private String role;
 }

@@ -8,8 +8,9 @@ import lombok.Getter;
 public class UserBoardResponse {
     private Long boardId;
     private String name;
+    private String content;
     private String activityType;
     private String detailType;
     private String status;
-    private String role;
+    private String owner;
 }
