@@ -1,6 +1,6 @@
 package com.paassible.boardservice.board.service;
 
-import com.paassible.boardservice.board.entity.ProjectRole;
+import com.paassible.boardservice.board.entity.enums.ProjectRole;
 import com.paassible.boardservice.board.entity.UserBoard;
 import com.paassible.boardservice.board.exception.BoardException;
 import com.paassible.boardservice.board.repository.UserBoardRepository;
