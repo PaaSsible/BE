@@ -15,7 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/meet")
+@RequestMapping("/meets")
 @RequiredArgsConstructor
 @Tag(name = "회의 API", description = "화상 회의 API")
 public class MeetController {
@@ -38,5 +38,14 @@ public class MeetController {
             @PathVariable Long meetId){
         MeetJoinResponse response = meetService.joinMeet(meetId,user.getUserId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED, response));
+    }
+
+    @DeleteMapping("/{meetId}/participants")
+    @Operation(summary = "회의 나가기", description = "회의 나가기를 요청합니다.")
+    public ResponseEntity<ApiResponse<Void>> leaveMeet(
+            @AuthenticationPrincipal UserJwtDto user,
+            @PathVariable Long meetId){
+        meetService.leaveMeet(meetId,user.getUserId());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
     }
 }

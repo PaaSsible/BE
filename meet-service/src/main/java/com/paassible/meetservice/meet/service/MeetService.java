@@ -1,5 +1,7 @@
 package com.paassible.meetservice.meet.service;
 
+import com.paassible.common.response.ErrorCode;
+import com.paassible.meetservice.exception.MeetException;
 import com.paassible.meetservice.meet.dto.MeetCreateRequest;
 import com.paassible.meetservice.meet.dto.MeetCreateResponse;
 import com.paassible.meetservice.meet.dto.MeetJoinResponse;
@@ -48,4 +50,16 @@ public class MeetService {
 
         return MeetJoinResponse.from(savedParticipant);
     }
+
+    public void leaveMeet(Long meetId, Long userId){
+        meetRepository.findById(meetId)
+                .orElseThrow(()-> new MeetException(ErrorCode.MEET_NOT_FOUND));
+        Participant participant = participantRepository.findByMeetIdAndUserId(meetId,userId)
+                .orElseThrow(
+                        ()->  new MeetException(ErrorCode.MEET_NOT_PARTICIPANT)
+                );
+        participantRepository.delete(participant);
+    }
+
+
 }
