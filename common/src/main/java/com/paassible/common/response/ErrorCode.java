@@ -16,6 +16,7 @@ public enum ErrorCode implements BaseResponseCode {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C005", "허용되지 않은 HTTP 메서드입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C006", "서버 내부 오류가 발생했습니다."),
     FORBIDDEN_ACTION(HttpStatus.FORBIDDEN, "C007", "해당 작업에 대한 권한이 없습니다."),
+    INVALID_CURSOR(HttpStatus.BAD_REQUEST, "C008", "유효하지 않은 커서입니다"),
 
     // auth
     REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "A001", "리프레쉬 토큰이 만료되었습니다."),
@@ -23,7 +24,7 @@ public enum ErrorCode implements BaseResponseCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "유효하지 않은 토큰입니다."),
     AUTHENTICATION_FAILED(HttpStatus.UNAUTHORIZED, "A004", "인증에 실패하였습니다."),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "A005", "인증 토큰이 존재하지 않습니다."),
-    BASIC_AUTH_FAILED(HttpStatus.UNAUTHORIZED, "A006", "Basic Auth 인증이 실패했습니다"),
+    INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "A006", "유효하지 않은 Authorization 헤더입니다"),
 
     // board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "B001", "존재하지 않는 보드입니다."),
@@ -36,6 +37,12 @@ public enum ErrorCode implements BaseResponseCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 게시물입니다."),
     INVALID_POSITION(HttpStatus.BAD_REQUEST, "R002", "잘못된 포지션 입력입니다."),
     INVALID_STACK(HttpStatus.BAD_REQUEST, "R003", "잘못된 스택 입력입니다."),
+
+    //meet
+    MEET_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 회의입니다."),
+    MEET_ALREADY_JOINED(HttpStatus.CONFLICT, "M002", "이미 이 회의에 참가했습니다."),
+    MEET_NOT_PARTICIPANT(HttpStatus.BAD_REQUEST, "M003", "회의에 참가하지 않았습니다."),
+
 
     // chat
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CR001", "존재하지 않는 채팅방입니다.");

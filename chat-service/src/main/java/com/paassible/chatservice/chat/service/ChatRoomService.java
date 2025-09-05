@@ -28,6 +28,7 @@ public class ChatRoomService {
      * 보드 채팅방 조회
      * - 보드 생성 시 room이 이미 만들어져 있다고 가정
      * - 단순히 boardId로 연결된 room을 찾아 반환
+     * - 추가 방을 만든다면 여기에 boardId로 여러 보드를 찾아와서 보여주기 + 보드 이름만들기
      */
     @Transactional(readOnly = true)
     public ChatRoomResponse getGroupChatRoom(Long boardId) {

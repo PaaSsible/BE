@@ -39,7 +39,7 @@ user-service:
   url: http://user-service.user-service:8080
 
 chat-service:
-  url: http://chat-service.chat-servicee:8080
+  url: http://chat-service.chat-service:8080
 
 meet-service:
   url: http://meet-service.meet-service:8080

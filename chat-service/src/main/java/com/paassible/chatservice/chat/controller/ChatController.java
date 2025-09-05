@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -14,13 +15,13 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 
     private final ChatMessageService chatMessageService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/chat.send.{roomId}")
-    @SendTo("/topic/chatroom.{roomId}")
-    public ChatMessageResponse sendMessage(
+    @MessageMapping("/chat/{roomId}/send")
+    public void sendMessage(
             @DestinationVariable Long roomId,
             ChatMessageRequest request) {
         ChatMessageResponse response = chatMessageService.saveMessage(roomId, request);
-        return response;
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
     }
 }
