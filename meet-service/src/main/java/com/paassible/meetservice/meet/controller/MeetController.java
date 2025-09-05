@@ -39,4 +39,13 @@ public class MeetController {
         MeetJoinResponse response = meetService.joinMeet(meetId,user.getUserId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED, response));
     }
+
+    @DeleteMapping("/{meetId}/participants")
+    @Operation(summary = "회의 나가기", description = "회의 나가기를 요청합니다.")
+    public ResponseEntity<ApiResponse<Void>> leaveMeet(
+            @AuthenticationPrincipal UserJwtDto user,
+            @PathVariable Long meetId){
+        meetService.leaveMeet(meetId,user.getUserId());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
+    }
 }
