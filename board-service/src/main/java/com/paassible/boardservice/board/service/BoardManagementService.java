@@ -32,7 +32,7 @@ public class BoardManagementService {
         Board board = boardService.createBoard(boardRequest);
         userBoardService.registerOwner(userId, board.getId());
 
-        //chatClient.createBoardChatRoom(userId, board.getId());
+        chatClient.createBoardChatRoom(userId, board.getId());
     }
 
     // 보드 수락 시 해당 보드에 참여자 추가
@@ -42,7 +42,7 @@ public class BoardManagementService {
             throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
         }
         userBoardService.assignUserToBoard(userId, boardId);
-        //chatClient.addParticipant(userId, boardId);
+        chatClient.addParticipant(userId, boardId);
     }
 
     // 특정 보드의 유저 목록 조회
