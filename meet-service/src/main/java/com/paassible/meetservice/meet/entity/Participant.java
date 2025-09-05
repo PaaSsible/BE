@@ -3,12 +3,14 @@ package com.paassible.meetservice.meet.entity;
 import com.paassible.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
+@Getter
 public class Participant extends BaseEntity {
 
     @Id
@@ -26,9 +28,13 @@ public class Participant extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ParticipantStatus status;
 
-    public void join() {
-        this.status = ParticipantStatus.JOINED;
-        this.joinedAt = LocalDateTime.now();
+    public static Participant create(Long meetId, Long userId) {
+        Participant participant = new Participant();
+        participant.meetId = meetId;
+        participant.userId = userId;
+        participant.status = ParticipantStatus.JOINED;
+        participant.joinedAt = LocalDateTime.now();
+        return participant;
     }
 
     public void leave() {
