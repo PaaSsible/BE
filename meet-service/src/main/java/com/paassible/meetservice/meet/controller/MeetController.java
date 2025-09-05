@@ -15,7 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/meet")
+@RequestMapping("/meets")
 @RequiredArgsConstructor
 @Tag(name = "회의 API", description = "화상 회의 API")
 public class MeetController {
