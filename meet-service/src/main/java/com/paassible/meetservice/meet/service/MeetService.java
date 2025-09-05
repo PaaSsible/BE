@@ -1,8 +1,8 @@
 package com.paassible.meetservice.meet.service;
 
-import com.paassible.meetservice.client.board.BoardClient;
 import com.paassible.meetservice.meet.dto.MeetCreateRequest;
 import com.paassible.meetservice.meet.dto.MeetCreateResponse;
+import com.paassible.meetservice.meet.dto.MeetJoinResponse;
 import com.paassible.meetservice.meet.entity.Meet;
 import com.paassible.meetservice.meet.entity.Participant;
 import com.paassible.meetservice.meet.repository.MeetRepository;
@@ -19,14 +19,12 @@ import java.time.LocalDateTime;
 public class MeetService {
 
     private final MeetRepository meetRepository;
-    private final BoardClient boardClient;
     private final ParticipantRepository participantRepository;
+    private final MeetValidator meetValidator;
 
     public MeetCreateResponse createMeet(Long hostId, MeetCreateRequest request) {
 
-       boardClient.validateBoard(request.boardId());
-       boardClient.validateUserInBoard(request.boardId(), hostId);
-
+       meetValidator.validateUserInBoard(request.boardId(), hostId);
         Meet meet = Meet.create(
                 request.boardId(),
                 hostId,
@@ -38,5 +36,16 @@ public class MeetService {
         Participant savedParticipant = participantRepository.save(participant);
 
         return MeetCreateResponse.from(savedMeet,savedParticipant);
+    }
+
+    public MeetJoinResponse joinMeet(Long meetId, Long userId){
+        Long boardId = meetValidator.validateMeet(meetId);
+        meetValidator.validateUserInBoard(boardId, userId);
+        meetValidator.validateUserInMeet(meetId, userId);
+
+        Participant participant = Participant.create(meetId, userId);
+        Participant savedParticipant = participantRepository.save(participant);
+
+        return MeetJoinResponse.from(savedParticipant);
     }
 }
