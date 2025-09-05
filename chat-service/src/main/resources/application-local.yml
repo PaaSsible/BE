@@ -1,0 +1,27 @@
+server:
+  port: 8085
+
+spring:
+  data:
+    redis:
+      database: 1
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+            scope:
+              - email
+              - profile
+user-service:
+  url: http://localhost:8080
+board-service:
+  url: http://localhost:8082
+recruit-service:
+  url : http://localhost:8083
+meet-service:
+  url: http://localhost:8084
