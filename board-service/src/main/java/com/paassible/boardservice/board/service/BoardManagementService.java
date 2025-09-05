@@ -1,6 +1,7 @@
 package com.paassible.boardservice.board.service;
 
 
+import com.paassible.boardservice.board.entity.enums.ProjectRole;
 import com.paassible.boardservice.client.ChatClient;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.client.UserResponse;
@@ -32,7 +33,7 @@ public class BoardManagementService {
         Board board = boardService.createBoard(boardRequest);
         userBoardService.registerOwner(userId, board.getId());
 
-        chatClient.createBoardChatRoom(userId, board.getId());
+        //chatClient.createBoardChatRoom(userId, board.getId());
     }
 
     // 보드 수락 시 해당 보드에 참여자 추가
@@ -42,7 +43,7 @@ public class BoardManagementService {
             throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
         }
         userBoardService.assignUserToBoard(userId, boardId);
-        chatClient.addParticipant(userId, boardId);
+        //chatClient.addParticipant(userId, boardId);
     }
 
     // 특정 보드의 유저 목록 조회
@@ -52,29 +53,39 @@ public class BoardManagementService {
         return userBoards.stream()
                 .map(ub -> {
                     UserResponse user = userClient.getUser(ub.getUserId());
-                    System.out.println(user.getId());
+
                     return BoardMemberResponse.builder()
                             .userId(user.getId())
                             .userName(user.getNickname())
+                            .profileImageUrl(user.getProfileImageUrl())
                             .role(ub.getRole().name())
                             .build();
                 })
                 .toList();
     }
 
+    // 유저의 보드 목록 조회
     public List<UserBoardResponse> getBoardsByUser(Long userId) {
         List<UserBoard> userBoards = userBoardService.getUserBoardsByUser(userId);
 
         return userBoards.stream()
                 .map(ub -> {
                     Board board = boardService.getBoard(ub.getBoardId());
+                    UserBoard adminUserBoard = userBoardService.getUserBoardsByBoard(board.getId()).stream()
+                            .filter(u -> u.getRole() == ProjectRole.OWNER)
+                            .findFirst()
+                            .orElseThrow(() -> new BoardException(ErrorCode.OWNER_NOT_FOUND));
+
+                    UserResponse owner = userClient.getUser(adminUserBoard.getUserId());
+
                     return UserBoardResponse.builder()
                             .boardId(board.getId())
                             .name(board.getName())
-                            .activityType(board.getActivityType())
-                            .detailType(board.getDetailType())
+                            .content(board.getContent())
+                            .activityType(board.getActivityType().name())
+                            .detailType(board.getDetailType().name())
                             .status(board.getStatus().name())
-                            .role(ub.getRole().name())
+                            .owner(owner.getNickname())
                             .build();
                 })
                 .toList();

@@ -1,5 +1,8 @@
 package com.paassible.boardservice.board.entity;
 
+import com.paassible.boardservice.board.entity.enums.ActivityType;
+import com.paassible.boardservice.board.entity.enums.BoardStatus;
+import com.paassible.boardservice.board.entity.enums.DetailType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,10 +19,21 @@ public class Board {
 
     private String name;
 
-    private String activityType;
+    private String content;
 
-    private String detailType;
+    @Enumerated(EnumType.STRING)
+    private ActivityType activityType;
+
+    @Enumerated(EnumType.STRING)
+    private DetailType detailType;
 
     @Enumerated(EnumType.STRING)
     private BoardStatus status;
+
+    public void updateBoard(String name, String content, ActivityType activityType, DetailType detailType) {
+        this.name = name;
+        this.content = content;
+        this.activityType = activityType;
+        this.detailType = detailType;
+    }
 }

@@ -37,11 +37,18 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED));
     }
 
+    @PutMapping("/{boardId}")
+    @Operation(summary = "보드 수정", description = "프로젝트 보드를 수정합니다.")
+    public ResponseEntity<ApiResponse<Void>> updateBoard(@PathVariable Long boardId,
+                                                         @RequestBody BoardRequest boardRequest) {
+        boardService.updateBoard(boardId, boardRequest);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
+    }
+
     @DeleteMapping("/{boardId}")
     @Operation(summary = "보드 삭제", description = "프로젝트 보드를 삭제합니다.")
     // 혼자 만든 프로젝트만 삭제 가능하도록 만들어야할지?
     // 함께한 프로젝트면 자기만 방 나가기처럼?
-
     public ResponseEntity<ApiResponse<Void>> deleteBoard(@PathVariable Long boardId) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
