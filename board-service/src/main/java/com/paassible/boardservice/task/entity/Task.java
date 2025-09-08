@@ -26,18 +26,15 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
-    private Long assigneeId;
-
     private Long boardId;
 
     public void updateStatus(TaskStatus status) {
         this.status = status;
     }
 
-    public void updateTask(String title, LocalDateTime dueDate, Long assigneeId) {
+    public void updateTask(String title, LocalDateTime dueDate) {
         this.title = title;
         this.dueDate = dueDate;
-        this.assigneeId = assigneeId;
     }
 
     public void updateTaskDescription(String description) {

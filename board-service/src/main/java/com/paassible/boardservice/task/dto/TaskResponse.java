@@ -5,25 +5,34 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
 public class TaskResponse {
     private Long id;
     private String title;
+    private String description;
     private LocalDateTime dueDate;
     private String status;
-    private Long assigneeId;
     private Long boardId;
+    private List<AssigneeDto> assignees;
 
-    public static TaskResponse from(Task task) {
+    @Getter
+    @Builder
+    public static class AssigneeDto {
+        private Long userId;
+        private String name;
+    }
+
+    public static TaskResponse from(Task task, List<AssigneeDto> assignees) {
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
                 .dueDate(task.getDueDate())
                 .status(task.getStatus().name())
-                .assigneeId(task.getAssigneeId())
                 .boardId(task.getBoardId())
+                .assignees(assignees)
                 .build();
     }
 }
