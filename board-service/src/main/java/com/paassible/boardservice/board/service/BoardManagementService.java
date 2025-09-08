@@ -46,8 +46,10 @@ public class BoardManagementService {
         //chatClient.addParticipant(userId, boardId);
     }
 
-    // 특정 보드의 유저 목록 조회
-    public List<BoardMemberResponse> getUsersByBoard(Long boardId) {
+    // 특정 보드의 멤버 목록 조회
+    public List<BoardMemberResponse> getUsersByBoard(Long userId, Long boardId) {
+        userBoardService.validateUserInBoard(boardId, userId);
+
         List<UserBoard> userBoards = userBoardService.getUserBoardsByBoard(boardId);
 
         return userBoards.stream()
