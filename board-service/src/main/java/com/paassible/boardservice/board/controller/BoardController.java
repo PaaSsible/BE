@@ -2,14 +2,12 @@ package com.paassible.boardservice.board.controller;
 
 import com.paassible.boardservice.board.dto.BoardMemberResponse;
 import com.paassible.boardservice.board.dto.BoardRequest;
-import com.paassible.boardservice.board.dto.UserBoardResponse;
+import com.paassible.boardservice.board.dto.BoardResponse;
 import com.paassible.boardservice.board.service.BoardManagementService;
 import com.paassible.boardservice.board.service.BoardService;
-import com.paassible.boardservice.board.service.UserBoardService;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/board")
 @RequiredArgsConstructor
-@Tag(name = "보드 API", description = "보드 목록 조회, 상세 조회, 생성, 삭제")
+@Tag(name = "보드 API", description = "보드 멤버 조회, 목록 조회, 상세 조회, 생성, 수정, 삭제")
 public class BoardController {
 
     private final BoardService boardService;
@@ -41,7 +39,7 @@ public class BoardController {
     public ResponseEntity<ApiResponse<Void>> updateBoard(@AuthenticationPrincipal UserJwtDto user,
                                                          @PathVariable Long boardId,
                                                          @RequestBody BoardRequest boardRequest) {
-        boardService.updateBoard(user.getUserId(), boardId, boardRequest);
+        boardManagementService.updateBoard(user.getUserId(), boardId, boardRequest);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
@@ -65,8 +63,8 @@ public class BoardController {
 
     @GetMapping
     @Operation(summary = "보드 목록 조회", description = "유저가 참여하는 보드 목록을 조회한다.")
-    public ResponseEntity<ApiResponse<List<UserBoardResponse>>> getBoardsByUser(@AuthenticationPrincipal UserJwtDto user) {
-        List<UserBoardResponse> response = boardManagementService.getBoardsByUser(user.getUserId());
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoardsByUser(@AuthenticationPrincipal UserJwtDto user) {
+        List<BoardResponse> response = boardManagementService.getBoardsByUser(user.getUserId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }

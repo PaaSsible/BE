@@ -1,11 +1,12 @@
 package com.paassible.boardservice.task.service;
 
-import com.paassible.boardservice.board.service.UserBoardService;
+import com.paassible.boardservice.board.service.BoardMemberService;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.client.UserResponse;
 import com.paassible.boardservice.task.dto.CommentRequest;
 import com.paassible.boardservice.task.dto.CommentResponse;
 import com.paassible.boardservice.task.entity.Comment;
+import com.paassible.boardservice.task.entity.Task;
 import com.paassible.boardservice.task.exception.TaskException;
 import com.paassible.boardservice.task.repository.CommentRepository;
 import com.paassible.common.response.ErrorCode;
@@ -19,12 +20,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final UserBoardService userBoardService;
+    private final BoardMemberService userBoardService;
+    private final TaskService taskService;
+
     private final CommentRepository commentRepository;
     private final UserClient userClient;
 
     public void createComment(Long userId, Long boardId, Long taskId, CommentRequest request) {
         userBoardService.validateUserInBoard(boardId, userId);
+
+        Task task = taskService.getTask(taskId);
+        if (!task.getBoardId().equals(boardId)) {
+            throw new TaskException(ErrorCode.BOARD_TASK_NOT_FOUND);
+        }
 
         Comment comment = Comment.builder()
                 .taskId(taskId)

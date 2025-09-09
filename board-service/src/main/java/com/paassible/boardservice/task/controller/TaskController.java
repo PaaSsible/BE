@@ -9,6 +9,7 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/board")
+@Tag(name = "업무 API", description = "업무 목록 조회, 상세 조회, 생성, 수정(업무, 설명, 상태), 삭제")
 public class TaskController {
 
     private final TaskManagementService taskManagementService;
