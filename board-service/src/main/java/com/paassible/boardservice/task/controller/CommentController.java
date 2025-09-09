@@ -7,6 +7,7 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/board/{boardId}/task/{taskId}")
+@Tag(name = "업무 댓글 API", description = "업무 댓글 조회, 생성, 수정, 삭제")
 public class CommentController {
 
     private final CommentService commentService;

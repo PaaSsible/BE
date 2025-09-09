@@ -1,6 +1,6 @@
 package com.paassible.boardservice.task.service;
 
-import com.paassible.boardservice.board.service.UserBoardService;
+import com.paassible.boardservice.board.service.BoardMemberService;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.task.dto.TaskDescriptionRequest;
 import com.paassible.boardservice.task.dto.TaskRequest;
@@ -19,7 +19,7 @@ public class TaskManagementService {
 
     private final TaskService taskService;
     private final TaskAssigneeService taskAssigneeService;
-    private final UserBoardService userBoardService;
+    private final BoardMemberService userBoardService;
     private final UserClient userClient;
 
     @Transactional
