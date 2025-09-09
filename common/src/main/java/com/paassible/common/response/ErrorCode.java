@@ -49,7 +49,10 @@ public enum ErrorCode implements BaseResponseCode {
     //meet
     MEET_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 회의입니다."),
     MEET_ALREADY_JOINED(HttpStatus.CONFLICT, "M002", "이미 이 회의에 참가했습니다."),
-    MEET_NOT_PARTICIPANT(HttpStatus.BAD_REQUEST, "M003", "회의에 참가하지 않았습니다."),
+    MEET_NOT_PARTICIPANT(HttpStatus.BAD_REQUEST, "M003", "회의 참가자가 아닙니다."),
+    MEET_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "M002", "이미 종료된 회의입니다."),
+    PARTICIPANT_ALREADY_LEFT(HttpStatus.CONFLICT, "M005", "이미 퇴장한 참가자입니다."),
+
 
 
     // chat

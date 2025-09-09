@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,6 +26,8 @@ public class Participant extends BaseEntity {
 
     private LocalDateTime leftAt;
 
+    private Long totalStayDuration = 0L;
+
     @Enumerated(EnumType.STRING)
     private ParticipantStatus status;
 
@@ -37,15 +40,19 @@ public class Participant extends BaseEntity {
         return participant;
     }
 
+    public void rejoin(){
+        this.status = ParticipantStatus.JOINED;
+        this.joinedAt = LocalDateTime.now();
+        this.leftAt = null;
+    }
+
     public void leave() {
+        long sessionDuration = Duration.between(joinedAt, LocalDateTime.now()).getSeconds();
+        this.totalStayDuration += sessionDuration;
         this.status = ParticipantStatus.LEFT;
         this.leftAt = LocalDateTime.now();
     }
 
-    public void kick(){
-        this.status = ParticipantStatus.KICKED;
-        this.leftAt = LocalDateTime.now();
-    }
 
 
 }

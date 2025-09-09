@@ -41,7 +41,4 @@ public class Meet extends BaseEntity {
         this.status = MeetingStatus.ENDED;
         this.endTime = LocalDateTime.now();
     }
-
-
-
 }
