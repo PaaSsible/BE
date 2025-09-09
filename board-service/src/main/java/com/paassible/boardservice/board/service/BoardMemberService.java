@@ -1,9 +1,9 @@
 package com.paassible.boardservice.board.service;
 
 import com.paassible.boardservice.board.entity.enums.ProjectRole;
-import com.paassible.boardservice.board.entity.UserBoard;
+import com.paassible.boardservice.board.entity.BoardMember;
 import com.paassible.boardservice.board.exception.BoardException;
-import com.paassible.boardservice.board.repository.UserBoardRepository;
+import com.paassible.boardservice.board.repository.BoardMemberRepository;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,42 +12,48 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserBoardService {
+public class BoardMemberService {
 
-    private final UserBoardRepository userBoardRepository;
+    private final BoardMemberRepository boardMemberRepository;
 
     public void registerOwner(Long userId, Long boardId) {
-        UserBoard userBoard = UserBoard.builder()
+        BoardMember userBoard = BoardMember.builder()
                 .userId(userId)
                 .boardId(boardId)
                 .role(ProjectRole.OWNER)
                 .build();
-        userBoardRepository.save(userBoard);
+        boardMemberRepository.save(userBoard);
     }
 
     public void assignUserToBoard(Long userId, Long boardId) {
-        UserBoard userBoard = UserBoard.builder()
+        BoardMember userBoard = BoardMember.builder()
                 .userId(userId)
                 .boardId(boardId)
                 .role(ProjectRole.MEMBER)
                 .build();
-        userBoardRepository.save(userBoard);
+        boardMemberRepository.save(userBoard);
     }
 
-    public List<UserBoard> getUserBoardsByBoard(Long boardId) {
-        return userBoardRepository.findByBoardId(boardId)
+    public List<BoardMember> getBoardMembersByBoard(Long boardId) {
+        return boardMemberRepository.findBoardMembersByBoardId(boardId)
                 .stream()
                 .toList();
     }
 
-    public List<UserBoard> getUserBoardsByUser(Long userId) {
-        return userBoardRepository.findByUserId(userId)
+    public List<BoardMember> getBoardMembersByUser(Long userId) {
+        return boardMemberRepository.findBoardMembersByUserId(userId)
                 .stream()
                 .toList();
+    }
+
+    public BoardMember getBoardMemberByUser(Long userId) {
+        return boardMemberRepository.findByUserId(userId).orElseThrow(
+                () -> new BoardException(ErrorCode.BOARD_USER_NOT_FOUND));
+
     }
 
     public void validateUserInBoard(Long boardId, Long userId) {
-        if (! userBoardRepository.existsByUserIdAndBoardId(userId, boardId)){
+        if (!boardMemberRepository.existsByUserIdAndBoardId(userId, boardId)){
             throw new BoardException(ErrorCode.BOARD_USER_NOT_FOUND);
         }
     }

@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserBoard {
+public class BoardMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

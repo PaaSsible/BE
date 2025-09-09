@@ -1,7 +1,7 @@
 package com.paassible.boardservice.board.controller;
 
 import com.paassible.boardservice.board.service.BoardService;
-import com.paassible.boardservice.board.service.UserBoardService;
+import com.paassible.boardservice.board.service.BoardMemberService;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class BoardInternalController {
 
     private final BoardService boardService;
-    private final UserBoardService userBoardService;
+    private final BoardMemberService boardMemberService;
 
     @Hidden
     @GetMapping("/{boardId}/exists")
@@ -25,6 +25,6 @@ public class BoardInternalController {
     @Hidden
     @GetMapping("/{boardId}/user/{userId}/exists")
     public void existUserInBoard(@PathVariable Long boardId, @PathVariable Long userId) {
-        userBoardService.validateUserInBoard(boardId,userId);
+        boardMemberService.validateUserInBoard(boardId,userId);
     }
 }
