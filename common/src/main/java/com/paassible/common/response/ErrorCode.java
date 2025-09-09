@@ -29,7 +29,14 @@ public enum ErrorCode implements BaseResponseCode {
     // board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "B001", "존재하지 않는 보드입니다."),
     BOARD_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "B002", "해당 보드에 없는 사용자입니다."),
-    OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "B002", "보드 소유자가 존재하지 않습니다."),
+    OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "B003", "보드 소유자가 존재하지 않습니다."),
+    BOARD_TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T004", "해당 보드에는 없는 업무입니다"),
+    BOARD_UPDATE_OWNER(HttpStatus.FORBIDDEN, "B005", "보드 소유자만 보드를 수정할 수 있습니다"),
+
+    // task
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T001", "존재하지 않는 업무입니다."),
+    TASK_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "T002", "존재하지 않는 업무 댓글입니다"),
+    COMMENT_NOT_OWNER(HttpStatus.FORBIDDEN, "T003", "본인이 작성한 댓글만 수정/삭제할 수 있습니다."),
 
     // user
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "존재하지 않는 사용자입니다."),

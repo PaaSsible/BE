@@ -34,7 +34,9 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoard(Long boardId, BoardRequest boardRequest) {
+    public Board updateBoard(Long boardId, BoardRequest boardRequest) {
+        // 유저가 보드에 속하는지 검증하거나 보드 소유자만 변경할 수 있게 한다면 그걸 검증
+        // validateUserRole(boardId, userId, Role.OWNER/ADMIN)
         Board board = getBoard(boardId);
 
         board.updateBoard(
@@ -43,9 +45,12 @@ public class BoardService {
                 boardRequest.getActivityType(),
                 boardRequest.getDetailType()
         );
+        return board;
     }
 
-    public void deleteBoard(Long boardId) {
+    public void deleteBoard(Long userId, Long boardId) {
+        // 누가 삭제하게 할것인가(보드 소유자만?멤버면 가능?)
+        // 멤버 입장에서 보드 삭제는 보드 나가기로 하기?
         if (!boardRepository.existsById(boardId)) {
             throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
         }

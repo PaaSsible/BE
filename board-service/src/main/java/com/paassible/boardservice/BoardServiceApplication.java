@@ -3,7 +3,9 @@ package com.paassible.boardservice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableJpaAuditing
 @SpringBootApplication(scanBasePackages = {"com.paassible.boardservice", "com.paassible.common"})
 @EnableFeignClients(basePackages = "com.paassible.boardservice.client")
 public class BoardServiceApplication {
