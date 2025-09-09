@@ -59,10 +59,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/test")
+    @GetMapping("/test/{userId}")
     @Operation(summary = "유저 엑세스 토큰 발급(테스트용)")
-    public ResponseEntity<String> getCurrentUser() {
-        String accessToken = jwtUtil.createAccessToken(1L, Role.MEMBER);
+    public ResponseEntity<String> getCurrentUser(@PathVariable Long userId) {
+        String accessToken = jwtUtil.createAccessToken(userId, Role.MEMBER);
         return ResponseEntity.ok(accessToken);
     }
 }
