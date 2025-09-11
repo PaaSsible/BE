@@ -29,6 +29,7 @@ public class TaskResponse {
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
+                .description(task.getDescription())
                 .dueDate(task.getDueDate())
                 .status(task.getStatus().name())
                 .boardId(task.getBoardId())
