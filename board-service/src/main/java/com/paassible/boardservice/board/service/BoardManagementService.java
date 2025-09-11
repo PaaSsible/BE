@@ -38,11 +38,9 @@ public class BoardManagementService {
 
     @Transactional
     public void updateBoard(Long userId, Long boardId, BoardRequest boardRequest) {
-        System.out.println("보드 수정 들어옴");
         boardMemberService.validateUserInBoard(userId, boardId);
-        System.out.println("유저 검증함");
 
-        BoardMember boardMember = boardMemberService.getBoardMemberByUser(userId);
+        BoardMember boardMember = boardMemberService.getBoardMember(userId, boardId);
         if(boardMember.getRole() != ProjectRole.OWNER) {
             throw new BoardException(ErrorCode.BOARD_UPDATE_OWNER);
         }

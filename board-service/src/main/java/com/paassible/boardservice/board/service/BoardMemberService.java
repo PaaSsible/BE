@@ -46,10 +46,9 @@ public class BoardMemberService {
                 .toList();
     }
 
-    public BoardMember getBoardMemberByUser(Long userId) {
-        return boardMemberRepository.findByUserId(userId).orElseThrow(
+    public BoardMember getBoardMember(Long userId, Long boardId) {
+        return boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(
                 () -> new BoardException(ErrorCode.BOARD_USER_NOT_FOUND));
-
     }
 
     public void validateUserInBoard(Long boardId, Long userId) {
