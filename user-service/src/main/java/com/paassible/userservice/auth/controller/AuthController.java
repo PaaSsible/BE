@@ -46,7 +46,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.LOGOUT));
     }
 
-    @PostMapping("/callback")
+    @PostMapping("/token")
     @Operation(summary = "토큰 발급", description = "로그인 한 유저에 대해 토큰을 발급합니다.")
     public ResponseEntity<ApiResponse<TokenResponse>> callback(@RequestParam String code,
                                                                 HttpServletResponse response) {
