@@ -4,8 +4,11 @@ import com.paassible.common.response.ErrorCode;
 import com.paassible.common.security.jwt.JwtUtil;
 import com.paassible.common.security.jwt.Role;
 import com.paassible.common.security.token.RefreshTokenRepository;
+import com.paassible.userservice.auth.dto.AuthCodeRequest;
 import com.paassible.userservice.auth.dto.TokenResponse;
 import com.paassible.userservice.auth.exception.AuthException;
+import com.paassible.userservice.auth.oauth.GoogleOAuthService;
+import com.paassible.userservice.auth.oauth.GoogleUserInfo;
 import com.paassible.userservice.user.entity.User;
 import com.paassible.userservice.user.service.UserService;
 import jakarta.servlet.http.Cookie;
@@ -24,6 +27,24 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final UserService userService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final GoogleOAuthService googleOAuthService;
+
+    public TokenResponse createAccessToken(AuthCodeRequest request, HttpServletResponse response) {
+
+        GoogleUserInfo userInfo = googleOAuthService.processCode(request.getCode());
+
+        User user = userService.findOrCreateUser(userInfo);
+
+        Long userId = user.getId();
+        Role role = user.getRole();
+
+        String newAccessToken = jwtUtil.createAccessToken(userId, role);
+        String newRefreshToken = jwtUtil.createRefreshToken(userId);
+
+        response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));
+
+        return new TokenResponse(newAccessToken);
+    }
 
     public TokenResponse refreshAccessToken(
             HttpServletRequest request, HttpServletResponse response) {
@@ -52,12 +73,11 @@ public class AuthService {
         Role role = user.getRole();
 
         String newAccessToken = jwtUtil.createAccessToken(userId, role);
-        String newIdToken = jwtUtil.createIdToken(userId, role);
         String newRefreshToken = jwtUtil.createRefreshToken(userId);
 
         response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));
 
-        return new TokenResponse(newAccessToken, newIdToken);
+        return new TokenResponse(newAccessToken);
     }
 
     public void logout(Long userId, HttpServletResponse response) {

@@ -1,27 +1,17 @@
 package com.paassible.userservice.auth.oauth;
 
-import java.util.Map;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class GoogleUserInfo implements OAuth2UserInfo {
-
-    private final Map<String, Object> attributes;
-
-    public GoogleUserInfo(Map<String, Object> attributes) {
-        this.attributes = attributes;
-    }
-
-    @Override
-    public String getProviderId() {
-        return attributes.get("sub").toString();
-    }
-
-    @Override
-    public String getEmail() {
-        return attributes.get("email").toString();
-    }
-
-    @Override
-    public String getName() {
-        return attributes.get("name").toString();
-    }
+@Getter
+@NoArgsConstructor
+public class GoogleUserInfo {
+    private String sub;
+    private String email;
+    private String name;
+    private String given_name;
+    private String family_name;
+    private String picture;
+    private Boolean email_verified;
+    private String locale;
 }
