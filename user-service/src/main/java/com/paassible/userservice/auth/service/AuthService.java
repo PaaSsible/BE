@@ -4,6 +4,7 @@ import com.paassible.common.response.ErrorCode;
 import com.paassible.common.security.jwt.JwtUtil;
 import com.paassible.common.security.jwt.Role;
 import com.paassible.common.security.token.RefreshTokenRepository;
+import com.paassible.userservice.auth.dto.AuthCodeRequest;
 import com.paassible.userservice.auth.dto.TokenResponse;
 import com.paassible.userservice.auth.exception.AuthException;
 import com.paassible.userservice.auth.oauth.GoogleOAuthService;
@@ -28,9 +29,9 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final GoogleOAuthService googleOAuthService;
 
-    public TokenResponse createAccessToken(String code, HttpServletResponse response) {
+    public TokenResponse createAccessToken(AuthCodeRequest request, HttpServletResponse response) {
 
-        GoogleUserInfo userInfo = googleOAuthService.processCode(code);
+        GoogleUserInfo userInfo = googleOAuthService.processCode(request.getCode());
 
         User user = userService.findOrCreateUser(userInfo);
 

@@ -3,6 +3,7 @@ package com.paassible.userservice.auth.controller;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
+import com.paassible.userservice.auth.dto.AuthCodeRequest;
 import com.paassible.userservice.auth.dto.TokenResponse;
 import com.paassible.userservice.auth.oauth.GoogleOAuthService;
 import com.paassible.userservice.auth.oauth.GoogleUserInfo;
@@ -14,10 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,9 +46,9 @@ public class AuthController {
 
     @PostMapping("/token")
     @Operation(summary = "토큰 발급", description = "로그인 한 유저에 대해 토큰을 발급합니다.")
-    public ResponseEntity<ApiResponse<TokenResponse>> callback(@RequestParam String code,
-                                                                HttpServletResponse response) {
-        TokenResponse token = authService.createAccessToken(code, response);
+    public ResponseEntity<ApiResponse<TokenResponse>> callback(@RequestBody AuthCodeRequest request,
+                                                               HttpServletResponse response) {
+        TokenResponse token = authService.createAccessToken(request, response);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, token));
     }
 }
