@@ -3,8 +3,6 @@ package com.paassible.userservice.config;
 import com.paassible.common.security.exception.CustomAuthenticationEntryPoint;
 import com.paassible.common.security.jwt.JwtAuthenticationFilter;
 import com.paassible.common.security.jwt.JwtUtil;
-import com.paassible.userservice.auth.oauth.CustomOAuth2UserService;
-import com.paassible.userservice.auth.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtUtil jwtUtil;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
@@ -48,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/user/swagger-ui/**",
                                 "/user/v3/api-docs/**",
+                                "/user/auth/callback",
                                 "/user/test/**",
                                 "/user/internal/**"
                         ).permitAll()
@@ -60,14 +57,6 @@ public class SecurityConfig {
                         new JwtAuthenticationFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)
 
-                // OAuth2 설정
-                .oauth2Login(
-                        oauth ->
-                                oauth.userInfoEndpoint(
-                                                userInfoEndpoint ->
-                                                        userInfoEndpoint.userService(
-                                                                customOAuth2UserService))
-                                        .successHandler(oAuth2SuccessHandler))
                 .build();
     }
 }
