@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record PostCreateRequest(
+        @NotBlank String mainCategory,
+        @NotBlank String subCategory,
         @NotBlank String title,
         @NotBlank String content,
         @FutureOrPresent  LocalDate deadline,

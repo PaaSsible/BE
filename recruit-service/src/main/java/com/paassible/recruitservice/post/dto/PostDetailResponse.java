@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record PostDetailResponse (
+        String mainCategory,
+        String subCategory,
         Long postId,
         String title,
         String content,

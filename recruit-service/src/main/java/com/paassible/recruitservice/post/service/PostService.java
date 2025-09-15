@@ -50,6 +50,8 @@ public class PostService {
                 .toList();
 
         return new PostDetailResponse(
+                post.getMainCategory(),
+                post.getSubCategory(),
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
@@ -65,6 +67,8 @@ public class PostService {
     public PostCreateResponse createPost(PostCreateRequest request,long userId) {
 
         Post post = Post.create(
+                request.mainCategory(),
+                request.subCategory(),
                 userId,
                 request.title(),
                 request.content(),
@@ -103,7 +107,7 @@ public class PostService {
         if(!post.getWriterId().equals(userId)) {
             throw new CustomException(ErrorCode.FORBIDDEN_ACTION);
         }
-        post.updatePost(request.title(), request.content(), request.deadline(), request.projectDuration());
+        post.updatePost(request.mainCategory(), request.subCategory(), request.title(), request.content(), request.deadline(), request.projectDuration());
 
         recruitmentRepository.deleteByPostId(postId);
 

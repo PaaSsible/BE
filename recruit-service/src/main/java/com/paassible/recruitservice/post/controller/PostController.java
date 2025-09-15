@@ -42,7 +42,7 @@ public class PostController {
             @RequestParam Long postId, @RequestBody  @Valid PostUpdateRequest request, @AuthenticationPrincipal UserJwtDto user
     ){
         PostUpdateResponse response = postService.updatePost(postId,request, user.getUserId());
-        return ApiResponse.success(SuccessCode.OK,response);
+        return ApiResponse.success(SuccessCode.MODIFIED,response);
     }
 
     @DeleteMapping("/{postId}")
@@ -51,7 +51,7 @@ public class PostController {
             @RequestParam Long postId,@AuthenticationPrincipal UserJwtDto user
     ){
         postService.deletePost(postId,user.getUserId());
-        return ApiResponse.success(SuccessCode.OK);
+        return ApiResponse.success(SuccessCode.DELETED);
     }
 
 

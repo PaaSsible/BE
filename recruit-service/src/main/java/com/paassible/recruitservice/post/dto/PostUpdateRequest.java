@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record PostUpdateRequest(
+        @NotBlank String mainCategory,
+        @NotBlank String subCategory,
         @NotBlank String title,
         @NotBlank String content,
         @NotNull @FutureOrPresent LocalDate deadline,
