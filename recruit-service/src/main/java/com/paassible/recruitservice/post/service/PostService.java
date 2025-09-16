@@ -7,15 +7,25 @@ import com.paassible.recruitservice.client.UserResponse;
 import com.paassible.recruitservice.position.entity.Position;
 import com.paassible.recruitservice.position.repositoty.PositionRepository;
 import com.paassible.recruitservice.post.dto.*;
+import com.paassible.recruitservice.post.dto.read.PagedPostListResponse;
+import com.paassible.recruitservice.post.dto.read.PostListResponse;
+import com.paassible.recruitservice.post.dto.read.PostSearchRequest;
 import com.paassible.recruitservice.post.entity.Post;
+import com.paassible.recruitservice.post.entity.QPost;
 import com.paassible.recruitservice.post.entity.Recruitment;
 import com.paassible.recruitservice.post.repository.PostRepository;
 import com.paassible.recruitservice.post.repository.RecruitmentRepository;
 import com.paassible.recruitservice.stack.entity.Stack;
 import com.paassible.recruitservice.stack.repositoty.StackRepository;
+import com.querydsl.core.types.OrderSpecifier;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +38,37 @@ public class PostService {
     private final StackRepository stackRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final UserClient userClient;
+
+
+    @Transactional(readOnly = true)
+    public PagedPostListResponse getPosts(PostSearchRequest request) {
+        Pageable pageable = PageRequest.of(request.page(), request.size());
+
+        OrderSpecifier<?> orderSpecifier = getOrderSpecifier(request.sort());
+
+        Page<PostListResponse> postsPage = postRepository.searchPosts(request, pageable, orderSpecifier);
+
+        var pageInfo = new PagedPostListResponse.PageInfo(
+                postsPage.getNumber(),
+                postsPage.getTotalPages(),
+                postsPage.getTotalElements(),
+                postsPage.getSize(),
+                postsPage.hasNext()
+        );
+
+        return new PagedPostListResponse(postsPage.getContent(), pageInfo);
+    }
+
+    private OrderSpecifier<?> getOrderSpecifier(String sort) {
+        QPost post = QPost.post;
+
+        return switch (sort.toUpperCase()) {
+            case "DEADLINE" -> post.deadline.asc();
+            case "POPULAR" -> post.applicationCount.desc();
+            default -> post.createdAt.desc(); // RECENT
+        };
+    }
+
 
     @Transactional(readOnly = true)
     public PostDetailResponse getPostDetail(Long postId) {

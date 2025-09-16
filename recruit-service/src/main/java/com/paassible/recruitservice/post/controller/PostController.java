@@ -4,6 +4,8 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.recruitservice.post.dto.*;
+import com.paassible.recruitservice.post.dto.read.PagedPostListResponse;
+import com.paassible.recruitservice.post.dto.read.PostSearchRequest;
 import com.paassible.recruitservice.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +21,18 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
 
     private final PostService postService;
+
+
+    @GetMapping
+    public ApiResponse<PagedPostListResponse> getPosts(
+            @ModelAttribute @Valid PostSearchRequest request) {
+
+        PagedPostListResponse response = postService.getPosts(request);
+
+        return ApiResponse.success(SuccessCode.OK , response);
+    }
+
+
 
     @GetMapping("/{postId}")
     @Operation(summary = "게시판 글 상세조회")
