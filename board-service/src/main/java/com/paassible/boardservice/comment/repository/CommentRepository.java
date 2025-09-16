@@ -1,6 +1,6 @@
-package com.paassible.boardservice.task.repository;
+package com.paassible.boardservice.comment.repository;
 
-import com.paassible.boardservice.task.entity.Comment;
+import com.paassible.boardservice.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

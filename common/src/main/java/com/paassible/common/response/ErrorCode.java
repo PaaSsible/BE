@@ -33,10 +33,11 @@ public enum ErrorCode implements BaseResponseCode {
     OWNER_NOT_FOUND(HttpStatus.NOT_FOUND, "B003", "보드 소유자가 존재하지 않습니다."),
     BOARD_TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T004", "해당 보드에는 없는 업무입니다"),
     BOARD_UPDATE_OWNER(HttpStatus.FORBIDDEN, "B005", "보드 소유자만 보드를 수정할 수 있습니다"),
+    SHORTCUT_NOT_FOUND(HttpStatus.NOT_FOUND, "B006", "존재하지 않는 바로가기입니다."),
 
     // task
     TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "T001", "존재하지 않는 업무입니다."),
-    TASK_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "T002", "존재하지 않는 업무 댓글입니다"),
+    TASK_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "T002", "해당 보드의 업무에 존재하는 댓글이 없습니다."),
     COMMENT_NOT_OWNER(HttpStatus.FORBIDDEN, "T003", "본인이 작성한 댓글만 수정/삭제할 수 있습니다."),
 
     // user

@@ -1,7 +1,7 @@
-package com.paassible.boardservice.task.dto;
+package com.paassible.boardservice.comment.dto;
 
 import com.paassible.boardservice.client.UserResponse;
-import com.paassible.boardservice.task.entity.Comment;
+import com.paassible.boardservice.comment.entity.Comment;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,6 +14,7 @@ public class CommentResponse {
     private Long taskId;
     private Long userId;
     private String userName;
+    private String profileImageUrl;
     private String comment;
     private LocalDateTime createdAt;
 
@@ -23,6 +24,7 @@ public class CommentResponse {
                 .taskId(comment.getTaskId())
                 .userId(user.getId())
                 .userName(user.getNickname())
+                .profileImageUrl(user.getProfileImageUrl())
                 .comment(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .build();
