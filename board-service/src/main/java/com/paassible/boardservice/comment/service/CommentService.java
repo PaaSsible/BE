@@ -1,5 +1,7 @@
 package com.paassible.boardservice.comment.service;
 
+import com.paassible.boardservice.board.entity.BoardMember;
+import com.paassible.boardservice.board.entity.enums.MemberStatus;
 import com.paassible.boardservice.board.service.BoardMemberService;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.client.UserResponse;
@@ -23,6 +25,7 @@ public class CommentService {
 
     private final BoardMemberService userBoardService;
     private final TaskService taskService;
+    private final BoardMemberService boardMemberService;
 
     private final CommentRepository commentRepository;
     private final UserClient userClient;
@@ -75,8 +78,19 @@ public class CommentService {
 
         return commentRepository.findComments(taskId, boardId).stream()
                 .map(comment -> {
-                    UserResponse user = userClient.getUser(comment.getUserId());
-                    return CommentResponse.from(comment, user);
+                    BoardMember boardMember = boardMemberService.getBoardMember(comment.getUserId(), boardId);
+
+                    String userName;
+                    String profileImageUrl;
+                    if (boardMember.getStatus() == MemberStatus.INACTIVE) {
+                        userName = "알 수 없음";
+                        profileImageUrl = "default";
+                    } else {
+                        UserResponse user = userClient.getUser(comment.getUserId());
+                        userName = user.getNickname();
+                        profileImageUrl = user.getProfileImageUrl();
+                    }
+                    return CommentResponse.from(comment, comment.getUserId(), userName, profileImageUrl);
                 })
                 .toList();
     }

@@ -18,13 +18,13 @@ public class CommentResponse {
     private String comment;
     private LocalDateTime createdAt;
 
-    public static CommentResponse from(Comment comment, UserResponse user) {
+    public static CommentResponse from(Comment comment, Long userId, String userName, String profileImageUrl) {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .taskId(comment.getTaskId())
-                .userId(user.getId())
-                .userName(user.getNickname())
-                .profileImageUrl(user.getProfileImageUrl())
+                .userId(userId)
+                .userName(userName)
+                .profileImageUrl(profileImageUrl)
                 .comment(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .build();
