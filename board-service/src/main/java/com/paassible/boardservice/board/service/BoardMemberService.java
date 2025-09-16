@@ -56,4 +56,8 @@ public class BoardMemberService {
             throw new BoardException(ErrorCode.BOARD_USER_NOT_FOUND);
         }
     }
+
+    public void deleteBoardMembers(Long boardId) {
+        boardMemberRepository.deleteAllByBoardId(boardId);
+    }
 }

@@ -17,4 +17,6 @@ public interface BoardMemberRepository extends JpaRepository<BoardMember, Long> 
     Optional<BoardMember> findByUserIdAndBoardId(Long userId, Long boardId);
 
     boolean existsByUserIdAndBoardId(Long userId, Long boardId);
+
+    void deleteAllByBoardId(Long boardId);
 }

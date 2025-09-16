@@ -46,7 +46,18 @@ public class BoardManagementService {
         }
         Board board = boardService.updateBoard(boardId, boardRequest);
         boardMemberService.registerOwner(userId, board.getId());
+    }
 
+    @Transactional
+    public void deleteBoard(Long userId, Long boardId) {
+        boardMemberService.validateUserInBoard(userId, boardId);
+
+        BoardMember boardMember = boardMemberService.getBoardMember(userId, boardId);
+        if(boardMember.getRole() != ProjectRole.OWNER) {
+            throw new BoardException(ErrorCode.BOARD_UPDATE_OWNER);
+        }
+        boardService.deleteBoard(userId, boardId);
+        boardMemberService.deleteBoardMembers(boardId);
     }
 
     // 보드 수락 시 해당 보드에 참여자 추가
