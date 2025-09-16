@@ -1,10 +1,8 @@
 package com.paassible.boardservice.task.controller;
 
-import com.paassible.boardservice.task.dto.TaskDescriptionRequest;
-import com.paassible.boardservice.task.dto.TaskRequest;
-import com.paassible.boardservice.task.dto.TaskResponse;
-import com.paassible.boardservice.task.dto.TaskStatusRequest;
+import com.paassible.boardservice.task.dto.*;
 import com.paassible.boardservice.task.service.TaskManagementService;
+import com.paassible.boardservice.task.service.TaskVisualizationService;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
@@ -24,6 +22,7 @@ import java.util.List;
 public class TaskController {
 
     private final TaskManagementService taskManagementService;
+    private final TaskVisualizationService taskVisualizationService;
 
     @PostMapping("/task")
     @Operation(summary = "업무 생성", description = "새로운 업무를 생성합니다.")
@@ -87,6 +86,14 @@ public class TaskController {
     public ResponseEntity<ApiResponse<List<TaskResponse>>> getTasksByBoard(@AuthenticationPrincipal UserJwtDto user,
                                                                            @PathVariable Long boardId) {
         List<TaskResponse> response = taskManagementService.getByBoard(user.getUserId(), boardId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
+
+    @GetMapping("/task/visualization")
+    @Operation(summary = "업무 상태 시각화", description = "업무 상태를 시각화합니다.")
+    public ResponseEntity<ApiResponse<TaskVisualizationResponse>> getTaskVisualization(@AuthenticationPrincipal UserJwtDto user,
+                                                                                        @PathVariable Long boardId) {
+        TaskVisualizationResponse response = taskVisualizationService.getTaskVisualization(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }

@@ -3,12 +3,10 @@ package com.paassible.boardservice.shortcut.service;
 
 import com.paassible.boardservice.board.exception.BoardException;
 import com.paassible.boardservice.board.service.BoardMemberService;
-import com.paassible.boardservice.client.UserResponse;
 import com.paassible.boardservice.shortcut.dto.ShortcutRequest;
 import com.paassible.boardservice.shortcut.dto.ShortcutResponse;
 import com.paassible.boardservice.shortcut.entity.Shortcut;
 import com.paassible.boardservice.shortcut.repository.ShortcutRepository;
-import com.paassible.boardservice.task.dto.CommentResponse;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
