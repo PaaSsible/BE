@@ -1,6 +1,8 @@
 package com.paassible.boardservice.board.service;
 
 
+import com.paassible.boardservice.board.entity.enums.BoardStatus;
+import com.paassible.boardservice.board.entity.enums.MemberStatus;
 import com.paassible.boardservice.board.entity.enums.ProjectRole;
 import com.paassible.boardservice.client.ChatClient;
 import com.paassible.boardservice.client.UserClient;
@@ -27,7 +29,6 @@ public class BoardManagementService {
     private final UserClient userClient;
     private final ChatClient chatClient;
 
-    // 보드 생성(생성한 사람을 owner로 설정)
     @Transactional
     public void createBoardWithOwner(Long userId, BoardRequest boardRequest) {
         Board board = boardService.createBoard(boardRequest);
@@ -56,8 +57,16 @@ public class BoardManagementService {
         if(boardMember.getRole() != ProjectRole.OWNER) {
             throw new BoardException(ErrorCode.BOARD_UPDATE_OWNER);
         }
-        boardService.deleteBoard(userId, boardId);
         boardMemberService.deleteBoardMembers(boardId);
+        boardService.deleteBoard(boardId);
+    }
+
+    @Transactional
+    public void leaveBoard(Long userId, Long boardId) {
+        boardMemberService.validateUserInBoard(userId, boardId);
+
+        BoardMember boardMember = boardMemberService.getBoardMember(userId, boardId);
+        boardMember.updateMemberStatus(MemberStatus.INACTIVE);
     }
 
     // 보드 수락 시 해당 보드에 참여자 추가
@@ -70,7 +79,6 @@ public class BoardManagementService {
         //chatClient.addParticipant(userId, boardId);
     }
 
-    // 특정 보드의 멤버 목록 조회
     public List<BoardMemberResponse> getUsersByBoard(Long userId, Long boardId) {
         boardMemberService.validateUserInBoard(boardId, userId);
 
@@ -78,17 +86,26 @@ public class BoardManagementService {
 
         return userBoards.stream()
                 .map(ub -> {
-                    UserResponse user = userClient.getUser(ub.getUserId());
-                    return BoardMemberResponse.from(user, ub);
+                    String userName;
+                    String profileImageUrl;
+                    if (ub.getStatus() == MemberStatus.INACTIVE) {
+                        userName = "알 수 없음";
+                        profileImageUrl = "default";
+                    } else {
+                        UserResponse user = userClient.getUser(ub.getUserId());
+                        userName = user.getNickname();
+                        profileImageUrl = user.getProfileImageUrl();
+                    }
+                    return BoardMemberResponse.from(ub.getUserId(), userName, profileImageUrl, ub);
                 })
                 .toList();
     }
 
-    // 유저의 보드 목록 조회
-    public List<BoardResponse> getBoardsByUser(Long userId) {
+    public List<BoardResponse> getBoardsByUser(Long userId, BoardStatus status, String keyword) {
         List<BoardMember> boardMembers = boardMemberService.getBoardMembersByUser(userId);
 
         return boardMembers.stream()
+                .filter(ub -> ub.getStatus() == MemberStatus.ACTIVE)
                 .map(ub -> {
                     Board board = boardService.getBoard(ub.getBoardId());
                     BoardMember adminUserBoard = boardMemberService.getBoardMembersByBoard(board.getId()).stream()
@@ -99,6 +116,11 @@ public class BoardManagementService {
                     UserResponse owner = userClient.getUser(adminUserBoard.getUserId());
                     return BoardResponse.from(board, owner);
                 })
+                .filter(response -> status == null
+                        || response.getStatus().equals(status.name()))
+                .filter(response -> keyword == null
+                        || response.getName().toLowerCase().contains(keyword.toLowerCase())
+                        || response.getContent().toLowerCase().contains(keyword.toLowerCase()))
                 .toList();
     }
 }

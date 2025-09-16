@@ -1,5 +1,7 @@
 package com.paassible.boardservice.task.service;
 
+import com.paassible.boardservice.board.entity.BoardMember;
+import com.paassible.boardservice.board.entity.enums.MemberStatus;
 import com.paassible.boardservice.board.service.BoardMemberService;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.task.dto.TaskDescriptionRequest;
@@ -74,10 +76,21 @@ public class TaskManagementService {
     private TaskResponse toResponse(Task task) {
         List<TaskResponse.AssigneeDto> assignees = taskAssigneeService.getAssigneeIds(task.getId())
                 .stream()
-                .map(userId -> TaskResponse.AssigneeDto.builder()
-                        .userId(userId)
-                        .name(userClient.getUser(userId).getNickname())
-                        .build())
+                .map(userId -> {
+                    BoardMember boardMember = boardMemberService.getBoardMember(userId, task.getBoardId());
+
+                    String name;
+                    if (boardMember.getStatus() == MemberStatus.INACTIVE) {
+                        name = "알 수 없음";
+                    } else {
+                        name = userClient.getUser(userId).getNickname();
+                    }
+
+                    return TaskResponse.AssigneeDto.builder()
+                            .userId(userId)
+                            .name(name)
+                            .build();
+                })
                 .toList();
 
         return TaskResponse.from(task, assignees);

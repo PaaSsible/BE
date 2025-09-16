@@ -13,11 +13,11 @@ public class BoardMemberResponse {
     private String profileImageUrl;
     private String role;
 
-    public static BoardMemberResponse from(UserResponse user, BoardMember ub) {
+    public static BoardMemberResponse from(Long userId, String userName, String profileImageUrl, BoardMember ub) {
         return BoardMemberResponse.builder()
-                .userId(user.getId())
-                .userName(user.getNickname())
-                .profileImageUrl(user.getProfileImageUrl())
+                .userId(userId)
+                .userName(userName)
+                .profileImageUrl(profileImageUrl)
                 .role(ub.getRole().name())
                 .build();
     }
