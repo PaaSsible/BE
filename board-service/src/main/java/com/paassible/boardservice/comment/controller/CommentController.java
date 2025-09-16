@@ -1,8 +1,8 @@
-package com.paassible.boardservice.task.controller;
+package com.paassible.boardservice.comment.controller;
 
-import com.paassible.boardservice.task.dto.CommentRequest;
-import com.paassible.boardservice.task.dto.CommentResponse;
-import com.paassible.boardservice.task.service.CommentService;
+import com.paassible.boardservice.comment.dto.CommentRequest;
+import com.paassible.boardservice.comment.dto.CommentResponse;
+import com.paassible.boardservice.comment.service.CommentService;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;

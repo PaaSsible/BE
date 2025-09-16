@@ -1,4 +1,4 @@
-package com.paassible.boardservice.task.dto;
+package com.paassible.boardservice.comment.dto;
 
 import lombok.Getter;
 

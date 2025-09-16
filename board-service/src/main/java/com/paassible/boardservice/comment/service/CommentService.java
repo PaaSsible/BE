@@ -1,14 +1,15 @@
-package com.paassible.boardservice.task.service;
+package com.paassible.boardservice.comment.service;
 
 import com.paassible.boardservice.board.service.BoardMemberService;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.client.UserResponse;
-import com.paassible.boardservice.task.dto.CommentRequest;
-import com.paassible.boardservice.task.dto.CommentResponse;
-import com.paassible.boardservice.task.entity.Comment;
+import com.paassible.boardservice.comment.dto.CommentRequest;
+import com.paassible.boardservice.comment.dto.CommentResponse;
+import com.paassible.boardservice.comment.entity.Comment;
 import com.paassible.boardservice.task.entity.Task;
 import com.paassible.boardservice.task.exception.TaskException;
-import com.paassible.boardservice.task.repository.CommentRepository;
+import com.paassible.boardservice.comment.repository.CommentRepository;
+import com.paassible.boardservice.task.service.TaskService;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
