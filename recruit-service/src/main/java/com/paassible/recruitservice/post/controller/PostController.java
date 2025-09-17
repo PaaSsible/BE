@@ -4,8 +4,8 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.recruitservice.post.dto.*;
-import com.paassible.recruitservice.post.dto.read.PagedPostListResponse;
-import com.paassible.recruitservice.post.dto.read.PostSearchRequest;
+import com.paassible.recruitservice.post.dto.PagedPostListResponse;
+import com.paassible.recruitservice.post.dto.PostSearchRequest;
 import com.paassible.recruitservice.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,7 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/recruit")
+@RequestMapping("/recruits")
 @RequiredArgsConstructor
 @Tag(name = "팀원 모집 게시판 API", description = "팀원 모집 게시판 조회, 상세 조회, 생성, 삭제")
 public class PostController {

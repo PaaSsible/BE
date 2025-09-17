@@ -1,4 +1,4 @@
-package com.paassible.recruitservice.post.dto.read;
+package com.paassible.recruitservice.post.dto;
 
 import com.paassible.recruitservice.post.entity.MainCategory;
 import com.paassible.recruitservice.post.entity.SubCategory;

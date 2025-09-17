@@ -1,7 +1,7 @@
 package com.paassible.recruitservice.post.repository;
 
-import com.paassible.recruitservice.post.dto.read.PostListResponse;
-import com.paassible.recruitservice.post.dto.read.PostSearchRequest;
+import com.paassible.recruitservice.post.dto.PostListResponse;
+import com.paassible.recruitservice.post.dto.PostSearchRequest;
 import com.paassible.recruitservice.post.entity.Post;
 import com.paassible.recruitservice.post.entity.QPost;
 import com.paassible.recruitservice.post.entity.QRecruitment;

@@ -1,6 +1,4 @@
-package com.paassible.recruitservice.post.dto.read;
-
-import com.paassible.recruitservice.position.dto.PositionResponse;
+package com.paassible.recruitservice.post.dto;
 
 import java.util.List;
 
