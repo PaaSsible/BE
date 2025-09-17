@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostRepositoryCustom {
     Page<PostListResponse> searchPosts(PostSearchRequest request, Pageable pageable, OrderSpecifier<?> orderSpecifier);
+    Page<PostListResponse> findMyPosts(Long writerId, Integer position, Pageable pageable, OrderSpecifier<?> orderSpecifier);
 }
 
 

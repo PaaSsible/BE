@@ -17,17 +17,21 @@ import com.paassible.recruitservice.post.repository.PostRepository;
 import com.paassible.recruitservice.post.repository.RecruitmentRepository;
 import com.paassible.recruitservice.stack.entity.Stack;
 import com.paassible.recruitservice.stack.repositoty.StackRepository;
+import com.paassible.recruitservice.util.QuerydslSortUtils;
 import com.querydsl.core.types.OrderSpecifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,11 +67,92 @@ public class PostService {
         QPost post = QPost.post;
 
         return switch (sort.toUpperCase()) {
+            case "RECENT" -> post.createdAt.desc();
             case "DEADLINE" -> post.deadline.asc();
             case "POPULAR" -> post.applicationCount.desc();
-            default -> post.createdAt.desc(); // RECENT
+            default -> throw new CustomException(ErrorCode.INVALID_SORT_OPTION);
         };
     }
+
+
+    public PagedPostListResponse getMyPosts(Long userId, Integer position, String sort, Pageable pageable) {
+        // ✅ 정렬 옵션 매핑
+        Sort sortOption = switch (sort.toUpperCase()) {
+            case "RECENT"   -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case "DEADLINE" -> Sort.by(Sort.Direction.ASC, "deadline");
+            case "POPULAR"  -> Sort.by(Sort.Direction.DESC, "applicationCount");
+            default -> throw new CustomException(ErrorCode.INVALID_SORT_OPTION);
+        };
+
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                sortOption
+        );
+
+        // ✅ 1. 내 글 조회
+        Page<Post> posts = (position != null)
+                ? postRepository.findMyPostsByPosition(userId, position.longValue(), sortedPageable)
+                : postRepository.findByWriterId(userId, sortedPageable);
+
+        if (posts.isEmpty()) {
+            return new PagedPostListResponse(Collections.emptyList(),
+                    new PagedPostListResponse.PageInfo(
+                            posts.getNumber(),
+                            posts.getTotalPages(),
+                            posts.getTotalElements(),
+                            posts.getSize(),
+                            posts.hasNext()
+                    ));
+        }
+
+        // ✅ 2. recruitments 조회
+        List<Long> postIds = posts.getContent().stream().map(Post::getId).toList();
+        List<Recruitment> recruitments = recruitmentRepository.findByPostIdIn(postIds);
+
+        // ✅ 3. PostId별 그룹핑
+        Map<Long, List<PostListResponse.RecruitmentSummary>> recruitmentsByPost =
+                recruitments.stream()
+                        .collect(Collectors.groupingBy(
+                                Recruitment::getPostId,
+                                Collectors.mapping(
+                                        r -> new PostListResponse.RecruitmentSummary(
+                                                r.getRecruitmentId(),
+                                                r.getPositionId(),
+                                                r.getStackId()
+                                        ),
+                                        Collectors.toList()
+                                )
+                        ));
+
+        // ✅ 4. DTO 조립
+        List<PostListResponse> results = posts.getContent().stream()
+                .map(p -> new PostListResponse(
+                        p.getId(),
+                        p.getTitle(),
+                        p.getMainCategory(),
+                        p.getSubCategory(),
+                        p.getCreatedAt(),
+                        p.getUpdatedAt(),
+                        p.getDeadline(),
+                        p.getViewCount(),
+                        p.getApplicationCount(),
+                        recruitmentsByPost.getOrDefault(p.getId(), Collections.emptyList())
+                ))
+                .toList();
+
+        var pageInfo = new PagedPostListResponse.PageInfo(
+                posts.getNumber(),
+                posts.getTotalPages(),
+                posts.getTotalElements(),
+                posts.getSize(),
+                posts.hasNext()
+        );
+
+        return new PagedPostListResponse(results, pageInfo);
+    }
+
+
 
 
     @Transactional(readOnly = true)

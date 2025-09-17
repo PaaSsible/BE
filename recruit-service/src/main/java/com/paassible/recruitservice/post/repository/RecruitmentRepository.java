@@ -11,4 +11,6 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
 
     @Query("select r from Recruitment r where r.postId = :postId")
     List<Recruitment> findByPostId(Long postId);
+
+    List<Recruitment> findByPostIdIn(List<Long> postIds);
 }

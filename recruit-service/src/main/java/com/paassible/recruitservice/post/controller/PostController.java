@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +26,7 @@ public class PostController {
 
 
     @GetMapping
+    @Operation(summary = "게시글 목록")
     public ApiResponse<PagedPostListResponse> getPosts(
             @ModelAttribute @Valid PostSearchRequest request) {
 
@@ -31,6 +34,20 @@ public class PostController {
 
         return ApiResponse.success(SuccessCode.OK , response);
     }
+
+    @GetMapping("/me/posts")
+    @Operation(summary = "내가 작성한게시글 목록")
+    public ApiResponse<PagedPostListResponse> getMyPosts(
+            @AuthenticationPrincipal UserJwtDto user,
+            @RequestParam(required = false) Integer position,
+            @RequestParam(defaultValue = "RECENT") String sort,
+            Pageable pageable) {
+
+        PagedPostListResponse response = postService.getMyPosts(user.getUserId(), position, sort, pageable);
+
+        return ApiResponse.success(SuccessCode.OK , response);
+    }
+
 
 
 
