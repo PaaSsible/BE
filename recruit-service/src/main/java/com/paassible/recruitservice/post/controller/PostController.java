@@ -24,7 +24,6 @@ public class PostController {
 
     private final PostService postService;
 
-
     @GetMapping
     @Operation(summary = "게시글 목록")
     public ApiResponse<PagedPostListResponse> getPosts(
@@ -47,8 +46,6 @@ public class PostController {
 
         return ApiResponse.success(SuccessCode.OK , response);
     }
-
-
 
 
     @GetMapping("/{postId}")
