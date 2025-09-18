@@ -4,21 +4,47 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.recruitservice.post.dto.*;
+import com.paassible.recruitservice.post.dto.PagedPostListResponse;
+import com.paassible.recruitservice.post.dto.PostSearchRequest;
 import com.paassible.recruitservice.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/recruit")
+@RequestMapping("/recruits")
 @RequiredArgsConstructor
 @Tag(name = "팀원 모집 게시판 API", description = "팀원 모집 게시판 조회, 상세 조회, 생성, 삭제")
 public class PostController {
 
     private final PostService postService;
+
+    @GetMapping
+    @Operation(summary = "게시글 목록")
+    public ApiResponse<PagedPostListResponse> getPosts(
+            @ModelAttribute @Valid PostSearchRequest request) {
+
+        PagedPostListResponse response = postService.getPosts(request);
+
+        return ApiResponse.success(SuccessCode.OK , response);
+    }
+
+    @GetMapping("/me/posts")
+    @Operation(summary = "내가 작성한게시글 목록")
+    public ApiResponse<PagedPostListResponse> getMyPosts(
+            @AuthenticationPrincipal UserJwtDto user,
+            Pageable pageable) {
+
+        PagedPostListResponse response = postService.getMyPosts(user.getUserId(),pageable);
+
+        return ApiResponse.success(SuccessCode.OK , response);
+    }
+
 
     @GetMapping("/{postId}")
     @Operation(summary = "게시판 글 상세조회")
@@ -42,7 +68,7 @@ public class PostController {
             @RequestParam Long postId, @RequestBody  @Valid PostUpdateRequest request, @AuthenticationPrincipal UserJwtDto user
     ){
         PostUpdateResponse response = postService.updatePost(postId,request, user.getUserId());
-        return ApiResponse.success(SuccessCode.OK,response);
+        return ApiResponse.success(SuccessCode.MODIFIED,response);
     }
 
     @DeleteMapping("/{postId}")
@@ -51,7 +77,7 @@ public class PostController {
             @RequestParam Long postId,@AuthenticationPrincipal UserJwtDto user
     ){
         postService.deletePost(postId,user.getUserId());
-        return ApiResponse.success(SuccessCode.OK);
+        return ApiResponse.success(SuccessCode.DELETED);
     }
 
 

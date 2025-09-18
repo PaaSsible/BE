@@ -7,17 +7,30 @@ import com.paassible.recruitservice.client.UserResponse;
 import com.paassible.recruitservice.position.entity.Position;
 import com.paassible.recruitservice.position.repositoty.PositionRepository;
 import com.paassible.recruitservice.post.dto.*;
+import com.paassible.recruitservice.post.dto.PagedPostListResponse;
+import com.paassible.recruitservice.post.dto.PostListResponse;
+import com.paassible.recruitservice.post.dto.PostSearchRequest;
 import com.paassible.recruitservice.post.entity.Post;
+import com.paassible.recruitservice.post.entity.QPost;
 import com.paassible.recruitservice.post.entity.Recruitment;
 import com.paassible.recruitservice.post.repository.PostRepository;
 import com.paassible.recruitservice.post.repository.RecruitmentRepository;
 import com.paassible.recruitservice.stack.entity.Stack;
 import com.paassible.recruitservice.stack.repositoty.StackRepository;
+import com.querydsl.core.types.OrderSpecifier;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +41,106 @@ public class PostService {
     private final StackRepository stackRepository;
     private final RecruitmentRepository recruitmentRepository;
     private final UserClient userClient;
+
+
+    @Transactional(readOnly = true)
+    public PagedPostListResponse getPosts(PostSearchRequest request) {
+        Pageable pageable = PageRequest.of(request.page(), request.size());
+
+        OrderSpecifier<?> orderSpecifier = getOrderSpecifier(request.sort());
+
+        Page<PostListResponse> postsPage = postRepository.searchPosts(request, pageable, orderSpecifier);
+
+        var pageInfo = new PagedPostListResponse.PageInfo(
+                postsPage.getNumber(),
+                postsPage.getTotalPages(),
+                postsPage.getTotalElements(),
+                postsPage.getSize(),
+                postsPage.hasNext()
+        );
+
+        return new PagedPostListResponse(postsPage.getContent(), pageInfo);
+    }
+
+    private OrderSpecifier<?> getOrderSpecifier(String sort) {
+        QPost post = QPost.post;
+
+        return switch (sort.toUpperCase()) {
+            case "RECENT" -> post.createdAt.desc();
+            case "DEADLINE" -> post.deadline.asc();
+            case "POPULAR" -> post.applicationCount.desc();
+            default -> throw new CustomException(ErrorCode.INVALID_SORT_OPTION);
+        };
+    }
+
+    @Transactional(readOnly = true)
+    public PagedPostListResponse getMyPosts(Long userId,Pageable pageable) {
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "createdAt")
+                );
+
+        Page<Post> posts = postRepository.findByWriterId(userId, sortedPageable);
+        if(posts.isEmpty()){
+            return new PagedPostListResponse(
+                    Collections.emptyList(),
+                    new PagedPostListResponse.PageInfo(
+                            posts.getNumber(),
+                            posts.getTotalPages(),
+                            posts.getTotalElements(),
+                            posts.getSize(),
+                            posts.hasNext()
+                    )
+            );
+        }
+
+        List<Long> postIds = posts.getContent().stream()
+                .map(Post::getId)
+                .toList();
+
+        List<Recruitment> recruitments = recruitmentRepository.findByPostIdIn(postIds);
+        Map<Long, List<PostListResponse.RecruitmentSummary>> recruitmentsByPost =
+                recruitments.stream()
+                        .collect(Collectors.groupingBy(
+                                Recruitment::getPostId,
+                                Collectors.mapping(
+                                        r -> new PostListResponse.RecruitmentSummary(
+                                                r.getRecruitmentId(),
+                                                r.getPositionId(),
+                                                r.getStackId()
+                                        ),
+                                        Collectors.toList()
+                                )
+                        ));
+        List<PostListResponse> results = posts.getContent().stream()
+                .map(p->new PostListResponse(
+                        p.getId(),
+                        p.getTitle(),
+                        p.getMainCategory(),
+                        p.getSubCategory(),
+                        p.getCreatedAt(),
+                        p.getUpdatedAt(),
+                        p.getDeadline(),
+                        p.getViewCount(),
+                        p.getApplicationCount(),
+                        recruitmentsByPost.getOrDefault(p.getId(), Collections.emptyList())
+                ))
+                .toList();
+
+        PagedPostListResponse.PageInfo pageInfo = new PagedPostListResponse.PageInfo(
+                posts.getNumber(),
+                posts.getTotalPages(),
+                posts.getTotalElements(),
+                posts.getSize(),
+                posts.hasNext()
+        );
+        return new PagedPostListResponse(results, pageInfo);
+    }
+
+
+
+
 
     @Transactional(readOnly = true)
     public PostDetailResponse getPostDetail(Long postId) {
@@ -50,6 +163,8 @@ public class PostService {
                 .toList();
 
         return new PostDetailResponse(
+                post.getMainCategory(),
+                post.getSubCategory(),
                 post.getId(),
                 post.getTitle(),
                 post.getContent(),
@@ -65,6 +180,8 @@ public class PostService {
     public PostCreateResponse createPost(PostCreateRequest request,long userId) {
 
         Post post = Post.create(
+                request.mainCategory(),
+                request.subCategory(),
                 userId,
                 request.title(),
                 request.content(),
@@ -103,7 +220,7 @@ public class PostService {
         if(!post.getWriterId().equals(userId)) {
             throw new CustomException(ErrorCode.FORBIDDEN_ACTION);
         }
-        post.updatePost(request.title(), request.content(), request.deadline(), request.projectDuration());
+        post.updatePost(request.mainCategory(), request.subCategory(), request.title(), request.content(), request.deadline(), request.projectDuration());
 
         recruitmentRepository.deleteByPostId(postId);
 
