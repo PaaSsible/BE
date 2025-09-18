@@ -73,42 +73,33 @@ public class PostService {
         };
     }
 
-
-    public PagedPostListResponse getMyPosts(Long userId, Integer position, String sort, Pageable pageable) {
-
-        Sort sortOption = switch (sort.toUpperCase()) {
-            case "RECENT"   -> Sort.by(Sort.Direction.DESC, "createdAt");
-            case "DEADLINE" -> Sort.by(Sort.Direction.ASC, "deadline");
-            case "POPULAR"  -> Sort.by(Sort.Direction.DESC, "applicationCount");
-            default -> throw new CustomException(ErrorCode.INVALID_SORT_OPTION);
-        };
-
+    @Transactional(readOnly = true)
+    public PagedPostListResponse getMyPosts(Long userId,Pageable pageable) {
         Pageable sortedPageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
-                sortOption
-        );
+                Sort.by(Sort.Direction.DESC, "createdAt")
+                );
 
-
-        Page<Post> posts = (position != null)
-                ? postRepository.findMyPostsByPosition(userId, position.longValue(), sortedPageable)
-                : postRepository.findByWriterId(userId, sortedPageable);
-
-        if (posts.isEmpty()) {
-            return new PagedPostListResponse(Collections.emptyList(),
+        Page<Post> posts = postRepository.findByWriterId(userId, sortedPageable);
+        if(posts.isEmpty()){
+            return new PagedPostListResponse(
+                    Collections.emptyList(),
                     new PagedPostListResponse.PageInfo(
                             posts.getNumber(),
                             posts.getTotalPages(),
                             posts.getTotalElements(),
                             posts.getSize(),
                             posts.hasNext()
-                    ));
+                    )
+            );
         }
 
-        List<Long> postIds = posts.getContent().stream().map(Post::getId).toList();
+        List<Long> postIds = posts.getContent().stream()
+                .map(Post::getId)
+                .toList();
+
         List<Recruitment> recruitments = recruitmentRepository.findByPostIdIn(postIds);
-
-
         Map<Long, List<PostListResponse.RecruitmentSummary>> recruitmentsByPost =
                 recruitments.stream()
                         .collect(Collectors.groupingBy(
@@ -122,10 +113,8 @@ public class PostService {
                                         Collectors.toList()
                                 )
                         ));
-
-
         List<PostListResponse> results = posts.getContent().stream()
-                .map(p -> new PostListResponse(
+                .map(p->new PostListResponse(
                         p.getId(),
                         p.getTitle(),
                         p.getMainCategory(),
@@ -139,16 +128,16 @@ public class PostService {
                 ))
                 .toList();
 
-        var pageInfo = new PagedPostListResponse.PageInfo(
+        PagedPostListResponse.PageInfo pageInfo = new PagedPostListResponse.PageInfo(
                 posts.getNumber(),
                 posts.getTotalPages(),
                 posts.getTotalElements(),
                 posts.getSize(),
                 posts.hasNext()
         );
-
         return new PagedPostListResponse(results, pageInfo);
     }
+
 
 
 
