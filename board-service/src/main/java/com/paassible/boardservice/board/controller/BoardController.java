@@ -1,10 +1,12 @@
 package com.paassible.boardservice.board.controller;
 
+import com.paassible.boardservice.board.dto.BoardEntryResponse;
 import com.paassible.boardservice.board.dto.BoardMemberResponse;
 import com.paassible.boardservice.board.dto.BoardRequest;
 import com.paassible.boardservice.board.dto.BoardResponse;
 import com.paassible.boardservice.board.entity.enums.BoardStatus;
 import com.paassible.boardservice.board.service.BoardManagementService;
+import com.paassible.boardservice.board.service.BoardMemberService;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
@@ -18,12 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/boards")
 @RequiredArgsConstructor
 @Tag(name = "보드 API", description = "보드 멤버 조회, 목록 조회, 상세 조회, 생성, 수정, 삭제")
 public class BoardController {
 
     private final BoardManagementService boardManagementService;
+    private final BoardMemberService boardMemberService;
 
     @PostMapping
     @Operation(summary = "보드 생성", description = "새로운 프로젝트 보드를 생성합니다.")
@@ -50,15 +53,15 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
     }
 
-    @DeleteMapping("/{boardId}/leave")
+    @DeleteMapping("/{boardId}/members")
     @Operation(summary = "보드 탈퇴", description = "프로젝트 보드를 탈퇴합니다.")
     public ResponseEntity<ApiResponse<Void>> leaveBoard(@AuthenticationPrincipal UserJwtDto user,
                                                          @PathVariable Long boardId) {
-        boardManagementService.leaveBoard(user.getUserId(), boardId);
+        boardMemberService.leaveBoard(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
     }
 
-    @GetMapping("/{boardId}")
+    @GetMapping("/{boardId}/members")
     @Operation(summary = "보드 멤버 조회", description = "해당 보드에 참여한 유저들의 목록을 조회한다.")
     public ResponseEntity<ApiResponse<List<BoardMemberResponse>>> getUsersByBoard(@AuthenticationPrincipal UserJwtDto user,
                                                                                   @PathVariable Long boardId) {
@@ -73,5 +76,23 @@ public class BoardController {
                                                                             @RequestParam(required = false) String keyword) {
         List<BoardResponse> response = boardManagementService.getBoardsByUser(user.getUserId(), status, keyword);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
+
+    @PatchMapping("/{boardId}/members")
+    @Operation(summary = "보드 포지션 설정", description = "유저가 참여하는 보드에서의 포지션을 설정한다.")
+    public ResponseEntity<ApiResponse<Void>> updateMemberPosition(@AuthenticationPrincipal UserJwtDto user,
+                                                                  @PathVariable Long boardId,
+                                                                  @RequestParam Long positionId
+    ) {
+        boardMemberService.updatePosition(user.getUserId(), boardId, positionId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
+    }
+
+    @GetMapping("/{boardId}")
+    @Operation(summary = "보드 진입", description = "사용자가 보드에 진입할 때 포지션 설정 여부를 확인한다.")
+    public ResponseEntity<ApiResponse<BoardEntryResponse>> enterBoard(@AuthenticationPrincipal UserJwtDto user,
+                                                                      @PathVariable Long boardId) {
+        BoardEntryResponse response = boardManagementService.enterBoard(user.getUserId(), boardId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK,response));
     }
 }

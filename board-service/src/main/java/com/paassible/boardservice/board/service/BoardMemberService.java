@@ -1,5 +1,6 @@
 package com.paassible.boardservice.board.service;
 
+import com.paassible.boardservice.board.entity.enums.MemberStatus;
 import com.paassible.boardservice.board.entity.enums.ProjectRole;
 import com.paassible.boardservice.board.entity.BoardMember;
 import com.paassible.boardservice.board.exception.BoardException;
@@ -7,6 +8,7 @@ import com.paassible.boardservice.board.repository.BoardMemberRepository;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +34,21 @@ public class BoardMemberService {
                 .role(ProjectRole.MEMBER)
                 .build();
         boardMemberRepository.save(userBoard);
+    }
+
+    @Transactional
+    public void updatePosition(Long userId, Long boardId, Long positionId) {
+        validateUserInBoard(userId, boardId);
+        BoardMember boardMember = getBoardMember(userId, boardId);
+        boardMember.updatePosition(positionId);
+    }
+
+    @Transactional
+    public void leaveBoard(Long userId, Long boardId) {
+        validateUserInBoard(userId, boardId);
+
+        BoardMember boardMember = getBoardMember(userId, boardId);
+        boardMember.updateMemberStatus(MemberStatus.INACTIVE);
     }
 
     public List<BoardMember> getBoardMembersByBoard(Long boardId) {

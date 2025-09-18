@@ -3,6 +3,7 @@ package com.paassible.boardservice.task.service;
 import com.paassible.boardservice.board.entity.BoardMember;
 import com.paassible.boardservice.board.entity.enums.MemberStatus;
 import com.paassible.boardservice.board.service.BoardMemberService;
+import com.paassible.boardservice.client.PositionClient;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.task.dto.TaskDescriptionRequest;
 import com.paassible.boardservice.task.dto.TaskRequest;
@@ -22,13 +23,17 @@ public class TaskManagementService {
     private final TaskService taskService;
     private final TaskAssigneeService taskAssigneeService;
     private final BoardMemberService boardMemberService;
+    private final TaskPositionService taskPositionService;
+
     private final UserClient userClient;
+    private final PositionClient positionClient;
 
     @Transactional
     public void createTask(Long userId, Long boardId, TaskRequest request) {
         boardMemberService.validateUserInBoard(boardId, userId);
         Task task = taskService.createTask(boardId, request);
         taskAssigneeService.assignUsers(task.getId(), request.getAssigneeIds());
+        taskPositionService.assignPositions(task.getId(), request.getPositionIds());
     }
 
     @Transactional
@@ -36,6 +41,7 @@ public class TaskManagementService {
         boardMemberService.validateUserInBoard(boardId, userId);
         Task task = taskService.updateTask(boardId, taskId, request);
         taskAssigneeService.reassignUsers(task.getId(), request.getAssigneeIds());
+        taskPositionService.reassignPositions(task.getId(), request.getPositionIds());
     }
 
     @Transactional
@@ -74,6 +80,11 @@ public class TaskManagementService {
     }
 
     private TaskResponse toResponse(Task task) {
+        List<String> positions = taskPositionService.getPositionIdsByTaskId(task.getId())
+                .stream()
+                .map(positionClient::getPositionName)
+                .toList();
+
         List<TaskResponse.AssigneeDto> assignees = taskAssigneeService.getAssigneeIds(task.getId())
                 .stream()
                 .map(userId -> {
@@ -93,6 +104,6 @@ public class TaskManagementService {
                 })
                 .toList();
 
-        return TaskResponse.from(task, assignees);
+        return TaskResponse.from(task, positions, assignees);
     }
 }
