@@ -39,7 +39,7 @@ public class ShortcutService {
         shortcutRepository.save(shortcut);
     }
 
-    public void deleteShortcut(Long boardId, Long shortcutId, Long userId) {
+    public void deleteShortcut(Long userId, Long boardId, Long shortcutId) {
         boardMemberService.validateUserInBoard(userId, boardId);
 
         Shortcut shortcut = shortcutRepository.findByIdAndBoardId(shortcutId, boardId)

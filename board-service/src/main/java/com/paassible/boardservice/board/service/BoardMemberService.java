@@ -68,7 +68,7 @@ public class BoardMemberService {
                 () -> new BoardException(ErrorCode.BOARD_USER_NOT_FOUND));
     }
 
-    public void validateUserInBoard(Long boardId, Long userId) {
+    public void validateUserInBoard(Long userId, Long boardId) {
         if (!boardMemberRepository.existsByUserIdAndBoardId(userId, boardId)){
             throw new BoardException(ErrorCode.BOARD_USER_NOT_FOUND);
         }

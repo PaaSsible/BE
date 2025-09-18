@@ -27,6 +27,7 @@ public class BoardMember {
     @Enumerated(EnumType.STRING)
     private ProjectRole role;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private MemberStatus status = MemberStatus.ACTIVE;
 
