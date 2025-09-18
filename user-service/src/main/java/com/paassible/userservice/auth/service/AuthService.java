@@ -43,7 +43,9 @@ public class AuthService {
 
         response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));
 
-        return new TokenResponse(newAccessToken);
+        long expiresAt = System.currentTimeMillis() + jwtUtil.getAccessTokenValidity();
+
+        return new TokenResponse(newAccessToken, expiresAt);
     }
 
     public TokenResponse refreshAccessToken(
@@ -77,7 +79,9 @@ public class AuthService {
 
         response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));
 
-        return new TokenResponse(newAccessToken);
+        long expiresAt = System.currentTimeMillis() + jwtUtil.getAccessTokenValidity();
+
+        return new TokenResponse(newAccessToken, expiresAt);
     }
 
     public void logout(Long userId, HttpServletResponse response) {

@@ -95,6 +95,10 @@ public class JwtUtil {
                 .get("role", String.class);
     }
 
+    public long getAccessTokenValidity() {
+        return accessTokenExpiration;
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
