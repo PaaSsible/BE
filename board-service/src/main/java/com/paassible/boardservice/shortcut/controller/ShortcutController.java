@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/board/{boardId}")
+@RequestMapping("/boards/{boardId}")
 @Tag(name = "바로가기 API", description = "바로가기 조회, 생성, 삭제")
 public class ShortcutController {
 
@@ -33,7 +33,7 @@ public class ShortcutController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
-    @PostMapping("/shortcut")
+    @PostMapping("/shortcuts")
     @Operation(summary = "바로가기 생성", description = "바로가기를 추가합니다.")
     public ResponseEntity<ApiResponse<Void>> createShortcut(
             @PathVariable Long boardId,
@@ -44,7 +44,7 @@ public class ShortcutController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED));
     }
 
-    @DeleteMapping("/shortcut/{shortcutId}")
+    @DeleteMapping("/shortcuts/{shortcutId}")
     @Operation(summary = "바로가기 삭제", description = "바로가기를 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteShortcut(
             @PathVariable Long boardId,

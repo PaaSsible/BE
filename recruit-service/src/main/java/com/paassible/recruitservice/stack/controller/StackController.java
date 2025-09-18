@@ -18,7 +18,7 @@ import java.util.List;
 public class StackController {
     private final StackService stackService;
 
-    @GetMapping("/recruit/stacks")
+    @GetMapping("/recruits/stacks")
     @Operation(summary = "포지션 조회", description = "")
     public ApiResponse<List<StackResponse>> getAllStacks() {
         List<StackResponse> response = stackService.getAllStacks();

@@ -1,6 +1,7 @@
 package com.paassible.boardservice.board.service;
 
 
+import com.paassible.boardservice.board.dto.BoardEntryResponse;
 import com.paassible.boardservice.board.entity.enums.BoardStatus;
 import com.paassible.boardservice.board.entity.enums.MemberStatus;
 import com.paassible.boardservice.board.entity.enums.ProjectRole;
@@ -61,12 +62,9 @@ public class BoardManagementService {
         boardService.deleteBoard(boardId);
     }
 
-    @Transactional
-    public void leaveBoard(Long userId, Long boardId) {
-        boardMemberService.validateUserInBoard(userId, boardId);
-
+    public BoardEntryResponse enterBoard(Long userId, Long boardId) {
         BoardMember boardMember = boardMemberService.getBoardMember(userId, boardId);
-        boardMember.updateMemberStatus(MemberStatus.INACTIVE);
+        return new BoardEntryResponse(boardId, boardMember.getPositionId());
     }
 
     // 보드 수락 시 해당 보드에 참여자 추가

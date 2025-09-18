@@ -47,6 +47,7 @@ public enum ErrorCode implements BaseResponseCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 게시물입니다."),
     INVALID_POSITION(HttpStatus.BAD_REQUEST, "R002", "잘못된 포지션 입력입니다."),
     INVALID_STACK(HttpStatus.BAD_REQUEST, "R003", "잘못된 스택 입력입니다."),
+    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "R004", "존재하지 않는 포지션입니다."),
 
     //meet
     MEET_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 회의입니다."),

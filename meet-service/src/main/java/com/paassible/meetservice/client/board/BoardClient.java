@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "board-service", url = "${board-service.url}")
 public interface BoardClient {
 
-    @GetMapping("/board/internal/{boardId}/exists")
+    @GetMapping("/boards/internal/{boardId}/exists")
     void validateBoard(@PathVariable Long boardId);
 
-    @GetMapping("/board/internal/{boardId}/user/{userId}/exists")
+    @GetMapping("/boards/internal/{boardId}/user/{userId}/exists")
     void validateUserInBoard(@PathVariable Long boardId, @PathVariable Long userId);
 
 }
