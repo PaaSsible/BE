@@ -43,7 +43,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
-    @PatchMapping("/tasks/{taskId}")
+    @PatchMapping("/tasks/{taskId}/description")
     @Operation(summary = "업무 설명 수정", description = "업무의 상세 설명을 수정합니다.")
     public ResponseEntity<ApiResponse<Void>> updateTaskDescription(@AuthenticationPrincipal UserJwtDto user,
                                                                    @PathVariable Long boardId,
@@ -53,7 +53,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
-    @PatchMapping("/tasks/{taskId}")
+    @PatchMapping("/tasks/{taskId}/status")
     @Operation(summary = "업무 상태 수정", description = "업무의 상태를 수정합니다.")
     public ResponseEntity<ApiResponse<Void>> updateTaskStatus(@AuthenticationPrincipal UserJwtDto user,
                                                               @PathVariable Long boardId,
