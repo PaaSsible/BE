@@ -38,11 +38,9 @@ public class PostController {
     @Operation(summary = "내가 작성한게시글 목록")
     public ApiResponse<PagedPostListResponse> getMyPosts(
             @AuthenticationPrincipal UserJwtDto user,
-            @RequestParam(required = false) Integer position,
-            @RequestParam(defaultValue = "RECENT") String sort,
             Pageable pageable) {
 
-        PagedPostListResponse response = postService.getMyPosts(user.getUserId(), position, sort, pageable);
+        PagedPostListResponse response = postService.getMyPosts(user.getUserId(),pageable);
 
         return ApiResponse.success(SuccessCode.OK , response);
     }
