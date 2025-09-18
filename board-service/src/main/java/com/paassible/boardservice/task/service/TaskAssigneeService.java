@@ -14,14 +14,15 @@ public class TaskAssigneeService {
     private final TaskAssigneeRepository taskAssigneeRepository;
 
     public void assignUsers(Long taskId, List<Long> userIds) {
-        if (userIds != null) {
-            for (Long userId : userIds) {
-                TaskAssignee taskAssignee = TaskAssignee.builder()
-                        .taskId(taskId)
-                        .userId(userId)
-                        .build();
-                taskAssigneeRepository.save(taskAssignee);
-            }
+        if (userIds == null || userIds.isEmpty()) {
+            return;
+        }
+        for (Long userId : userIds) {
+            TaskAssignee taskAssignee = TaskAssignee.builder()
+                    .taskId(taskId)
+                    .userId(userId)
+                    .build();
+            taskAssigneeRepository.save(taskAssignee);
         }
     }
 
