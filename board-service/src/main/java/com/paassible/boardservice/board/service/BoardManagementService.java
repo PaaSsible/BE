@@ -46,8 +46,7 @@ public class BoardManagementService {
         if(boardMember.getRole() != ProjectRole.OWNER) {
             throw new BoardException(ErrorCode.BOARD_UPDATE_OWNER);
         }
-        Board board = boardService.updateBoard(boardId, boardRequest);
-        boardMemberService.registerOwner(userId, board.getId());
+        boardService.updateBoard(boardId, boardRequest);
     }
 
     @Transactional
