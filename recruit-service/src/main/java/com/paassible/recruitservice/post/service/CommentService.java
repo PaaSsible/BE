@@ -7,6 +7,7 @@ import com.paassible.recruitservice.post.dto.CommentListResponse;
 import com.paassible.recruitservice.post.dto.CommentResponse;
 import com.paassible.recruitservice.post.entity.Comment;
 import com.paassible.recruitservice.post.repository.CommentRepository;
+import com.paassible.recruitservice.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +20,12 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final PostRepository postRepository;
 
     public void createComment(Long postId, CommentCreateRequest request,Long userId) {
+
+        postRepository.findById(postId).orElseThrow(
+                ()->new CustomException(ErrorCode.POST_NOT_FOUND));
 
         if(request.parentId() != null){
             Comment parent = commentRepository.findById(request.parentId())

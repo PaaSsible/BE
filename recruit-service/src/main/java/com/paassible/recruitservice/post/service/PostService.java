@@ -75,7 +75,7 @@ public class PostService {
 
 
     public PagedPostListResponse getMyPosts(Long userId, Integer position, String sort, Pageable pageable) {
-        // ✅ 정렬 옵션 매핑
+
         Sort sortOption = switch (sort.toUpperCase()) {
             case "RECENT"   -> Sort.by(Sort.Direction.DESC, "createdAt");
             case "DEADLINE" -> Sort.by(Sort.Direction.ASC, "deadline");
@@ -89,7 +89,7 @@ public class PostService {
                 sortOption
         );
 
-        // ✅ 1. 내 글 조회
+
         Page<Post> posts = (position != null)
                 ? postRepository.findMyPostsByPosition(userId, position.longValue(), sortedPageable)
                 : postRepository.findByWriterId(userId, sortedPageable);
@@ -105,11 +105,10 @@ public class PostService {
                     ));
         }
 
-        // ✅ 2. recruitments 조회
         List<Long> postIds = posts.getContent().stream().map(Post::getId).toList();
         List<Recruitment> recruitments = recruitmentRepository.findByPostIdIn(postIds);
 
-        // ✅ 3. PostId별 그룹핑
+
         Map<Long, List<PostListResponse.RecruitmentSummary>> recruitmentsByPost =
                 recruitments.stream()
                         .collect(Collectors.groupingBy(
@@ -124,7 +123,7 @@ public class PostService {
                                 )
                         ));
 
-        // ✅ 4. DTO 조립
+
         List<PostListResponse> results = posts.getContent().stream()
                 .map(p -> new PostListResponse(
                         p.getId(),
