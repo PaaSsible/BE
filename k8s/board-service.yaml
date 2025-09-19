@@ -59,7 +59,7 @@ spec:
     - host: api.paassible.kro.kr
       http:
         paths:
-          - path: /board
+          - path: /boards
             pathType: Prefix
             backend:
               service:
