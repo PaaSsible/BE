@@ -22,7 +22,7 @@ public class BoardResponse {
                 .name(board.getName())
                 .content(board.getContent())
                 .activityType(board.getActivityType().name())
-                .detailType(board.getDetailType().name())
+                .detailType(board.getDetailType() != null ? board.getDetailType().name() : null)
                 .status(board.getStatus().name())
                 .owner(owner.getNickname())
                 .build();
