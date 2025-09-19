@@ -42,12 +42,12 @@ public class SecurityConfig {
                 // 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/board/swagger-ui/**",
-                                "/board/v3/api-docs/**",
-                                "/board/test",             // 있으면 내부 테스트용
-                                "/board/internal/**"       // 내부 호출은 전부 허용
+                                "/boards/swagger-ui/**",
+                                "/boards/v3/api-docs/**",
+                                "/boards/test",
+                                "/boards/internal/**"
                         ).permitAll()
-                        .requestMatchers("/board/**").authenticated()
+                        .requestMatchers("/boards/**").authenticated()
                         .anyRequest().permitAll()
                 )
 
