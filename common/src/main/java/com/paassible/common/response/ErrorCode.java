@@ -44,16 +44,22 @@ public enum ErrorCode implements BaseResponseCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "존재하지 않는 사용자입니다."),
 
     //recruit
-    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "R001", "존재하지 않는 게시물입니다."),
-    INVALID_POSITION(HttpStatus.BAD_REQUEST, "R002", "잘못된 포지션 입력입니다."),
-    INVALID_STACK(HttpStatus.BAD_REQUEST, "R003", "잘못된 스택 입력입니다."),
-    INVALID_SORT_OPTION(HttpStatus.BAD_REQUEST, "R004", "잘못된 정렬 옵션입니다."),
-    PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "R005", "존재하지 않는 부모 댓글입니다."),
-    INVALID_COMMENT_DEPTH(HttpStatus.BAD_REQUEST, "R006", "대댓글의 대댓글은 작성할 수 없습니다."),
-    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "R007", "존재하지 않는 댓글입니다."),
-    COMMENT_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "R008", "댓글 수정 권한이 없습니다."),
-    COMMENT_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "R009", "댓글 삭제 권한이 없습니다."),
-    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "R010", "존재하지 않는 포지션입니다."),
+
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "존재하지 않는 게시물입니다."),
+    INVALID_POSITION(HttpStatus.BAD_REQUEST, "P002", "잘못된 포지션 입력입니다."),
+    INVALID_STACK(HttpStatus.BAD_REQUEST, "P003", "잘못된 스택 입력입니다."),
+    INVALID_SORT_OPTION(HttpStatus.BAD_REQUEST, "P004", "잘못된 정렬 옵션입니다."),
+
+    PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "P005", "존재하지 않는 부모 댓글입니다."),
+    INVALID_COMMENT_DEPTH(HttpStatus.BAD_REQUEST, "P006", "대댓글의 대댓글은 작성할 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "P007", "존재하지 않는 댓글입니다."),
+    COMMENT_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "P008", "댓글 수정 권한이 없습니다."),
+    COMMENT_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "P009", "댓글 삭제 권한이 없습니다."),
+
+    APPLICATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 신청한 지원입니다."),
+    APPLICATION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "A002", "지원 내역에 접근할 권한이 없습니다."),
+
+
 
     //meet
     MEET_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 회의입니다."),

@@ -1,4 +1,4 @@
-package com.paassible.recruitservice.post.config;
+package com.paassible.recruitservice.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
