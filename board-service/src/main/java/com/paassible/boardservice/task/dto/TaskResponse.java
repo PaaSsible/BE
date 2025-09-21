@@ -17,6 +17,7 @@ public class TaskResponse {
     private String status;
     private Long boardId;
     private List<AssigneeDto> assignees;
+    private List<String> positions;
 
     @Getter
     @Builder
@@ -25,7 +26,7 @@ public class TaskResponse {
         private String name;
     }
 
-    public static TaskResponse from(Task task, List<AssigneeDto> assignees) {
+    public static TaskResponse from(Task task, List<String> positions, List<AssigneeDto> assignees) {
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
@@ -34,6 +35,7 @@ public class TaskResponse {
                 .status(task.getStatus().name())
                 .boardId(task.getBoardId())
                 .assignees(assignees)
+                .positions(positions)
                 .build();
     }
 }

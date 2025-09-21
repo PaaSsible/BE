@@ -17,14 +17,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/board/{boardId}")
+@RequestMapping("/boards/{boardId}")
 @Tag(name = "업무 API", description = "업무 목록 조회, 상세 조회, 생성, 수정(업무, 설명, 상태), 삭제")
 public class TaskController {
 
     private final TaskManagementService taskManagementService;
     private final TaskVisualizationService taskVisualizationService;
 
-    @PostMapping("/task")
+    @PostMapping("/tasks")
     @Operation(summary = "업무 생성", description = "새로운 업무를 생성합니다.")
     public ResponseEntity<ApiResponse<Void>> createTask(@AuthenticationPrincipal UserJwtDto user,
                                                         @PathVariable Long boardId,
@@ -33,7 +33,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED));
     }
 
-    @PatchMapping("/task/{taskId}")
+    @PatchMapping("/tasks/{taskId}")
     @Operation(summary = "업무 수정", description = "업무 내용을 수정합니다(제목, 마감일, 담당자).")
     public ResponseEntity<ApiResponse<Void>> updateTask(@AuthenticationPrincipal UserJwtDto user,
                                                         @PathVariable Long boardId,
@@ -43,7 +43,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
-    @PatchMapping("/task/{taskId}/description")
+    @PatchMapping("/tasks/{taskId}/description")
     @Operation(summary = "업무 설명 수정", description = "업무의 상세 설명을 수정합니다.")
     public ResponseEntity<ApiResponse<Void>> updateTaskDescription(@AuthenticationPrincipal UserJwtDto user,
                                                                    @PathVariable Long boardId,
@@ -53,7 +53,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
-    @PatchMapping("/task/{taskId}/status")
+    @PatchMapping("/tasks/{taskId}/status")
     @Operation(summary = "업무 상태 수정", description = "업무의 상태를 수정합니다.")
     public ResponseEntity<ApiResponse<Void>> updateTaskStatus(@AuthenticationPrincipal UserJwtDto user,
                                                               @PathVariable Long boardId,
@@ -63,7 +63,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
-    @DeleteMapping("/task/{taskId}")
+    @DeleteMapping("/tasks/{taskId}")
     @Operation(summary = "업무 삭제", description = "업무를 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteTask(@AuthenticationPrincipal UserJwtDto user,
                                                         @PathVariable Long boardId,
@@ -72,7 +72,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
     }
 
-    @GetMapping("/task/{taskId}")
+    @GetMapping("/tasks/{taskId}")
     @Operation(summary = "업무 상세 조회", description = "보드에 대한 정보를 조회합니다.")
     public ResponseEntity<ApiResponse<TaskResponse>> getTask(@AuthenticationPrincipal UserJwtDto user,
                                                              @PathVariable Long boardId,
@@ -89,7 +89,7 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
-    @GetMapping("/task/visualization")
+    @GetMapping("/tasks/visualization")
     @Operation(summary = "업무 상태 시각화", description = "업무 상태를 시각화합니다.")
     public ResponseEntity<ApiResponse<TaskVisualizationResponse>> getTaskVisualization(@AuthenticationPrincipal UserJwtDto user,
                                                                                         @PathVariable Long boardId) {

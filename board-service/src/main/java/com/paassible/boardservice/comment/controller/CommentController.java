@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/board/{boardId}/task/{taskId}")
+@RequestMapping("/boards/{boardId}/tasks/{taskId}")
 @Tag(name = "업무 댓글 API", description = "업무 댓글 조회, 생성, 수정, 삭제")
 public class CommentController {
 
@@ -32,7 +32,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
-    @PostMapping("/comment")
+    @PostMapping("/comments")
     @Operation(summary = "업무 댓글 생성", description = "업무에 새로운 댓글을 생성합니다.")
     public ResponseEntity<ApiResponse<Void>> createTask(@AuthenticationPrincipal UserJwtDto user,
                                                         @PathVariable Long boardId,
@@ -42,7 +42,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED));
     }
 
-    @PatchMapping("/comment/{commentId}")
+    @PatchMapping("/comments/{commentId}")
     @Operation(summary = "업무 댓글 수정", description = "업무의 댓글을 수정합니다.")
     public ResponseEntity<ApiResponse<Void>> updateTaskStatus(@AuthenticationPrincipal UserJwtDto user,
                                                               @PathVariable Long boardId,
@@ -53,7 +53,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
-    @DeleteMapping("/comment/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     @Operation(summary = "업무 댓글 삭제", description = "업무의 댓글을 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteTask(@AuthenticationPrincipal UserJwtDto user,
                                                         @PathVariable Long boardId,

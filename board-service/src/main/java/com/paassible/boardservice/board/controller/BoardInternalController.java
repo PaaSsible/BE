@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Hidden
 @RestController
-@RequestMapping("/board/internal")
+@RequestMapping("/boards/internal")
 @RequiredArgsConstructor
 public class BoardInternalController {
 

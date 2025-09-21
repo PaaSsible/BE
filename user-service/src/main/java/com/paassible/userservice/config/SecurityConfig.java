@@ -42,13 +42,13 @@ public class SecurityConfig {
                 // 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/user/swagger-ui/**",
-                                "/user/v3/api-docs/**",
-                                "/user/auth/token",
-                                "/user/test/**",
-                                "/user/internal/**"
+                                "/users/swagger-ui/**",
+                                "/users/v3/api-docs/**",
+                                "/users/auth/token",
+                                "/users/test/**",
+                                "/users/internal/**"
                         ).permitAll()
-                        .requestMatchers("/user/**").authenticated()
+                        .requestMatchers("/users/**").authenticated()
                         .anyRequest().permitAll()
                 )
 

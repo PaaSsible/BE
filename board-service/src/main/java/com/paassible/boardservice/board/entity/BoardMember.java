@@ -22,11 +22,18 @@ public class BoardMember {
 
     private Long boardId;
 
+    private Long positionId;
+
     @Enumerated(EnumType.STRING)
     private ProjectRole role;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private MemberStatus status = MemberStatus.ACTIVE;
+
+    public void updatePosition(Long positionId) {
+        this.positionId = positionId;
+    }
 
     public void updateMemberStatus(MemberStatus status) {
         this.status = status;
