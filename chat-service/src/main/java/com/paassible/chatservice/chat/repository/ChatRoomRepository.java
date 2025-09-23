@@ -1,7 +1,7 @@
 package com.paassible.chatservice.chat.repository;
 
 import com.paassible.chatservice.chat.entity.ChatRoom;
-import com.paassible.chatservice.chat.entity.RoomType;
+import com.paassible.chatservice.chat.entity.enums.RoomType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

@@ -1,10 +1,6 @@
 package com.paassible.chatservice.chat.controller;
 
-import com.paassible.chatservice.chat.dto.ChatRoomResponse;
-import com.paassible.chatservice.chat.dto.JoinDirectRequest;
 import com.paassible.chatservice.chat.service.ChatRoomService;
-import com.paassible.common.response.ApiResponse;
-import com.paassible.common.response.SuccessCode;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Hidden
 @RestController
-@RequestMapping("/chat/internal")
+@RequestMapping("/chats/internal")
 @RequiredArgsConstructor
 public class ChatInternalController {
 
@@ -21,7 +17,7 @@ public class ChatInternalController {
     @PostMapping("/board")
     public ResponseEntity<Void> createBoardChatRoom(@RequestParam("userId") Long userId,
                                                     @RequestParam("boardId") Long boardId) {
-        chatRoomService.createBoardChatRoom(userId, boardId);
+        chatRoomService.createGroupChat(userId, boardId);
         return ResponseEntity.noContent().build();
     }
 

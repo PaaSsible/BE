@@ -17,11 +17,11 @@ public class ChatController {
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/chat/{roomId}/send")
+    @MessageMapping("/chats/{roomId}/send")
     public void sendMessage(
             @DestinationVariable Long roomId,
             ChatMessageRequest request) {
         ChatMessageResponse response = chatMessageService.saveMessage(roomId, request);
-        messagingTemplate.convertAndSend("/topic/chat/" + roomId, response);
+        messagingTemplate.convertAndSend("/topic/chats/" + roomId, response);
     }
 }

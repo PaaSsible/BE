@@ -1,5 +1,6 @@
 package com.paassible.chatservice.chat.entity;
 
+import com.paassible.chatservice.chat.entity.enums.MessageType;
 import com.paassible.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

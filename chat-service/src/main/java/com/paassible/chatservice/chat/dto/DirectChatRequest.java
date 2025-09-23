@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JoinDirectRequest {
+public class DirectChatRequest {
     private Long userAId;
     private Long userBId;
 }

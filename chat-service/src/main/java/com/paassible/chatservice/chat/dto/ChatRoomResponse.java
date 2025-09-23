@@ -1,7 +1,7 @@
 package com.paassible.chatservice.chat.dto;
 
 import com.paassible.chatservice.chat.entity.ChatRoom;
-import com.paassible.chatservice.chat.entity.RoomType;
+import com.paassible.chatservice.chat.entity.enums.RoomType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

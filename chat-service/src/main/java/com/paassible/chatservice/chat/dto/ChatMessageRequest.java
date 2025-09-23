@@ -1,6 +1,6 @@
 package com.paassible.chatservice.chat.dto;
 
-import com.paassible.chatservice.chat.entity.MessageType;
+import com.paassible.chatservice.chat.entity.enums.MessageType;
 import lombok.Getter;
 import lombok.Setter;
 

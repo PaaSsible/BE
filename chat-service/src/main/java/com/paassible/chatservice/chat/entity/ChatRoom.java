@@ -1,5 +1,6 @@
 package com.paassible.chatservice.chat.entity;
 
+import com.paassible.chatservice.chat.entity.enums.RoomType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +15,8 @@ public class ChatRoom {
     private Long id;
 
     private Long boardId;
+
+    private String name;
 
     @Enumerated(EnumType.STRING)
     private RoomType type;

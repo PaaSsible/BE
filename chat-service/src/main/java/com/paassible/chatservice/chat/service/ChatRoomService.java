@@ -1,10 +1,11 @@
 package com.paassible.chatservice.chat.service;
 
 import com.paassible.chatservice.chat.dto.ChatRoomResponse;
-import com.paassible.chatservice.chat.dto.JoinDirectRequest;
+import com.paassible.chatservice.chat.dto.DirectChatRequest;
+import com.paassible.chatservice.chat.dto.SubChatRequest;
 import com.paassible.chatservice.chat.entity.ChatRoom;
 import com.paassible.chatservice.chat.entity.RoomParticipant;
-import com.paassible.chatservice.chat.entity.RoomType;
+import com.paassible.chatservice.chat.entity.enums.RoomType;
 import com.paassible.chatservice.chat.exception.ChatException;
 import com.paassible.chatservice.chat.repository.ChatRoomRepository;
 import com.paassible.chatservice.chat.repository.RoomParticipantRepository;
@@ -44,7 +45,7 @@ public class ChatRoomService {
      * - 없으면 새로 생성하고 RoomParticipant 등록
      */
     @Transactional
-    public ChatRoomResponse getOrCreateDirectRoom(JoinDirectRequest request) {
+    public ChatRoomResponse getOrCreateDirectChat(DirectChatRequest request) {
 
         Long userAId = request.getUserAId();
         Long userBId = request.getUserBId();
@@ -70,26 +71,35 @@ public class ChatRoomService {
         return ChatRoomResponse.from(room);
     }
 
-    @Transactional(readOnly = true)
-    public List<ChatRoomResponse> getRoomsByUser(Long userId) {
-        List<RoomParticipant> participants = participantRepository.findByUserId(userId);
-
-        return participants.stream()
-                .map(p -> chatRoomRepository.findById(p.getRoomId())
-                        .orElseThrow(() -> new ChatException(ErrorCode.CHAT_ROOM_NOT_FOUND)))
-                .map(ChatRoomResponse::from)
-                .toList();
-    }
-
     @Transactional
-    public void createBoardChatRoom(Long userId, Long boardId) {
+    public void createGroupChat(Long userId, Long boardId) {
         ChatRoom room = ChatRoom.builder()
                 .type(RoomType.GROUP)
+                // name으로 그냥 보드 이름 넣기?
                 .boardId(boardId)
                 .build();
         chatRoomRepository.save(room);
 
         addParticipant(userId, boardId);
+    }
+
+    public void createSubChat(Long boardId, SubChatRequest request, List<Long> memberIds) {
+        // 아니면 현재 프로젝트 보드의 모든 사람들을 가져와서 넣는 방식
+        // 지금은 따로 멤버를 받고 있음
+        ChatRoom room = ChatRoom.builder()
+                .type(RoomType.SUB)
+                .boardId(boardId)
+                .name(request.getName())
+                .build();
+        ChatRoom savedRoom = chatRoomRepository.save(room);
+
+        memberIds.forEach(memberId -> {
+            RoomParticipant participant = RoomParticipant.builder()
+                    .roomId(savedRoom.getId())
+                    .userId(memberId)
+                    .build();
+            participantRepository.save(participant);
+        });
     }
 
     @Transactional
@@ -103,6 +113,17 @@ public class ChatRoomService {
                 .userId(user.getId())
                 .build();
         participantRepository.save(participant);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatRoomResponse> getRoomsByUser(Long userId) {
+        List<RoomParticipant> participants = participantRepository.findByUserId(userId);
+
+        return participants.stream()
+                .map(p -> chatRoomRepository.findById(p.getRoomId())
+                        .orElseThrow(() -> new ChatException(ErrorCode.CHAT_ROOM_NOT_FOUND)))
+                .map(ChatRoomResponse::from)
+                .toList();
     }
 }
 

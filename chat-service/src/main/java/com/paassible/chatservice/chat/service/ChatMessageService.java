@@ -4,7 +4,6 @@ import com.paassible.chatservice.chat.dto.ChatMessageRequest;
 import com.paassible.chatservice.chat.dto.ChatMessageResponse;
 import com.paassible.chatservice.chat.entity.ChatMessage;
 import com.paassible.chatservice.chat.entity.ChatRoom;
-import com.paassible.chatservice.chat.entity.MessageType;
 import com.paassible.chatservice.chat.repository.ChatMessageRepository;
 import com.paassible.chatservice.chat.repository.ChatRoomRepository;
 import com.paassible.chatservice.client.UserClient;
