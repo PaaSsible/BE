@@ -17,4 +17,10 @@ public class RoomParticipant {
     private Long roomId;
 
     private Long userId;
+
+    private Long lastReadMessageId;
+
+    public void updateLastReadMessageId(Long lastReadMessageId) {
+        this.lastReadMessageId = lastReadMessageId;
+    }
 }

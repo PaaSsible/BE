@@ -6,8 +6,9 @@ import com.paassible.chatservice.chat.entity.ChatMessage;
 import com.paassible.chatservice.chat.entity.ChatRoom;
 import com.paassible.chatservice.chat.repository.ChatMessageRepository;
 import com.paassible.chatservice.chat.repository.ChatRoomRepository;
-import com.paassible.chatservice.client.UserClient;
-import com.paassible.chatservice.client.UserResponse;
+import com.paassible.chatservice.chat.repository.RoomParticipantRepository;
+import com.paassible.chatservice.client.user.UserClient;
+import com.paassible.chatservice.client.user.UserResponse;
 import com.paassible.common.dto.CursorPageResponse;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
@@ -22,14 +23,16 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
+
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final RoomParticipantRepository roomParticipantRepository;
     private final UserClient userClient;
 
     @Transactional
-    public ChatMessageResponse saveMessage(Long roomId, ChatMessageRequest request) {
+    public ChatMessageResponse saveMessage(Long roomId, Long userId, ChatMessageRequest request) {
         ChatRoom room = chatRoomRepository.findById(roomId).orElseThrow();
-        UserResponse user = userClient.getUser(request.getSenderId());
+        UserResponse user = userClient.getUser(userId);
 
         ChatMessage msg = ChatMessage.builder()
                 .roomId(room.getId())
@@ -37,10 +40,9 @@ public class ChatMessageService {
                 .content(request.getContent())
                 .type(request.getType())
                 .build();
-
         chatMessageRepository.save(msg);
 
-        return ChatMessageResponse.from(msg, user);
+        return ChatMessageResponse.from(msg, user, 0L);
     }
 
     public CursorPageResponse<ChatMessageResponse> getMessages(Long roomId, Long cursor, int size) {
@@ -65,7 +67,8 @@ public class ChatMessageService {
         List<ChatMessageResponse> responseItems = messages.stream()
                 .map(m -> {
                     UserResponse user = userClient.getUser(m.getSenderId());
-                    return ChatMessageResponse.from(m, user);
+                    Long readCount = roomParticipantRepository.countReaders(m.getRoomId(), m.getId());
+                    return ChatMessageResponse.from(m, user, readCount);
                 })
                 .toList();
 

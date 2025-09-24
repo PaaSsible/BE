@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class DirectChatRequest {
-    private Long receiverId;
+public class MessageReadRequest {
+    private Long messageId;
 }
