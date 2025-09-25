@@ -61,11 +61,6 @@ public class MessageReadService {
                 unreadUsers.add(user);
             }
         }
-
-        return MessageReadDetailResponse.builder()
-                .messageId(messageId)
-                .readUsers(readUsers)
-                .unreadUsers(unreadUsers)
-                .build();
+        return MessageReadDetailResponse.from(messageId, readUsers, unreadUsers);
     }
 }

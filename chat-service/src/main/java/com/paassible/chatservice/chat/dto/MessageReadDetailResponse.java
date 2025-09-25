@@ -14,4 +14,12 @@ public class MessageReadDetailResponse {
     private Long messageId;
     private List<UserResponse> readUsers;
     private List<UserResponse> unreadUsers;
+
+    public static MessageReadDetailResponse from(Long messageId, List<UserResponse> readUsers, List<UserResponse> unreadUsers) {
+        return MessageReadDetailResponse.builder()
+                .messageId(messageId)
+                .readUsers(readUsers)
+                .unreadUsers(unreadUsers)
+                .build();
+    }
 }
