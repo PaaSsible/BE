@@ -27,4 +27,13 @@ public class BoardInternalController {
     public void existUserInBoard(@PathVariable Long boardId, @PathVariable Long userId) {
         boardMemberService.validateUserInBoard(boardId,userId);
     }
+
+    @Hidden
+    @PostMapping("/{boardId}/members")
+    public void addMember(
+            @PathVariable Long boardId, @RequestParam Long userId) {
+        boardMemberService.assignUserToBoard(userId, boardId);
+    }
+
+
 }
