@@ -25,7 +25,7 @@ public class PositionService {
     @Transactional(readOnly = true)
     public String getPositionNameById(Long positionId) {
         Position position = positionRepository.findById(positionId)
-                .orElseThrow(() -> new CustomException(ErrorCode.POSITION_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_POSITION));
         return position.getName();
     }
 }
