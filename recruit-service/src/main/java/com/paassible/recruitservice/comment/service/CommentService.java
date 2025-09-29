@@ -1,12 +1,12 @@
-package com.paassible.recruitservice.post.service;
+package com.paassible.recruitservice.comment.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
-import com.paassible.recruitservice.post.dto.CommentCreateRequest;
-import com.paassible.recruitservice.post.dto.CommentListResponse;
-import com.paassible.recruitservice.post.dto.CommentResponse;
-import com.paassible.recruitservice.post.entity.Comment;
-import com.paassible.recruitservice.post.repository.CommentRepository;
+import com.paassible.recruitservice.comment.dto.CommentCreateRequest;
+import com.paassible.recruitservice.comment.dto.CommentListResponse;
+import com.paassible.recruitservice.comment.dto.CommentResponse;
+import com.paassible.recruitservice.comment.entity.Comment;
+import com.paassible.recruitservice.comment.repository.CommentRepository;
 import com.paassible.recruitservice.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

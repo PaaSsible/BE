@@ -22,6 +22,8 @@ public class Post extends BaseEntity{
     private Long writerId;
     private String content;
     private LocalDate deadline;
+    @Column(nullable = false)
+    private boolean closed = false;
 
     @Enumerated(EnumType.STRING)
     private ProjectDuration months;
@@ -55,6 +57,10 @@ public class Post extends BaseEntity{
         this.content = content;
         this.deadline = deadline;
         this.months = months;
+    }
+
+    public void close(){
+        this.closed = true;
     }
 
 }

@@ -17,10 +17,10 @@ public record PostListResponse (
         LocalDate deadline,
         int viewCount,
         int applicationCount,
-        List<RecruitmentSummary> recruitments
+        List<RecruitSummary> recruits
 
 ){
-    public record RecruitmentSummary (
+    public record RecruitSummary(
             Long recruitmentId,
             Long positionId,
             Long stackIds

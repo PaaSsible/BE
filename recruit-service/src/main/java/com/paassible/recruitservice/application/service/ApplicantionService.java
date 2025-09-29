@@ -28,11 +28,15 @@ public class ApplicantionService {
     @Transactional
     public void apply(Long postId, Long userId) {
 
-        postRepository.findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(()->new CustomException(ErrorCode.POST_NOT_FOUND));
 
         if(applicationRepository.existsByPostIdAndApplicantId(postId, userId)){
             throw new CustomException(ErrorCode.APPLICATION_ALREADY_EXISTS);
+        }
+
+        if(post.getWriterId().equals(userId)){
+            throw new CustomException(ErrorCode.CANNOT_APPLY_TO_OWN_POST);
         }
 
         Application application = Application.create(postId, userId);

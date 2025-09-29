@@ -17,6 +17,6 @@ public record PostDetailResponse (
         ProjectDuration projectDuration,
         Long writerId,
         String writerName,
-        List<RecruitmentInfo> recruitment
+        List<RecruitInfo> recruits
 ){
 }
