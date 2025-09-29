@@ -62,6 +62,8 @@ public enum ErrorCode implements BaseResponseCode {
     APPLICATION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "A002", "해당 게시글의 지원자 관련 기능에 접근할 권한이 없습니다."),
     APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "A003", "존재하지 않는 지원입니다."),
     APPLICATION_MISMATCH(HttpStatus.BAD_REQUEST, "A004", "해당 모집글의 지원이 아닙니다."),
+    CANNOT_APPLY_TO_OWN_POST(HttpStatus.FORBIDDEN, "A002", "자신이 작성한 모집글에는 지원할 수 없습니다."),
+
 
     //meet
     MEET_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 회의입니다."),
