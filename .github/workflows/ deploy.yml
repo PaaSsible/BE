@@ -6,6 +6,7 @@ on:
     paths:
       - 'user-service/**'
       - 'board-service/**'
+      - 'recruit-service/**'
       - 'common/**'
 
 jobs:
@@ -55,3 +56,17 @@ jobs:
             -H "X-TC-AUTHENTICATION-ID: ${{ secrets.NHN_ACCESS_KEY }}" \
             -H "X-TC-AUTHENTICATION-SECRET: ${{ secrets.NHN_SECRET_KEY }}" \
             "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-pipeline-3/execute"
+  recruit-service:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: contains(needs.detect-changes.outputs.changed-paths, 'recruit-service/') || contains(needs.detect-changes.outputs.changed-paths, 'common/')
+    steps:
+      - name: Call NHN Pipeline API (Recruit Service)
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-NHN-REGION: KR1" \
+            -H "X-NHN-APPKEY: ${{ secrets.NHN_APPKEY }}" \
+            -H "X-TC-AUTHENTICATION-ID: ${{ secrets.NHN_ACCESS_KEY }}" \
+            -H "X-TC-AUTHENTICATION-SECRET: ${{ secrets.NHN_SECRET_KEY }}" \
+            "https://api-pipeline.cloud.toast.com/api/anchor/v1.0/pipelines/contest-18-pipeline-2/execute"
