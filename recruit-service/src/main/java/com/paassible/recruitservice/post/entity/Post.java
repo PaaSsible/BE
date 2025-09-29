@@ -63,4 +63,8 @@ public class Post extends BaseEntity{
         this.closed = true;
     }
 
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
 }
