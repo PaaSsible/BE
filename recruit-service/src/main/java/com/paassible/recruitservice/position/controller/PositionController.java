@@ -23,7 +23,7 @@ public class PositionController {
 
     private final PositionService positionService;
 
-    @Operation(summary = "포지션 조회", description = "")
+    @Operation(summary = "포지션 조회 API", description = "")
     @GetMapping("/recruits/positions")
     public ApiResponse<List<PositionResponse>> getAllPositions() {
         List<PositionResponse> response =  positionService.getAllPositions();
