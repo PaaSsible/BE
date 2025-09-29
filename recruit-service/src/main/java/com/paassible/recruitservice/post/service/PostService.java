@@ -138,12 +138,14 @@ public class PostService {
         return new PagedPostListResponse(results, pageInfo);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDetailResponse getPostDetail(Long postId) {
 
         Post post = postRepository.findById(postId).orElseThrow(
                 ()-> new CustomException(ErrorCode.POST_NOT_FOUND)
         );
+
+        post.increaseViewCount();
 
         List<Recruitment> recs = recruitmentRepository.findByPostId(postId);
 
@@ -168,6 +170,8 @@ public class PostService {
                 post.getMonths(),
                 post.getWriterId(),
                 user.getNickname(),
+                post.getViewCount(),
+                post.getApplicationCount(),
                 recruitInfos
         );
     }

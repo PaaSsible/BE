@@ -41,6 +41,8 @@ public class ApplicantionService {
 
         Application application = Application.create(postId, userId);
         applicationRepository.save(application);
+
+        post.increaseApplicationCount();
     }
 
     @Transactional(readOnly = true)
