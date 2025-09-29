@@ -33,10 +33,6 @@ public class Application {
         return new Application(postId, userId);
     }
 
-    public void updateStatus(ApplicationStatus status) {
-        this.status = status;
-    }
-
     public void accept() {
         this.status = ApplicationStatus.ACCEPTED;
     }
