@@ -37,6 +37,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                     .selectFrom(post)
                     .join(recruitment).on(post.id.eq(recruitment.postId))
                     .where(
+                            post.closed.eq(false),
                             recruitment.positionId.eq(request.position().longValue()),
                             request.mainCategory() != null? post.mainCategory.eq(request.mainCategory()) : null,
                             request.subCategory() !=  null? post.subCategory.eq(request.subCategory()) : null,
@@ -52,6 +53,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                     .from(post)
                     .join(recruitment).on(post.id.eq(recruitment.postId))
                     .where(
+                            post.closed.eq(false),
                             recruitment.positionId.eq(request.position().longValue()),
                             request.mainCategory() != null? post.mainCategory.eq(request.mainCategory()) : null,
                             request.subCategory() != null? post.subCategory.eq(request.subCategory()) : null,

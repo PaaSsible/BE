@@ -81,7 +81,7 @@ public class PostService {
                 Sort.by(Sort.Direction.DESC, "createdAt")
                 );
 
-        Page<Post> posts = postRepository.findByWriterId(userId, sortedPageable);
+        Page<Post> posts = postRepository. findByWriterIdAndClosedFalse(userId, sortedPageable);
         if(posts.isEmpty()){
             return new PagedPostListResponse(
                     Collections.emptyList(),

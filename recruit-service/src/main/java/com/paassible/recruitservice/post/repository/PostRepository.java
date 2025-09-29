@@ -10,9 +10,11 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
 
-    Page<Post> findByWriterId(Long writerId, Pageable pageable);
+
+    Page<Post> findByWriterIdAndClosedFalse(Long writerId, Pageable pageable);
+
 
     List<Post> findByDeadlineBeforeAndClosed(LocalDate now, boolean closed);
-
 }
+
 
