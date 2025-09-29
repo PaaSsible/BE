@@ -3,6 +3,7 @@ package com.paassible.recruitservice.application.service;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.recruitservice.application.dto.ApplicantResponse;
+import com.paassible.recruitservice.application.dto.RejectRequest;
 import com.paassible.recruitservice.application.entity.Application;
 import com.paassible.recruitservice.application.entity.ApplicationStatus;
 import com.paassible.recruitservice.application.repository.ApplicantionRepository;
@@ -50,8 +51,24 @@ public class ApplicantionService {
                 .map(ApplicantResponse::from)
                 .toList();
 
+    }
 
+    @Transactional
+    public void reject(Long postId, Long applicantId, RejectRequest rejectRequest, Long userId){
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()->new CustomException(ErrorCode.POST_NOT_FOUND));
 
+        if(!post.getWriterId().equals(userId)){
+            throw new CustomException(ErrorCode.APPLICATION_UNAUTHORIZED);
+        }
+
+        Application application = applicantionRepository.findById(applicantId)
+                .orElseThrow(()->new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+        if(!application.getPostId().equals(postId)){
+            throw new CustomException(ErrorCode.APPLICATION_MISMATCH);
+        }
+
+        application.reject(rejectRequest);
     }
 
 
