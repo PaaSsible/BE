@@ -90,7 +90,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         }
 
         List<Long> postIds = posts.stream().map(Post::getId).collect(Collectors.toList());
-        Map<Long, List<PostListResponse.RecruitmentSummary>> postRecruitments =
+        Map<Long, List<PostListResponse.RecruitSummary>> postRecruitments =
                 getRecruitmentsByPostIds(postIds);
         List<PostListResponse> results = posts.stream()
                 .map(p->new PostListResponse(
@@ -109,7 +109,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         return new PageImpl<>(results, pageable, total != null? total : 0);
     }
 
-    private Map<Long,List<PostListResponse.RecruitmentSummary>> getRecruitmentsByPostIds(List<Long> postIds) {
+    private Map<Long,List<PostListResponse.RecruitSummary>> getRecruitmentsByPostIds(List<Long> postIds) {
         QRecruitment recruitment = QRecruitment.recruitment;
 
         return queryFactory
@@ -123,7 +123,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .collect(Collectors.groupingBy(
                         t->Objects.requireNonNull(t.get(recruitment.postId)),
                         Collectors.mapping(
-                                t->new PostListResponse.RecruitmentSummary(
+                                t->new PostListResponse.RecruitSummary(
                                         t.get(recruitment.recruitmentId),
                                         t.get(recruitment.positionId),
                                         t.get(recruitment.stackId)

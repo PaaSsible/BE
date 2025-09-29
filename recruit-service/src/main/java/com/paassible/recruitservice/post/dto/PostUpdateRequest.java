@@ -17,6 +17,6 @@ public record PostUpdateRequest(
         @NotBlank String content,
         @NotNull @FutureOrPresent LocalDate deadline,
         @NotNull ProjectDuration projectDuration,
-        @NotNull List<RecruitmentInfo> recruitment
+        @NotNull List<RecruitInfo> recruits
         ) {
 }
