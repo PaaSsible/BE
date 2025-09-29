@@ -2,11 +2,13 @@ package com.paassible.recruitservice.application.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
+import com.paassible.recruitservice.application.dto.AcceptRequest;
 import com.paassible.recruitservice.application.dto.ApplicantResponse;
 import com.paassible.recruitservice.application.dto.RejectRequest;
 import com.paassible.recruitservice.application.entity.Application;
 import com.paassible.recruitservice.application.entity.ApplicationStatus;
 import com.paassible.recruitservice.application.repository.ApplicantionRepository;
+import com.paassible.recruitservice.client.BoardClient;
 import com.paassible.recruitservice.post.entity.Post;
 import com.paassible.recruitservice.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApplicantionService {
 
-    private final ApplicantionRepository applicantionRepository;
+    private final ApplicantionRepository applicationRepository;
     private final PostRepository postRepository;
+    private final BoardClient boardClient;
 
     @Transactional
     public void apply(Long postId, Long userId) {
@@ -28,12 +31,12 @@ public class ApplicantionService {
         postRepository.findById(postId)
                 .orElseThrow(()->new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        if(applicantionRepository.existsByPostIdAndApplicantId(postId, userId)){
+        if(applicationRepository.existsByPostIdAndApplicantId(postId, userId)){
             throw new CustomException(ErrorCode.APPLICATION_ALREADY_EXISTS);
         }
 
         Application application = Application.create(postId, userId);
-        applicantionRepository.save(application);
+        applicationRepository.save(application);
     }
 
     @Transactional(readOnly = true)
@@ -45,7 +48,7 @@ public class ApplicantionService {
             throw new CustomException(ErrorCode.APPLICATION_UNAUTHORIZED);
         }
 
-        List<Application> applications = applicantionRepository.findAllByPostIdAndStatus(postId, ApplicationStatus.PENDING);
+        List<Application> applications = applicationRepository.findAllByPostIdAndStatus(postId, ApplicationStatus.PENDING);
 
         return applications.stream()
                 .map(ApplicantResponse::from)
@@ -62,13 +65,36 @@ public class ApplicantionService {
             throw new CustomException(ErrorCode.APPLICATION_UNAUTHORIZED);
         }
 
-        Application application = applicantionRepository.findById(applicantId)
+        Application application = applicationRepository.findById(applicantId)
                 .orElseThrow(()->new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
         if(!application.getPostId().equals(postId)){
             throw new CustomException(ErrorCode.APPLICATION_MISMATCH);
         }
 
         application.reject(rejectRequest);
+    }
+
+    @Transactional
+    public void accept(Long postId, Long applicationId, Long userId, AcceptRequest acceptRequest) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(()->new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        if(!post.getWriterId().equals(userId)){
+            throw new CustomException(ErrorCode.APPLICATION_UNAUTHORIZED);
+        }
+
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(()->new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+        if(!application.getPostId().equals(postId)){
+            throw new CustomException(ErrorCode.APPLICATION_MISMATCH);
+        }
+
+        boardClient.existUserInBoard(acceptRequest.boardId(),userId);
+
+        application.accept();
+
+        boardClient.addMember(acceptRequest.boardId(), application.getApplicantId());
     }
 
 

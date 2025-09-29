@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode implements BaseResponseCode {
@@ -75,4 +77,11 @@ public enum ErrorCode implements BaseResponseCode {
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
+
+    public static ErrorCode fromCode(String code) {
+        return Arrays.stream(values())
+                .filter(e -> e.getCode().equals(code))
+                .findFirst()
+                .orElse(INTERNAL_SERVER_ERROR);
+    }
 }
