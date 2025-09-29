@@ -26,9 +26,9 @@ server:
 
 springdoc:
   api-docs:
-    path: /recruit/v3/api-docs
+    path: /recruits/v3/api-docs
   swagger-ui:
-    path: /recruit/swagger-ui.html
+    path: /recruits/swagger-ui.html
 
 jwt:
   secret: ${JWT_SECRET}
