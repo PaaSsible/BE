@@ -42,7 +42,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "지원 거절")
-    @PostMapping("/{postId}/applicants/{applicantId}/reject")
+    @PostMapping("/{postId}/applications/{applicationId}/reject")
     public ApiResponse<Void> rejectApplication(
             @PathVariable("postId") Long postId,
             @PathVariable("applicantId") Long applicantId,
