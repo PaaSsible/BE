@@ -58,8 +58,12 @@ metadata:
 
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - user.paassible.kro.kr
+      secretName: user-tls
   rules:
-    - host: api.paassible.kro.kr
+    - host: user.paassible.kro.kr
       http:
         paths:
           - path: /users
