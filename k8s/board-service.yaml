@@ -60,10 +60,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - board.paassible.kro.kr
+        - api.paassible.kro.kr
       secretName: board-tls
   rules:
-    - host: board.paassible.kro.kr
+    - host: api.paassible.kro.kr
       http:
         paths:
           - path: /boards
