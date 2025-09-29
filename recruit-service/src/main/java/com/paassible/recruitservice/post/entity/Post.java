@@ -67,4 +67,8 @@ public class Post extends BaseEntity{
         this.viewCount++;
     }
 
+    public void increaseApplicationCount() {
+        this.applicationCount++;
+    }
+
 }
