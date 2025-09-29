@@ -1,6 +1,6 @@
-package com.paassible.recruitservice.post.dto;
+package com.paassible.recruitservice.comment.dto;
 
-import com.paassible.recruitservice.post.entity.Comment;
+import com.paassible.recruitservice.comment.entity.Comment;
 
 import java.util.List;
 

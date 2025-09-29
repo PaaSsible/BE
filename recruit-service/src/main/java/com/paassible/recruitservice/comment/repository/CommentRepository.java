@@ -1,7 +1,7 @@
-package com.paassible.recruitservice.post.repository;
+package com.paassible.recruitservice.comment.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.paassible.recruitservice.post.entity.Comment;
+import com.paassible.recruitservice.comment.entity.Comment;
 
 import java.util.List;
 import java.util.Optional;

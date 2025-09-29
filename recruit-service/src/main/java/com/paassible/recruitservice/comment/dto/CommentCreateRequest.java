@@ -1,4 +1,4 @@
-package com.paassible.recruitservice.post.dto;
+package com.paassible.recruitservice.comment.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
