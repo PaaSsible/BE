@@ -74,4 +74,10 @@ public class ChatMessageService {
 
         return new CursorPageResponse<>(responseItems, nextCursor, hasNext);
     }
+
+    public void validateMessageInRoom(Long messageId, Long roomId) {
+        if (!chatMessageRepository.existsByIdAndRoomId(messageId, roomId)) {
+            throw new CustomException(ErrorCode.CHAT_MESSAGE_NOT_FOUND);
+        }
+    }
 }

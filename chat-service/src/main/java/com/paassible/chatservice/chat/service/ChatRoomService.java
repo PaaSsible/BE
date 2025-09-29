@@ -12,6 +12,7 @@ import com.paassible.chatservice.chat.repository.RoomParticipantRepository;
 import com.paassible.chatservice.client.board.BoardClient;
 import com.paassible.chatservice.client.user.UserClient;
 import com.paassible.chatservice.client.user.UserResponse;
+import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -133,6 +134,12 @@ public class ChatRoomService {
                         .orElseThrow(() -> new ChatException(ErrorCode.CHAT_ROOM_NOT_FOUND)))
                 .map(ChatRoomResponse::from)
                 .toList();
+    }
+
+    public void validateRoom(Long roomId) {
+        if (!chatRoomRepository.existsById(roomId)) {
+            throw new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND);
+        }
     }
 
     // 채팅방 목록 조회가 어떻게 될지..

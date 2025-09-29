@@ -25,6 +25,6 @@ public class BoardInternalController {
     @Hidden
     @GetMapping("/{boardId}/user/{userId}/exists")
     public void existUserInBoard(@PathVariable Long boardId, @PathVariable Long userId) {
-        boardMemberService.validateUserInBoard(boardId,userId);
+        boardMemberService.validateUserInBoard(boardId, userId);
     }
 }

@@ -3,6 +3,7 @@ package com.paassible.chatservice.chat.service;
 import com.paassible.chatservice.chat.dto.MessageReadDetailResponse;
 import com.paassible.chatservice.chat.dto.MessageReadResponse;
 import com.paassible.chatservice.chat.entity.ChatMessage;
+import com.paassible.chatservice.chat.entity.ChatRoom;
 import com.paassible.chatservice.chat.entity.RoomParticipant;
 import com.paassible.chatservice.chat.repository.ChatMessageRepository;
 import com.paassible.chatservice.chat.repository.RoomParticipantRepository;
@@ -21,12 +22,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessageReadService {
 
-    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomService chatRoomService;
+    private final ChatMessageService chatMessageService;
+    // 이거 서비스로 뺄지
     private final RoomParticipantRepository roomParticipantRepository;
     private final UserClient userClient;
 
     @Transactional
     public MessageReadResponse markAsRead(Long userId, Long roomId, Long messageId) {
+        chatRoomService.validateRoom(roomId);
+        chatMessageService.validateMessageInRoom(messageId, roomId);
+
         RoomParticipant participant = roomParticipantRepository.findByRoomIdAndUserId(roomId, userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ROOM_PARTICIPANT_NOT_FOUND));
 
@@ -35,18 +41,27 @@ public class MessageReadService {
             participant.updateLastReadMessageId(messageId);
         }
 
-        roomParticipantRepository.save(participant);
+        // 읽은 사람 수 조회
+        long readCount = roomParticipantRepository.countReaders(roomId, messageId);
 
-        return MessageReadResponse.from(roomId, userId, messageId);
+        // 안 읽은 사람 수 조회
+        //long totalParticipants = roomParticipantRepository.countByRoomId(roomId);
+        //long unreadCount = totalParticipants - readCount;
+
+        return MessageReadResponse.from(messageId, readCount);
     }
 
     @Transactional(readOnly = true)
-    public MessageReadDetailResponse getMessageReadDetail(Long messageId) {
-        ChatMessage message = chatMessageRepository.findById(messageId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_MESSAGE_NOT_FOUND));
+    public MessageReadDetailResponse getMessageReadDetail(Long userId, Long roomId, Long messageId) {
+        chatRoomService.validateRoom(roomId);
+        chatMessageService.validateMessageInRoom(messageId, roomId);
+
+        if (!roomParticipantRepository.existsByRoomIdAndUserId(roomId, userId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN_ROOM_ACCESS);
+        }
 
         List<RoomParticipant> participants =
-                roomParticipantRepository.findAllByRoomId(message.getRoomId());
+                roomParticipantRepository.findAllByRoomId(messageId);
 
         List<UserResponse> readUsers = new ArrayList<>();
         List<UserResponse> unreadUsers = new ArrayList<>();

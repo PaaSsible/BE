@@ -71,7 +71,8 @@ public enum ErrorCode implements BaseResponseCode {
     // chat
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CR001", "존재하지 않는 채팅방입니다."),
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CR002", "존재하지 않는 채팅 메시지입니다."),
-    ROOM_PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "CR003", "존재하지 않는 채팅 메시지입니다.");
+    ROOM_PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "CR003", "존재하지 않는 채팅 메시지입니다."),
+    FORBIDDEN_ROOM_ACCESS(HttpStatus.FORBIDDEN, "CR004", "해당 방에 존재하지 않는 멤버입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
