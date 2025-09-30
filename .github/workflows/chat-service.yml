@@ -46,4 +46,4 @@ jobs:
 
           sed -i "s|{BUILD_DATE_TIME}|${TAG}|g" chat-service.yaml
 
-          kubectl apply -f chat-service.yaml --namespace contest-18-deployment
+          kubectl apply -f chat-service.yaml
