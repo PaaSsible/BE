@@ -81,7 +81,7 @@ public class PostService {
                 Sort.by(Sort.Direction.DESC, "createdAt")
                 );
 
-        Page<Post> posts = postRepository.findByWriterId(userId, sortedPageable);
+        Page<Post> posts = postRepository. findByWriterIdAndClosedFalse(userId, sortedPageable);
         if(posts.isEmpty()){
             return new PagedPostListResponse(
                     Collections.emptyList(),
@@ -100,12 +100,12 @@ public class PostService {
                 .toList();
 
         List<Recruitment> recruitments = recruitmentRepository.findByPostIdIn(postIds);
-        Map<Long, List<PostListResponse.RecruitmentSummary>> recruitmentsByPost =
+        Map<Long, List<PostListResponse.RecruitSummary>> recruitmentsByPost =
                 recruitments.stream()
                         .collect(Collectors.groupingBy(
                                 Recruitment::getPostId,
                                 Collectors.mapping(
-                                        r -> new PostListResponse.RecruitmentSummary(
+                                        r -> new PostListResponse.RecruitSummary(
                                                 r.getRecruitmentId(),
                                                 r.getPositionId(),
                                                 r.getStackId()
@@ -138,28 +138,26 @@ public class PostService {
         return new PagedPostListResponse(results, pageInfo);
     }
 
-
-
-
-
-    @Transactional(readOnly = true)
+    @Transactional
     public PostDetailResponse getPostDetail(Long postId) {
 
         Post post = postRepository.findById(postId).orElseThrow(
                 ()-> new CustomException(ErrorCode.POST_NOT_FOUND)
         );
 
+        post.increaseViewCount();
+
         List<Recruitment> recs = recruitmentRepository.findByPostId(postId);
 
         UserResponse user = userClient.getUser(post.getWriterId());
 
-        List<RecruitmentInfo> recruitmentInfos = recs.stream()
+        List<RecruitInfo> recruitInfos = recs.stream()
                 .collect(Collectors.groupingBy(
                         Recruitment::getPositionId,
                         Collectors.mapping(Recruitment::getStackId, Collectors.toList())
                 ))
                 .entrySet().stream()
-                .map(e-> new RecruitmentInfo(e.getKey(), e.getValue()))
+                .map(e-> new RecruitInfo(e.getKey(), e.getValue()))
                 .toList();
 
         return new PostDetailResponse(
@@ -172,7 +170,9 @@ public class PostService {
                 post.getMonths(),
                 post.getWriterId(),
                 user.getNickname(),
-                recruitmentInfos
+                post.getViewCount(),
+                post.getApplicationCount(),
+                recruitInfos
         );
     }
 
@@ -190,7 +190,7 @@ public class PostService {
 
         Post savedPost = postRepository.save(post);
 
-        request.recruitment()
+        request.recruits()
                 .forEach(r->{
                     Position position = positionRepository.findById(r.position()).orElseThrow(
                             ()-> new CustomException(ErrorCode.INVALID_POSITION));
@@ -224,8 +224,8 @@ public class PostService {
 
         recruitmentRepository.deleteByPostId(postId);
 
-        if(request.recruitment() != null) {
-            request.recruitment().forEach(r->{
+        if(request.recruits() != null) {
+            request.recruits().forEach(r->{
                 Position position = positionRepository.findById(r.position()).orElseThrow(
                         () -> new CustomException(ErrorCode.INVALID_POSITION)
                 );

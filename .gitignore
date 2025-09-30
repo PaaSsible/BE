@@ -39,3 +39,4 @@ out/
 
 /k8s/secret/*
 /k8s/db/*
+/k8s/cluster/*

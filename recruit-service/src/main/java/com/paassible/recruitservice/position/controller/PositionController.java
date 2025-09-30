@@ -4,6 +4,7 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.recruitservice.position.dto.PositionResponse;
 import com.paassible.recruitservice.position.service.PositionService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +23,14 @@ public class PositionController {
 
     private final PositionService positionService;
 
-    @Operation(summary = "포지션 조회", description = "")
+    @Operation(summary = "포지션 조회 API", description = "")
     @GetMapping("/recruits/positions")
     public ApiResponse<List<PositionResponse>> getAllPositions() {
         List<PositionResponse> response =  positionService.getAllPositions();
         return ApiResponse.success(SuccessCode.OK, response);
     }
 
+    @Hidden
     @PostMapping("/recruits/internal/position")
     public ResponseEntity<String> getPositionName(@RequestParam("positionId") Long positionId) {
         String positionName = positionService.getPositionNameById(positionId);

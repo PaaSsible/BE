@@ -17,6 +17,6 @@ public record PostCreateRequest(
         @NotBlank String content,
         @FutureOrPresent  LocalDate deadline,
         @NotNull ProjectDuration projectDuration,
-        List<RecruitmentInfo> recruitment) {
+        List<RecruitInfo> recruits) {
 
 }
