@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "chat-service", url = "${chat-service.url}")
 public interface ChatClient {
 
-    @PostMapping("/chat/internal/board")
+    @PostMapping("/chats/internal/board")
     void createBoardChatRoom(@RequestParam("userId") Long userId,
                              @RequestParam("boardId") Long boardId);
 
-    @PostMapping("/chat/internal/participant")
+    @PostMapping("/chats/internal/participant")
     void addParticipant(@RequestParam("userId") Long userId,
                         @RequestParam("boardId") Long boardId);
 }

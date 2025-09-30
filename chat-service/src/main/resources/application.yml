@@ -26,9 +26,9 @@ server:
 
 springdoc:
   api-docs:
-    path: /chat/v3/api-docs
+    path: /chats/v3/api-docs
   swagger-ui:
-    path: /chat/swagger-ui.html
+    path: /chats/swagger-ui.html
 
 jwt:
   secret: ${JWT_SECRET}

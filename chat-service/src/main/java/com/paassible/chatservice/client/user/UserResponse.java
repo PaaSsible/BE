@@ -1,4 +1,4 @@
-package com.paassible.chatservice.client;
+package com.paassible.chatservice.client.user;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

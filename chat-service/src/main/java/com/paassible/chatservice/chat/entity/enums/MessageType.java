@@ -1,4 +1,4 @@
-package com.paassible.chatservice.chat.entity;
+package com.paassible.chatservice.chat.entity.enums;
 
 public enum MessageType {
     CHAT,

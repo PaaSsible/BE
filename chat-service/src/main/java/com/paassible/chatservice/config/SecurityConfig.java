@@ -39,11 +39,11 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/chat/swagger-ui/**",
-                                "/chat/v3/api-docs/**",
-                                "chat/internal/**"
+                                "/chats/swagger-ui/**",
+                                "/chats/v3/api-docs/**",
+                                "chats/internal/**"
                         ).permitAll()
-                        .requestMatchers("/chat/**").authenticated()
+                        .requestMatchers("/chats/**").authenticated()
                         .anyRequest().permitAll()
                 )
 

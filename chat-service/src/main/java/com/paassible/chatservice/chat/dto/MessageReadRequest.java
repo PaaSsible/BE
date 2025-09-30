@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JoinDirectRequest {
-    private Long userAId;
-    private Long userBId;
+public class MessageReadRequest {
+    private Long messageId;
 }

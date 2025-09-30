@@ -1,4 +1,4 @@
-package com.paassible.chatservice.client;
+package com.paassible.chatservice.client.user;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

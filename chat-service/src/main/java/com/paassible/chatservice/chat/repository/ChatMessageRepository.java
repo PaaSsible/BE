@@ -24,4 +24,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             @Param("createdAt") LocalDateTime createdAt,
             Pageable pageable
     );
+
+    boolean existsByIdAndRoomId(Long id, Long roomId);
 }
