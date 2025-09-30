@@ -37,9 +37,9 @@ public class AuthService {
 
         Long userId = user.getId();
         Role role = user.getRole();
-        boolean termsAgreed = user.isTermsAgreed();
+        boolean agreedToTerms = user.isAgreedToTerms();
 
-        String newAccessToken = jwtUtil.createAccessToken(userId, role, termsAgreed);
+        String newAccessToken = jwtUtil.createAccessToken(userId, role, agreedToTerms);
         String newRefreshToken = jwtUtil.createRefreshToken(userId);
 
         response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));
@@ -74,9 +74,9 @@ public class AuthService {
 
         User user = userService.getUser(userId);
         Role role = user.getRole();
-        boolean termsAgreed = user.isTermsAgreed();
+        boolean agreedToTerms = user.isAgreedToTerms();
 
-        String newAccessToken = jwtUtil.createAccessToken(userId, role, termsAgreed);
+        String newAccessToken = jwtUtil.createAccessToken(userId, role, agreedToTerms);
         String newRefreshToken = jwtUtil.createRefreshToken(userId);
 
         response.addCookie(jwtUtil.createRefreshTokenCookie(newRefreshToken));

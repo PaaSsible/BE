@@ -46,7 +46,7 @@ public class UserService {
                                             .email(info.getEmail())
                                             .nickname(info.getName())
                                             .role(Role.PENDING)
-                                            .termsAgreed(false)
+                                            .agreedToTerms(false)
                                             .deleted(false)
                                             .build();
                             return userRepository.save(newUser);
@@ -62,7 +62,7 @@ public class UserService {
     @Transactional
     public void agreeTerms(Long userId) {
         User user = getUser(userId);
-        user.updateTermsAgreed(true);
+        user.updateAgreedToTerms(true);
     }
 
     // 프로필 설정 시에 확인 누르면 바로 같이 role 업데이트 되도록

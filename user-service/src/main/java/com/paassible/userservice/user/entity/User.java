@@ -28,7 +28,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private boolean termsAgreed;
+    private boolean agreedToTerms;
 
     private boolean deleted;
 
@@ -40,7 +40,7 @@ public class User {
         this.deleted = deleted;
     }
 
-    public void updateTermsAgreed(boolean termsAgreed) {
-        this.termsAgreed = termsAgreed;
+    public void updateAgreedToTerms(boolean termsAgreed) {
+        this.agreedToTerms = termsAgreed;
     }
 }
