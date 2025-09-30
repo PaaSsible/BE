@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode implements BaseResponseCode {
@@ -57,8 +59,10 @@ public enum ErrorCode implements BaseResponseCode {
     COMMENT_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "P009", "댓글 삭제 권한이 없습니다."),
 
     APPLICATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 신청한 지원입니다."),
-    APPLICATION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "A002", "지원 내역에 접근할 권한이 없습니다."),
-
+    APPLICATION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "A002", "해당 게시글의 지원자 관련 기능에 접근할 권한이 없습니다."),
+    APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "A003", "존재하지 않는 지원입니다."),
+    APPLICATION_MISMATCH(HttpStatus.BAD_REQUEST, "A004", "해당 모집글의 지원이 아닙니다."),
+    CANNOT_APPLY_TO_OWN_POST(HttpStatus.FORBIDDEN, "A002", "자신이 작성한 모집글에는 지원할 수 없습니다."),
 
 
     //meet
@@ -77,4 +81,11 @@ public enum ErrorCode implements BaseResponseCode {
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
+
+    public static ErrorCode fromCode(String code) {
+        return Arrays.stream(values())
+                .filter(e -> e.getCode().equals(code))
+                .findFirst()
+                .orElse(INTERNAL_SERVER_ERROR);
+    }
 }

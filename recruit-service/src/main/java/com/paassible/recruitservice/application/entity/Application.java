@@ -1,5 +1,6 @@
 package com.paassible.recruitservice.application.entity;
 
+import com.paassible.recruitservice.application.dto.RejectRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -32,17 +33,13 @@ public class Application {
         return new Application(postId, userId);
     }
 
-    public void updateStatus(ApplicationStatus status) {
-        this.status = status;
-    }
-
     public void accept() {
         this.status = ApplicationStatus.ACCEPTED;
     }
 
-    public void reject(String reason) {
+    public void reject(RejectRequest reason) {
         this.status = ApplicationStatus.REJECTED;
-        this.rejectReason = reason;
+        this.rejectReason = reason.rejectReason();
     }
 
 }

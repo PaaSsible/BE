@@ -1,12 +1,12 @@
-package com.paassible.recruitservice.post.controller;
+package com.paassible.recruitservice.comment.controller;
 
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
-import com.paassible.recruitservice.post.dto.CommentCreateRequest;
-import com.paassible.recruitservice.post.dto.CommentListResponse;
-import com.paassible.recruitservice.post.dto.CommentUpdateRequest;
-import com.paassible.recruitservice.post.service.CommentService;
+import com.paassible.recruitservice.comment.dto.CommentCreateRequest;
+import com.paassible.recruitservice.comment.dto.CommentListResponse;
+import com.paassible.recruitservice.comment.dto.CommentUpdateRequest;
+import com.paassible.recruitservice.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

@@ -1,4 +1,4 @@
-package com.paassible.recruitservice.post.entity;
+package com.paassible.recruitservice.comment.entity;
 
 import com.paassible.common.entity.BaseEntity;
 import jakarta.persistence.*;
