@@ -15,7 +15,8 @@ public enum SuccessCode implements BaseResponseCode {
     // user
     LOGIN(HttpStatus.OK, "LOGIN", "로그인이 완료되었습니다."),
     LOGOUT(HttpStatus.OK, "LOGOUT", "로그아웃이 완료되었습니다."),
-    WITHDRAWAL(HttpStatus.OK, "WITHDRAWAL", "회원 탈퇴되었습니다.");
+    WITHDRAWAL(HttpStatus.OK, "WITHDRAWAL", "회원 탈퇴되었습니다."),
+    AGREE(HttpStatus.OK, "AGREE", "약관 동의가 완료되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
