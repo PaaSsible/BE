@@ -28,6 +28,8 @@ public enum ErrorCode implements BaseResponseCode {
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "A005", "인증 토큰이 존재하지 않습니다."),
     INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "A006", "유효하지 않은 Authorization 헤더입니다"),
     GOOGLE_TOKEN_EMPTY(HttpStatus.INTERNAL_SERVER_ERROR, "A007", "구글 응답에 access_token이 없습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "A008", "권한이 부족합니다"),
+    TERMS_NOT_AGREED(HttpStatus.FORBIDDEN, "A009", "약관에 동의하지 않았습니다"),
 
     // board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "B001", "존재하지 않는 보드입니다."),

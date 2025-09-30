@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final AuthService authService;
-    private final GoogleOAuthService googleOAuthService;
 
     @PostMapping("/reissue")
     @Operation(summary = "토큰 재발급", description = "현재 가진 토큰을 이용해 엑세스 토큰을 재발급합니다.")
