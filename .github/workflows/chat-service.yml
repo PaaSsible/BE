@@ -21,7 +21,7 @@ jobs:
         run: |
           TAG=$(date +%Y%m%d%H%M%S)
           echo "TAG=$TAG" >> $GITHUB_ENV
-          docker build -f ./chat-service/Dockerfile -t chat-service:latest ./chat-service
+          docker build -f ./chat-service/Dockerfile -t chat-service:latest .
           docker tag chat-service:latest docker.io/${{ secrets.DOCKERHUB_USERNAME }}/contest-18-image-chat:$TAG
           docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/contest-18-image-chat:$TAG
 
