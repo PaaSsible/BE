@@ -21,7 +21,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
     // mysql
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'org.postgresql:postgresql'
 
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
@@ -31,6 +31,14 @@ dependencies {
 
     // openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    //redisson
+    //implementation 'org.redisson:redisson-spring-boot-starter:3.35.0' // 버전은 최신 확인
+
+    //retry
+    implementation 'org.springframework.retry:spring-retry'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
 }
 
 dependencyManagement {

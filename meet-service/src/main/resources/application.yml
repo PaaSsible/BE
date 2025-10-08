@@ -3,7 +3,7 @@ spring:
     name: meet-service
   datasource:
     url: ${MEET_DB_URL}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
     username: ${MEET_DB_USERNAME}
     password: ${MEET_DB_PASSWORD}
   jpa:
@@ -34,6 +34,7 @@ jwt:
   secret: ${JWT_SECRET}
   access-expiration: ${JWT_ACCESS_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
 
 
 user-service:
