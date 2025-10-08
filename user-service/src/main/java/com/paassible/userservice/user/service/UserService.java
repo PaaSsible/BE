@@ -46,6 +46,7 @@ public class UserService {
                                             .email(info.getEmail())
                                             .nickname(info.getName())
                                             .role(Role.PENDING)
+                                            .agreedToTerms(false)
                                             .deleted(false)
                                             .build();
                             return userRepository.save(newUser);
@@ -57,16 +58,17 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         user.updateDeleted(true);
     }
-    /*
-       @Transactional
-       public UserResponse setUserRole(RoleRequest roleRequest, HttpServletResponse response) {
-           Long userId = SecurityUtils.getCurrentUserId();
 
-           User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-           user.updateRole(roleRequest.getRole());
+    @Transactional
+    public void agreeTerms(Long userId) {
+        User user = getUser(userId);
+        user.updateAgreedToTerms(true);
+    }
 
-           return UserResponse.from(user);
-       }
-
-    */
+    // 프로필 설정 시에 확인 누르면 바로 같이 role 업데이트 되도록
+    @Transactional
+    public void updateRoleToMember(Long userId) {
+        User user = getUser(userId);
+        user.updateRole(Role.MEMBER);
+    }
 }

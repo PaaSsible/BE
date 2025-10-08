@@ -4,8 +4,8 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.common.security.jwt.JwtUtil;
-import com.paassible.common.security.jwt.Role;
 import com.paassible.userservice.user.dto.UserResponse;
+import com.paassible.userservice.user.entity.User;
 import com.paassible.userservice.user.service.UserService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,17 +40,12 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.WITHDRAWAL));
     }
 
-    /*
-    @PostMapping("/role")
-    @Operation(summary = "역할 설정", description = "유저가 자신의 역할을 설정한다.")
-    public ResponseEntity<ApiResponse<UserResponse>> setRole(
-            @RequestBody RoleRequest request, HttpServletResponse httpServletResponse) {
-
-        UserResponse response = userService.setUserRole(request, httpServletResponse);
-
-        return ResponseEntity.ok(ApiResponse.success(CommonSuccessCode.OK, response));
+    @PatchMapping("/terms")
+    @Operation(summary = "약관 동의", description = "회원가입 후 약관에 동의한다.")
+    public ResponseEntity<ApiResponse<Void>> setRole(@AuthenticationPrincipal UserJwtDto user) {
+        userService.agreeTerms(user.getUserId());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.AGREE));
     }
-     */
 
     @Hidden
     @GetMapping("/internal/{userId}")
@@ -62,7 +57,8 @@ public class UserController {
     @GetMapping("/test/{userId}")
     @Operation(summary = "유저 엑세스 토큰 발급(테스트용)")
     public ResponseEntity<String> getCurrentUser(@PathVariable Long userId) {
-        String accessToken = jwtUtil.createAccessToken(userId, Role.MEMBER);
+        User user = userService.getUser(userId);
+        String accessToken = jwtUtil.createAccessToken(userId, user.getRole(), user.isTermsAgreed());
         return ResponseEntity.ok(accessToken);
     }
 }

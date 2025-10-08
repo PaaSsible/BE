@@ -14,6 +14,7 @@ import java.util.Collections;
 public class UserJwtDto {
     private Long userId;
     private Role role;
+    private boolean agreedToTerms;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));

@@ -38,10 +38,11 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(Long userId, Role role) {
+    public String createAccessToken(Long userId, Role role, boolean agreedToTerms) {
         return Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("role", role.name())
+                .claim("agreedToTerms", agreedToTerms)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
                 .signWith(key)
@@ -93,6 +94,15 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
+    }
+
+    public boolean getAgreedToTerms(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("agreedToTerms", Boolean.class);
     }
 
     public long getAccessTokenValidity() {
