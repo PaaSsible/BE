@@ -28,6 +28,23 @@ public class Meet extends BaseEntity {
 
     private LocalDateTime endTime;
 
+    @Column(nullable = false)
+    private Integer participantCount = 0;
+
+    public void incrementParticipantCount() {
+        this.participantCount++;
+    }
+
+    public void decrementParticipantCount() {
+        if(this.participantCount > 0){
+            this.participantCount--;
+        }
+    }
+
+    public boolean isEmpty(){
+        return this.participantCount == 0;
+    }
+
     public static Meet create(Long boardId, Long hostId, LocalDateTime startTime) {
         Meet meet = new Meet();
         meet.boardId = boardId;
