@@ -34,11 +34,6 @@ public class MeetValidator {
         return meet;
     }
 
-    public Long validateMeet(Long meetId) {
-       Meet meet = meetRepository.findById(meetId)
-               .orElseThrow(()-> new MeetException(ErrorCode.MEET_NOT_FOUND));
-       return meet.getBoardId();
-    }
     public void ensureNotAlreadyJoined(Long meetId, Long userId) {
         participantRepository.findByMeetIdAndUserId(meetId, userId)
                 .ifPresent(p -> {
@@ -59,19 +54,10 @@ public class MeetValidator {
         }
     }
 
-
-    public void validateUserInMeet (Long meetId, Long userId) {
-        if(participantRepository.existsByMeetIdAndUserId(meetId, userId)){
-            throw new MeetException(ErrorCode.MEET_ALREADY_JOINED);
+    public void ensureNoActiveMeetInBoard(Long boardId) {
+        boolean exists = meetRepository.existsByBoardIdAndStatus(boardId, MeetingStatus.ONGOING);
+        if (exists) {
+            throw new MeetException(ErrorCode.MEET_ALREADY_EXISTS);
         }
-    }
-
-    public void validateNotAlreadyJoined(Long meetId, Long userId) {
-        participantRepository.findByMeetIdAndUserId(meetId, userId)
-                .ifPresent(participant -> {
-                    if(participant.getStatus() == ParticipantStatus.JOINED){
-                        throw new MeetException(ErrorCode.MEET_ALREADY_JOINED);
-                    }
-                });
     }
 }

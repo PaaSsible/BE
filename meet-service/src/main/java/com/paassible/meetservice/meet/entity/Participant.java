@@ -1,6 +1,8 @@
 package com.paassible.meetservice.meet.entity;
 
 import com.paassible.common.entity.BaseEntity;
+import com.paassible.common.exception.CustomException;
+import com.paassible.common.response.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -47,6 +49,10 @@ public class Participant extends BaseEntity {
     }
 
     public void leave() {
+
+        if(this.joinedAt == null){
+            throw new CustomException(ErrorCode.MEET_NOT_PARTICIPANT);
+        }
         long sessionDuration = Duration.between(joinedAt, LocalDateTime.now()).getSeconds();
         this.totalStayDuration += sessionDuration;
         this.status = ParticipantStatus.LEFT;
