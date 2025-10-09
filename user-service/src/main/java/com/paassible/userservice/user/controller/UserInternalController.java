@@ -20,7 +20,7 @@ public class UserInternalController {
 
     @GetMapping("/internal/{userId}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
-        UserResponse response = userService.getUserInfo(userId);
+        UserResponse response = userService.getProfile(userId);
         return ResponseEntity.ok(response);
     }
 }
