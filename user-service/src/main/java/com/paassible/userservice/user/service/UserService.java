@@ -3,6 +3,7 @@ package com.paassible.userservice.user.service;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.common.security.jwt.Role;
 import com.paassible.userservice.auth.oauth.GoogleUserInfo;
+import com.paassible.userservice.user.dto.ProfileRequest;
 import com.paassible.userservice.user.dto.UserResponse;
 import com.paassible.userservice.user.entity.User;
 import com.paassible.userservice.user.exception.UserException;
@@ -10,6 +11,7 @@ import com.paassible.userservice.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -19,12 +21,6 @@ public class UserService {
 
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-    }
-
-    public UserResponse getUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        return UserResponse.from(user);
     }
 
     @Transactional
@@ -59,16 +55,36 @@ public class UserService {
         user.updateDeleted(true);
     }
 
+    public UserResponse getProfile(Long userId) {
+        User user = getUser(userId);
+        return UserResponse.from(user);
+    }
+
+    @Transactional
+    public void updateProfile(Long userId, ProfileRequest request, MultipartFile image) {
+        User user = getUser(userId);
+
+        String profileImageUrl = user.getProfileImageUrl();
+        if (image != null && !image.isEmpty()) {
+            profileImageUrl = saveProfileImage(image);
+        }
+
+        user.updateProfile(request.getNickname(), request.getUniversity(), request.getMajor(), profileImageUrl);
+    }
+
+    private String saveProfileImage(MultipartFile image) {
+        // s3에 저정하는식으로 수정 필요
+        return "url";
+    }
+
     @Transactional
     public void agreeTerms(Long userId) {
         User user = getUser(userId);
         user.updateAgreedToTerms(true);
     }
 
-    // 프로필 설정 시에 확인 누르면 바로 같이 role 업데이트 되도록
     @Transactional
-    public void updateRoleToMember(Long userId) {
-        User user = getUser(userId);
+    public void updateRoleToMember(User user) {
         user.updateRole(Role.MEMBER);
     }
 }
