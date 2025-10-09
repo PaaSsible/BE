@@ -21,6 +21,8 @@ public class User {
 
     private String nickname;
 
+    private String university;
+
     private String major;
 
     private String profileImageUrl;
@@ -42,5 +44,12 @@ public class User {
 
     public void updateAgreedToTerms(boolean termsAgreed) {
         this.agreedToTerms = termsAgreed;
+    }
+
+    public void updateProfile(String nickname, String university, String major, String profileImageUrl) {
+        this.nickname = nickname;
+        this.university = university;
+        this.major = major;
+        this.profileImageUrl = profileImageUrl;
     }
 }
