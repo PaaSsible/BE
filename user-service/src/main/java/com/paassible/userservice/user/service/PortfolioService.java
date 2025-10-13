@@ -2,7 +2,6 @@ package com.paassible.userservice.user.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
-import com.paassible.common.security.jwt.Role;
 import com.paassible.userservice.user.dto.PortfolioRequest;
 import com.paassible.userservice.user.dto.PortfolioResponse;
 import com.paassible.userservice.user.entity.Portfolio;
@@ -25,14 +24,11 @@ public class PortfolioService {
     @Transactional
     public void createPortfolio(Long userId, PortfolioRequest request, MultipartFile file) {
         User user = userService.getUser(userId);
-        if (user.getRole() == Role.PENDING) {
-            userService.updateRoleToMember(user);
-        }
 
         String fileUrl = saveFile(file);
 
         Portfolio portfolio = Portfolio.builder()
-                .userId(userId)
+                .userId(user.getId())
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .fileUrl(fileUrl)

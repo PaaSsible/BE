@@ -1,8 +1,14 @@
 package com.paassible.userservice.user.entity;
 
 import com.paassible.common.security.jwt.Role;
+import com.paassible.userservice.user.dto.ProfileRequest;
+import com.paassible.userservice.user.entity.enums.DegreeType;
+import com.paassible.userservice.user.entity.enums.GraduationStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,13 +25,31 @@ public class User {
 
     private String email;
 
+    private String profileImageUrl;
+
     private String nickname;
+
+    private Long positionId;
+
+    @ElementCollection
+    @CollectionTable(name = "user_tech_stacks", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "tech_stack_id")
+    private List<Long> stackIds = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    private DegreeType degreeType;
 
     private String university;
 
     private String major;
 
-    private String profileImageUrl;
+    @Enumerated(EnumType.STRING)
+    private GraduationStatus graduationStatus;
+
+    private String introductionTitle;
+
+    @Column(columnDefinition = "TEXT")
+    private String introductionContent;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -42,14 +66,21 @@ public class User {
         this.deleted = deleted;
     }
 
-    public void updateAgreedToTerms(boolean termsAgreed) {
-        this.agreedToTerms = termsAgreed;
+    public void updateAgreedToTerms(boolean agreedToTerms) {
+        this.agreedToTerms = agreedToTerms;
     }
 
-    public void updateProfile(String nickname, String university, String major, String profileImageUrl) {
-        this.nickname = nickname;
-        this.university = university;
-        this.major = major;
-        this.profileImageUrl = profileImageUrl;
+    public void updateProfile(ProfileRequest req, List<Long> stackIds, String imageUrl) {
+        this.nickname = req.getNickname();
+        this.positionId = req.getPositionId();
+        this.stackIds.clear();
+        this.stackIds.addAll(stackIds);
+        this.degreeType = req.getDegreeType();
+        this.university = req.getUniversity();
+        this.major = req.getMajor();
+        this.graduationStatus = req.getGraduationStatus();
+        this.introductionTitle = req.getIntroductionTitle();
+        this.introductionContent = req.getIntroductionContent();
+        this.profileImageUrl = imageUrl;
     }
 }
