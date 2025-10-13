@@ -4,17 +4,23 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.common.security.jwt.JwtUtil;
+import com.paassible.userservice.user.dto.ProfileRequest;
 import com.paassible.userservice.user.dto.UserResponse;
 import com.paassible.userservice.user.entity.User;
 import com.paassible.userservice.user.service.UserService;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -24,12 +30,23 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/me")
-    @Operation(summary = "유저 정보 조회", description = "로그인 한 유저 정보를 조회한다.")
+    @GetMapping("/profile")
+    @Operation(summary = "유저 프로필 조회", description = "유저의 프로필을 조회한다.")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
             @AuthenticationPrincipal UserJwtDto user) {
-        UserResponse response = userService.getUserInfo(user.getUserId());
+        UserResponse response = userService.getProfile(user.getUserId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
+
+    @PutMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "유저 프로필 수정", description = "기존 프로필 정보를 등록/수정한다.")
+    public ResponseEntity<ApiResponse<Void>> updateProfile(
+            @AuthenticationPrincipal UserJwtDto user,
+            @RequestPart("request") ProfileRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
+
+        userService.updateProfile(user.getUserId(), request, image);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
     @PostMapping("/withdrawal")
@@ -47,18 +64,11 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.AGREE));
     }
 
-    @Hidden
-    @GetMapping("/internal/{userId}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long userId) {
-        UserResponse response = userService.getUserInfo(userId);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/test/{userId}")
     @Operation(summary = "유저 엑세스 토큰 발급(테스트용)")
     public ResponseEntity<String> getCurrentUser(@PathVariable Long userId) {
         User user = userService.getUser(userId);
-        String accessToken = jwtUtil.createAccessToken(userId, user.getRole(), user.isTermsAgreed());
+        String accessToken = jwtUtil.createAccessToken(userId, user.getRole(), user.isAgreedToTerms());
         return ResponseEntity.ok(accessToken);
     }
 }

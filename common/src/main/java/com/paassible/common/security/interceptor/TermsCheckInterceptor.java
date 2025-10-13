@@ -33,7 +33,7 @@ public class TermsCheckInterceptor implements HandlerInterceptor {
 
         UserJwtDto dto = (UserJwtDto) auth.getPrincipal();
 
-        if (!dto.isTermsAgreed()) {
+        if (!dto.isAgreedToTerms()) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             response.setContentType("application/json;charset=UTF-8");
 

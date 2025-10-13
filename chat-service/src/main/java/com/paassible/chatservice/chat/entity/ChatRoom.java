@@ -20,5 +20,4 @@ public class ChatRoom {
 
     @Enumerated(EnumType.STRING)
     private RoomType type;
-
 }

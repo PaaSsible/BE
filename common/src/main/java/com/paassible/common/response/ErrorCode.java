@@ -46,6 +46,8 @@ public enum ErrorCode implements BaseResponseCode {
 
     // user
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U001", "존재하지 않는 사용자입니다."),
+    PORTFOLIO_NOT_FOUND(HttpStatus.NOT_FOUND, "U002", "존재하지 않는 포트폴리오입니다."),
+    PORTFOLIO_NOT_OWNER(HttpStatus.FORBIDDEN, "U003", "본인이 작성한 포트폴리오만 수정/삭제할 수 있습니다."),
 
     //recruit
 
