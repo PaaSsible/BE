@@ -35,7 +35,7 @@ public class BoardManagementService {
         Board board = boardService.createBoard(boardRequest);
         boardMemberService.registerOwner(userId, board.getId());
 
-        //chatClient.createBoardChatRoom(userId, board.getId());
+        chatClient.createGroupChat(userId, board.getId(), board.getName());
     }
 
     @Transactional
