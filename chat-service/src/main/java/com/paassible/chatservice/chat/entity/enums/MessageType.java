@@ -1,7 +1,8 @@
 package com.paassible.chatservice.chat.entity.enums;
 
 public enum MessageType {
-    CHAT,
-    JOIN,
-    LEAVE
+    TEXT,
+    IMAGE,
+    FILE,
+    SYSTEM
 }

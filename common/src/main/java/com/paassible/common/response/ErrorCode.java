@@ -50,7 +50,6 @@ public enum ErrorCode implements BaseResponseCode {
     PORTFOLIO_NOT_OWNER(HttpStatus.FORBIDDEN, "U003", "본인이 작성한 포트폴리오만 수정/삭제할 수 있습니다."),
 
     //recruit
-
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "존재하지 않는 게시물입니다."),
     INVALID_POSITION(HttpStatus.BAD_REQUEST, "P002", "잘못된 포지션 입력입니다."),
     INVALID_STACK(HttpStatus.BAD_REQUEST, "P003", "잘못된 스택 입력입니다."),
@@ -76,12 +75,14 @@ public enum ErrorCode implements BaseResponseCode {
     MEET_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "M004", "이미 종료된 회의입니다."),
     PARTICIPANT_ALREADY_LEFT(HttpStatus.CONFLICT, "M005", "이미 퇴장한 참가자입니다."),
     MEET_ALREADY_EXISTS(HttpStatus.CONFLICT, "M006", "이미 진행 중인 회의가 존재합니다."),
+
     // chat
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CR001", "존재하지 않는 채팅방입니다."),
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CR002", "존재하지 않는 채팅 메시지입니다."),
     ROOM_PARTICIPANT_NOT_FOUND(HttpStatus.NOT_FOUND, "CR003", "존재하지 않는 채팅 메시지입니다."),
-    FORBIDDEN_ROOM_ACCESS(HttpStatus.FORBIDDEN, "CR004", "해당 방에 존재하지 않는 멤버입니다.");
-
+    FORBIDDEN_ROOM_ACCESS(HttpStatus.FORBIDDEN, "CR004", "해당 방에 존재하지 않는 멤버입니다."),
+    INVALID_ROOM_TYPE(HttpStatus.BAD_REQUEST, "C005", "유효하지 않은 채팅방입니다.");
+;
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
