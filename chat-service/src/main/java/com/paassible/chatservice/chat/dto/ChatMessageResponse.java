@@ -17,6 +17,7 @@ public class ChatMessageResponse {
     private Long roomId;
     private Long senderId;
     private String senderName;
+    private String senderImage;
     private String content;
     private MessageType type;
     private LocalDateTime createdAt;
@@ -28,6 +29,7 @@ public class ChatMessageResponse {
                 .roomId(chatMessage.getRoomId())
                 .senderId(user.getId())
                 .senderName(user.getNickname())
+                .senderImage(user.getProfileImageUrl())
                 .content(chatMessage.getContent())
                 .type(chatMessage.getType())
                 .createdAt(chatMessage.getCreatedAt())
