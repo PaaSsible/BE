@@ -1,24 +1,26 @@
 package com.paassible.chatservice.chat.dto;
 
-import com.paassible.chatservice.chat.entity.ChatRoom;
-import com.paassible.chatservice.chat.entity.enums.RoomType;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class ChatRoomResponse {
-    private Long id;
-    private RoomType type;
-    private Long boardId;
+    private Long roomId;
+    private String roomName;
+    private String lastMessage;
+    private LocalDateTime lastMessageTime;
+    private int unreadCount;
 
-    public static ChatRoomResponse from(ChatRoom room) {
+    public static ChatRoomResponse from(Long roomId, String roomName, String lastMessage, LocalDateTime lastMessageTime, int unreadCount) {
         return ChatRoomResponse.builder()
-                .id(room.getId())
-                .type(room.getType())
-                .boardId(room.getBoardId())
+                .roomId(roomId)
+                .roomName(roomName)
+                .lastMessage(lastMessage)
+                .lastMessageTime(lastMessageTime)
+                .unreadCount(unreadCount)
                 .build();
     }
 }
