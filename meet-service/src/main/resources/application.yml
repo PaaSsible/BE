@@ -26,9 +26,9 @@ server:
 
 springdoc:
   api-docs:
-    path: /meet/v3/api-docs
+    path: /meets/v3/api-docs
   swagger-ui:
-    path: /meet/swagger-ui.html
+    path: /meets/swagger-ui.html
 
 jwt:
   secret: ${JWT_SECRET}
