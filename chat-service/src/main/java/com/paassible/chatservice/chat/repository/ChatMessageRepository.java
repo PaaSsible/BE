@@ -1,6 +1,7 @@
 package com.paassible.chatservice.chat.repository;
 
 import com.paassible.chatservice.chat.entity.ChatMessage;
+import com.paassible.chatservice.chat.entity.enums.MessageType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     );
 
     boolean existsByIdAndRoomId(Long id, Long roomId);
+
+    ChatMessage findTopByRoomIdAndTypeNotOrderByCreatedAtDesc(Long roomId, MessageType type);
+
+    @Query("select count(m) from ChatMessage m where m.roomId = :roomId and m.id > :lastReadId")
+    int countUnreadMessages(@Param("roomId") Long roomId, @Param("lastReadId") Long lastReadId);
+
+    int countByRoomId(Long roomId);
 }

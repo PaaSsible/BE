@@ -18,8 +18,6 @@ public interface MeetRepository extends JpaRepository<Meet, Long> {
     @Query("SELECT m FROM Meet m WHERE m.id = :id")
     Optional<Meet> findByIdWithLock(@Param("id") Long id);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT m FROM Meet m WHERE m.boardId =:boardId AND m.status = 'ONGOING'")
-    Optional<Meet> findOngoingByBoardIdWithLock(Long boardId);
+    Optional<Meet> findByBoardIdAndStatus(Long boardId, MeetingStatus status);
 
 }

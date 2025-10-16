@@ -1,149 +1,199 @@
 package com.paassible.chatservice.chat.service;
 
+import com.paassible.chatservice.chat.dto.ChatRoomInviteRequest;
+import com.paassible.chatservice.chat.dto.ChatRoomRequest;
 import com.paassible.chatservice.chat.dto.ChatRoomResponse;
-import com.paassible.chatservice.chat.dto.DirectChatRequest;
-import com.paassible.chatservice.chat.dto.SubChatRequest;
+import com.paassible.chatservice.chat.dto.SystemMessageResponse;
+import com.paassible.chatservice.chat.entity.ChatMessage;
 import com.paassible.chatservice.chat.entity.ChatRoom;
 import com.paassible.chatservice.chat.entity.RoomParticipant;
+import com.paassible.chatservice.chat.entity.enums.MessageType;
 import com.paassible.chatservice.chat.entity.enums.RoomType;
 import com.paassible.chatservice.chat.exception.ChatException;
+import com.paassible.chatservice.chat.repository.ChatMessageRepository;
 import com.paassible.chatservice.chat.repository.ChatRoomRepository;
-import com.paassible.chatservice.chat.repository.RoomParticipantRepository;
 import com.paassible.chatservice.client.board.BoardClient;
 import com.paassible.chatservice.client.user.UserClient;
-import com.paassible.chatservice.client.user.UserResponse;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
-    private final RoomParticipantRepository participantRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
+    private final RoomParticipantService roomParticipantService;
     private final UserClient userClient;
     private final BoardClient boardClient;
 
-    /**
-     * 보드 채팅방 조회
-     * - 보드 생성 시 room이 이미 만들어져 있다고 가정
-     * - 단순히 boardId로 연결된 room을 찾아 반환
-     * - 추가 방을 만든다면 여기에 boardId로 여러 보드를 찾아와서 보여주기 + 보드 이름만들기
-     */
+    private final SimpMessagingTemplate messagingTemplate;
+
     @Transactional(readOnly = true)
-    public ChatRoomResponse getGroupChatRoom(Long userId, Long boardId) {
-        boardClient.validateUserInBoard(userId, boardId);
+    public List<ChatRoomResponse> getChatRooms(Long userId, Long boardId) {
+        List<RoomParticipant> roomParticipants = roomParticipantService.getRoomParticipantsByBoardId(userId, boardId);
 
-        ChatRoom room = chatRoomRepository.findByBoardIdAndType(boardId, RoomType.GROUP)
-                .orElseThrow(() -> new ChatException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+        List<ChatRoomResponse> responses = new ArrayList<>();
 
-        return ChatRoomResponse.from(room);
-    }
+        for (RoomParticipant roomParticipant : roomParticipants) {
+            Long roomId = roomParticipant.getRoomId();
 
-    /**
-     * 1:1 채팅방 조회/생성
-     * - 두 유저가 속한 DIRECT 방이 있으면 재사용
-     * - 없으면 새로 생성하고 RoomParticipant 등록
-     */
-    @Transactional
-    public ChatRoomResponse getOrCreateDirectChat(Long userId, DirectChatRequest request) {
-        Long receiverId = request.getReceiverId();
+            ChatRoom room = chatRoomRepository.findById(roomId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        ChatRoom room = chatRoomRepository.findDirectRoom(userId, receiverId)
-                .orElseGet(() -> {
-                    ChatRoom newRoom = ChatRoom.builder()
-                            .type(RoomType.DIRECT)
-                            .build();
-                    ChatRoom savedRoom = chatRoomRepository.save(newRoom);
+            ChatMessage lastMessage = chatMessageRepository.findTopByRoomIdAndTypeNotOrderByCreatedAtDesc(roomId, MessageType.SYSTEM);
+            String lastMessageContent = (lastMessage != null) ? lastMessage.getContent() : null;
+            LocalDateTime lastMessageTime = (lastMessage != null) ? lastMessage.getCreatedAt() : null;
 
-                    for (Long id : List.of(userId, receiverId)) {
-                        UserResponse user = userClient.getUser(id);
-                        RoomParticipant participant = RoomParticipant.builder()
-                                .roomId(savedRoom.getId())
-                                .userId(user.getId())
-                                .build();
-                        participantRepository.save(participant);
-                    }
-                    return savedRoom;
-                });
-
-        return ChatRoomResponse.from(room);
+            int unreadCount;
+            if (roomParticipant.getLastReadMessageId() == null) {
+                unreadCount = chatMessageRepository.countByRoomId(roomId);
+            } else {
+                unreadCount = chatMessageRepository.countUnreadMessages(roomId, roomParticipant.getLastReadMessageId());
+            }
+            responses.add(ChatRoomResponse.from(room.getId(), room.getName(), lastMessageContent, lastMessageTime, unreadCount));
+        }
+        return responses;
     }
 
     @Transactional
-    public void createGroupChat(Long userId, Long boardId) {
+    public void createChatRoom(Long userId, Long boardId, ChatRoomRequest request) {
+        List<Long> participantIds = request.getParticipantIds();
+        if (!participantIds.contains(userId)) {
+            participantIds.add(userId);
+        }
+
+        String roomName;
+        if (participantIds.size() == 2) {
+            Long otherId = participantIds.stream()
+                    .filter(id -> !id.equals(userId))
+                    .findFirst()
+                    .orElseThrow();
+            roomName = userClient.getUser(otherId).getNickname();
+        } else {
+            roomName = participantIds.stream()
+                    .filter(id -> !id.equals(userId))
+                    .map(id -> userClient.getUser(id).getNickname())
+                    .collect(Collectors.joining(", "));
+        }
+
+        ChatRoom newRoom = ChatRoom.builder()
+                .type(RoomType.SUB)
+                .boardId(boardId)
+                .name(roomName)
+                .build();
+        ChatRoom savedRoom = chatRoomRepository.save(newRoom);
+
+        for (Long id : participantIds) {
+            roomParticipantService.saveRoomParticipant(savedRoom.getId(), id);
+        }
+    }
+
+    @Transactional
+    public void createGroupChat(Long userId, Long boardId, String boardName) {
         boardClient.validateUserInBoard(userId, boardId);
 
         ChatRoom room = ChatRoom.builder()
                 .type(RoomType.GROUP)
-                // name으로 그냥 보드 이름 넣기?
+                .name(boardName)
                 .boardId(boardId)
                 .build();
         chatRoomRepository.save(room);
 
-        addParticipant(userId, boardId);
-    }
-
-    public void createSubChat(Long userId, Long boardId, SubChatRequest request) {
-        // 아니면 현재 프로젝트 보드의 모든 사람들을 가져와서 넣는 방식
-        // board로 찾아와(해당 보드의 모든 사람들을)
-        // 지금은 따로 멤버를 받고 있음
-        boardClient.validateUserInBoard(userId, boardId);
-
-        ChatRoom room = ChatRoom.builder()
-                .type(RoomType.SUB)
-                .boardId(boardId)
-                .name(request.getName())
-                .build();
-        ChatRoom savedRoom = chatRoomRepository.save(room);
-
-        List<Long> memberIds = request.getMemberIds();
-        memberIds.forEach(memberId -> {
-            RoomParticipant participant = RoomParticipant.builder()
-                    .roomId(savedRoom.getId())
-                    .userId(memberId)
-                    .build();
-            participantRepository.save(participant);
-        });
+        addGroupParticipant(userId, boardId);
     }
 
     @Transactional
-    public void addParticipant(Long userId, Long boardId) {
-        ChatRoom room = chatRoomRepository.findByBoardId(boardId)
+    public void addGroupParticipant(Long userId, Long boardId) {
+        ChatRoom room = chatRoomRepository.findByBoardIdAndType(boardId, RoomType.GROUP)
                 .orElseThrow(() -> new ChatException(ErrorCode.CHAT_ROOM_NOT_FOUND));
-        UserResponse user = userClient.getUser(userId);
+        roomParticipantService.saveRoomParticipant(room.getId(), userId);
+    }
 
-        RoomParticipant participant = RoomParticipant.builder()
-                .roomId(room.getId())
-                .userId(user.getId())
+    @Transactional
+    public void addSubParticipant(Long userId, Long boardId, Long roomId, ChatRoomInviteRequest request) {
+        ChatRoom room = chatRoomRepository.findByIdAndBoardId(roomId, boardId)
+                .orElseThrow(() -> new ChatException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        if (!room.getBoardId().equals(boardId) || room.getType() != RoomType.SUB) {
+            throw new CustomException(ErrorCode.INVALID_ROOM_TYPE);
+        }
+        roomParticipantService.validateRoomParticipant(roomId, userId);
+
+        List<Long> participantIds = request.getParticipantIds();
+        for (Long id : participantIds) {
+            roomParticipantService.saveRoomParticipant(roomId, id);
+        }
+
+        String names = participantIds.stream()
+                .map(id -> userClient.getUser(id).getNickname())
+                .collect(Collectors.joining(", "));
+
+        String updatedName = room.getName() + ", " + names;
+        room.updateRoomName(updatedName);
+
+        ChatMessage systemMsg = ChatMessage.builder()
+                .roomId(roomId)
+                .type(MessageType.SYSTEM)
+                .content(names + "님이 들어왔습니다.")
                 .build();
-        participantRepository.save(participant);
+        chatMessageRepository.save(systemMsg);
+
+        messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/system",
+                SystemMessageResponse.from(systemMsg));
+
     }
 
-    @Transactional(readOnly = true)
-    public List<ChatRoomResponse> getRoomsByUser(Long userId) {
-        List<RoomParticipant> participants = participantRepository.findByUserId(userId);
+    @Transactional
+    public void leaveRoom(Long userId, Long boardId, Long roomId) {
+        validateRoom(roomId);
+        roomParticipantService.validateRoomParticipant(roomId, userId);
 
-        return participants.stream()
-                .map(p -> chatRoomRepository.findById(p.getRoomId())
-                        .orElseThrow(() -> new ChatException(ErrorCode.CHAT_ROOM_NOT_FOUND)))
-                .map(ChatRoomResponse::from)
-                .toList();
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+        if (!room.getBoardId().equals(boardId)) {
+            throw new CustomException(ErrorCode.FORBIDDEN_ROOM_ACCESS);
+        }
+
+        String nickname = userClient.getUser(userId).getNickname();
+        String updatedName = Arrays.stream(room.getName().split(","))
+                .map(String::trim)
+                .filter(name -> !name.equals(nickname))
+                .collect(Collectors.joining(", "));
+        room.updateRoomName(updatedName);
+
+        roomParticipantService.deleteRoomParticipant(roomId, userId);
+
+        ChatMessage systemMsg = ChatMessage.builder()
+                .roomId(roomId)
+                .type(MessageType.SYSTEM)
+                .content("사용자가 채팅방을 나갔습니다.")
+                .build();
+        chatMessageRepository.save(systemMsg);
+
+        messagingTemplate.convertAndSend("/topic/chats/rooms" + roomId + "/system",
+                SystemMessageResponse.from(systemMsg));
+
+        if (!roomParticipantService.existsByRoomId(roomId)) {
+            chatRoomRepository.deleteById(roomId);
+        }
     }
+
 
     public void validateRoom(Long roomId) {
         if (!chatRoomRepository.existsById(roomId)) {
             throw new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND);
         }
     }
-
-    // 채팅방 목록 조회가 어떻게 될지..
-    // 서브 채팅방이 멤버 구성이 어떻게 될지 일단 봐야함
-    // 프로젝트 보드 목록을 조회할때 뭐 단체랑 서브를 각자 따로해야할지
 }
 

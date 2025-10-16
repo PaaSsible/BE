@@ -35,7 +35,7 @@ public class BoardManagementService {
         Board board = boardService.createBoard(boardRequest);
         boardMemberService.registerOwner(userId, board.getId());
 
-        //chatClient.createBoardChatRoom(userId, board.getId());
+        chatClient.createGroupChat(userId, board.getId(), board.getName());
     }
 
     @Transactional
@@ -78,6 +78,28 @@ public class BoardManagementService {
 
     public List<BoardMemberResponse> getUsersByBoard(Long userId, Long boardId) {
         boardMemberService.validateUserInBoard(boardId, userId);
+
+        List<BoardMember> userBoards = boardMemberService.getBoardMembersByBoard(boardId);
+
+        return userBoards.stream()
+                .map(ub -> {
+                    String userName;
+                    String profileImageUrl;
+                    if (ub.getStatus() == MemberStatus.INACTIVE) {
+                        userName = "알 수 없음";
+                        profileImageUrl = "default";
+                    } else {
+                        UserResponse user = userClient.getUser(ub.getUserId());
+                        userName = user.getNickname();
+                        profileImageUrl = user.getProfileImageUrl();
+                    }
+                    return BoardMemberResponse.from(ub.getUserId(), userName, profileImageUrl, ub);
+                })
+                .toList();
+    }
+
+
+    public List<BoardMemberResponse> getUsersInBoard(Long boardId) {
 
         List<BoardMember> userBoards = boardMemberService.getBoardMembersByBoard(boardId);
 

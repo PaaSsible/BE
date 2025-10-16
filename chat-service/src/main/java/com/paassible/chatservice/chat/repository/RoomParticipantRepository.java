@@ -21,8 +21,29 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
     @Query("select rp from RoomParticipant rp where rp.roomId = :roomId")
     List<RoomParticipant> findAllByRoomId(@Param("roomId") Long roomId);
 
-    @Query("select count(rp) from RoomParticipant rp " +
-            "where rp.roomId = :roomId and rp.lastReadMessageId >= :messageId")
+    @Query("""
+    select count(rp)
+    from RoomParticipant rp
+    where rp.roomId = :roomId
+      and rp.userId <> :userId
+      and rp.lastReadMessageId >= :messageId
+    """)
     long countReaders(@Param("roomId") Long roomId,
+                      @Param("userId") Long userId,
                       @Param("messageId") Long messageId);
+
+
+    void deleteByRoomIdAndUserId(Long roomId, Long userId);
+
+    boolean existsByRoomId(Long roomId);
+
+    @Query("""
+    SELECT rp
+    FROM RoomParticipant rp
+    JOIN ChatRoom cr ON rp.roomId = cr.id
+    WHERE cr.boardId = :boardId
+      AND rp.userId = :userId
+    """)
+    List<RoomParticipant> findByUserIdAndBoardId(@Param("userId") Long userId,
+                                                 @Param("boardId") Long boardId);
 }
