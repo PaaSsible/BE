@@ -8,12 +8,12 @@ import lombok.Setter;
 @Setter
 @Builder
 public class MessageReadResponse {
-    private Long messageId;
+    private Long lastMessageId;
     private Long readCount;
 
-    public static MessageReadResponse from(Long messageId, Long readCount) {
+    public static MessageReadResponse from(Long lastMessageId, Long readCount) {
         return MessageReadResponse.builder()
-                .messageId(messageId)
+                .lastMessageId(lastMessageId)
                 .readCount(readCount)
                 .build();
     }

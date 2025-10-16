@@ -20,4 +20,8 @@ public class ChatRoom {
 
     @Enumerated(EnumType.STRING)
     private RoomType type;
+
+    public void updateRoomName(String newName) {
+        this.name = newName;
+    }
 }

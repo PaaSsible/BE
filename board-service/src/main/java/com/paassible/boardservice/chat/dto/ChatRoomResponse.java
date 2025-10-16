@@ -1,4 +1,4 @@
-package com.paassible.chatservice.chat.dto;
+package com.paassible.boardservice.chat.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -24,3 +24,4 @@ public class ChatRoomResponse {
                 .build();
     }
 }
+
