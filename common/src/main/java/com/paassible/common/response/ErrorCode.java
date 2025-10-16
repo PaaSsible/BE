@@ -50,7 +50,6 @@ public enum ErrorCode implements BaseResponseCode {
     PORTFOLIO_NOT_OWNER(HttpStatus.FORBIDDEN, "U003", "본인이 작성한 포트폴리오만 수정/삭제할 수 있습니다."),
 
     //recruit
-
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "P001", "존재하지 않는 게시물입니다."),
     INVALID_POSITION(HttpStatus.BAD_REQUEST, "P002", "잘못된 포지션 입력입니다."),
     INVALID_STACK(HttpStatus.BAD_REQUEST, "P003", "잘못된 스택 입력입니다."),
@@ -68,7 +67,6 @@ public enum ErrorCode implements BaseResponseCode {
     APPLICATION_MISMATCH(HttpStatus.BAD_REQUEST, "A004", "해당 모집글의 지원이 아닙니다."),
     CANNOT_APPLY_TO_OWN_POST(HttpStatus.FORBIDDEN, "A002", "자신이 작성한 모집글에는 지원할 수 없습니다."),
 
-
     //meet
     MEET_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 회의입니다."),
     MEET_ALREADY_JOINED(HttpStatus.CONFLICT, "M002", "이미 이 회의에 참가했습니다."),
@@ -76,6 +74,11 @@ public enum ErrorCode implements BaseResponseCode {
     MEET_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "M004", "이미 종료된 회의입니다."),
     PARTICIPANT_ALREADY_LEFT(HttpStatus.CONFLICT, "M005", "이미 퇴장한 참가자입니다."),
     MEET_ALREADY_EXISTS(HttpStatus.CONFLICT, "M006", "이미 진행 중인 회의가 존재합니다."),
+
+    // file
+    EMPTY_FILE_NAME(HttpStatus.BAD_REQUEST, "F001", "파일 이름이 비었습니다"),
+    FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "F002", "파일 업로드를 실패했습니다"),
+
     // chat
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CR001", "존재하지 않는 채팅방입니다."),
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CR002", "존재하지 않는 채팅 메시지입니다."),
