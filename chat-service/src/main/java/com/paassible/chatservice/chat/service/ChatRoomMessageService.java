@@ -9,7 +9,7 @@ import com.paassible.chatservice.client.user.UserClient;
 import com.paassible.chatservice.client.user.UserResponse;
 import com.paassible.common.dto.CursorPageResponse;
 import com.paassible.common.exception.CustomException;
-import com.paassible.common.file.service.FileStorageService;
+import com.paassible.common.file.service.ObjectStorageService;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +30,7 @@ public class ChatRoomMessageService {
     private final RoomParticipantService roomParticipantService;
 
     private final UserClient userClient;
-    private final FileStorageService fileStorageService;
+    private final ObjectStorageService fileStorageService;
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -124,7 +124,7 @@ public class ChatRoomMessageService {
     }
 
     public UploadResponse saveFile(MessageType type, MultipartFile file) {
-        String url = fileStorageService.save(file);
+        String url = fileStorageService.upload("chat", file);
         return UploadResponse .from(type, url);
     }
 }

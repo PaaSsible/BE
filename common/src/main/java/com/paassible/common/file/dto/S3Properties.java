@@ -15,4 +15,5 @@ public class S3Properties {
     private String endpoint;
     private String region;
     private String bucket;
+    private String tenantId;
 }

@@ -19,10 +19,11 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class FileStorageService {
+public class ObjectStorageService {
 
     private final S3Client s3Client;
     private final S3Properties s3Properties;
+    private final S3UrlService s3UrlService;
 
     public String upload(String dirName, MultipartFile file) {
         String originalFileName = file.getOriginalFilename();
@@ -44,34 +45,21 @@ public class FileStorageService {
             s3Client.putObject(putObjectRequest,
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-            return s3Client.utilities()
-                    .getUrl(builder -> builder.bucket(s3Properties.getBucket()).key(fileName))
-                    .toExternalForm();
+            return s3UrlService.generateFileUrl(fileName);
 
         } catch (IOException e) {
             throw new CustomException(ErrorCode.FILE_UPLOAD_ERROR);
         }
     }
 
-    public void deleteFile(String fileName) {
-        String splitFilename = ".com/";
-        String originalFileName =
-                fileName.substring(fileName.lastIndexOf(splitFilename) + splitFilename.length());
-
+    public void deleteFile(String fileUrl) {
+        String originalFileName = s3UrlService.extractKey(fileUrl);
+        System.out.println(originalFileName);
         String decodedFileName = URLDecoder.decode(originalFileName, StandardCharsets.UTF_8);
 
         DeleteObjectRequest deleteObjectRequest =
                 DeleteObjectRequest.builder().bucket(s3Properties.getBucket()).key(decodedFileName).build();
 
         s3Client.deleteObject(deleteObjectRequest);
-    }
-
-    public String updateFile(MultipartFile newFile, String oldFileName, String dirName)
-            throws IOException {
-        if (oldFileName != null && !oldFileName.isEmpty()) {
-            deleteFile(oldFileName);
-        }
-
-        return upload(dirName, newFile);
     }
 }
