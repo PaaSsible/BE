@@ -6,6 +6,7 @@ import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.meetservice.meet.dto.MeetCreateRequest;
 import com.paassible.meetservice.meet.dto.MeetCreateResponse;
 import com.paassible.meetservice.meet.dto.MeetJoinResponse;
+import com.paassible.meetservice.meet.dto.MeetOngoingResponse;
 import com.paassible.meetservice.meet.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,5 +48,18 @@ public class MeetController {
             @PathVariable Long meetId){
         meetService.leaveMeet(meetId,user.getUserId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
+    }
+
+    @GetMapping("/boards/{boardId}")
+    @Operation(summary = "진행 중인 회의 조회", description = "보드에 진행 중인 회의가 있다면 반환합니다.")
+    public ResponseEntity<ApiResponse<MeetOngoingResponse>> getOnGoingMeetByBoard(
+            @PathVariable Long boardId){
+        MeetOngoingResponse response = meetService.getOngoingMeetByBoard(boardId);
+
+        if(response == null){
+            return ResponseEntity.ok(ApiResponse.success(SuccessCode.ONGOING_NOT_FOUND, null));
+        }
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+
     }
 }

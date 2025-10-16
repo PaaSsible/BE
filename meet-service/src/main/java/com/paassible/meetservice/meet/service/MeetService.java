@@ -4,10 +4,7 @@ import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.meetservice.client.board.BoardClient;
 import com.paassible.meetservice.client.board.BoardMemberResponse;
-import com.paassible.meetservice.meet.dto.MeetCreateRequest;
-import com.paassible.meetservice.meet.dto.MeetCreateResponse;
-import com.paassible.meetservice.meet.dto.MeetJoinResponse;
-import com.paassible.meetservice.meet.dto.ParticipantStatusMessage;
+import com.paassible.meetservice.meet.dto.*;
 import com.paassible.meetservice.meet.entity.Meet;
 import com.paassible.meetservice.meet.entity.MeetingStatus;
 import com.paassible.meetservice.meet.entity.Participant;
@@ -161,4 +158,30 @@ public class MeetService {
         eventPublisher.publishEvent(new ParticipantLeftEvent(meetId, userId));
         broadcastCurrentStatus(meet);
     }
+
+
+    @Transactional(readOnly = true)
+    public MeetOngoingResponse getOngoingMeetByBoard(Long boardId){
+        boardClient.validateBoard(boardId);
+
+        Meet meet = meetRepository.findByBoardIdAndStatus(boardId, MeetingStatus.ONGOING)
+                .orElse(null);
+
+        if(meet == null) {
+            return null;
+        }
+
+        Set<String> redisMembers = redisTemplate.opsForSet().members("meeting:" + meet.getId() + ":participants");
+        List<Long> joinedIds = redisMembers == null
+                ?List.of()
+                :redisMembers.stream().map(Long::valueOf).toList();
+
+        List<BoardMemberResponse> allMembers = boardClient.getBoardMembers(meet.getBoardId());
+        List<BoardMemberResponse> presentMembers = allMembers.stream()
+                .filter(member -> joinedIds.contains(member.getUserId()))
+                .toList();
+
+        return MeetOngoingResponse.from(meet, presentMembers);
+    }
+
 }

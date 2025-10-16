@@ -21,7 +21,10 @@ public enum SuccessCode implements BaseResponseCode {
     // chat
     INVITED(HttpStatus.OK, "INVITED", "채팅방에 초대되었습니다."),
     LEAVED(HttpStatus.OK, "LEAVED", "채팅방을 퇴장하였습니다."),
-    READ(HttpStatus.OK, "READ", "메시지 읽음 처리가 되었습니다.");
+    READ(HttpStatus.OK, "READ", "메시지 읽음 처리가 되었습니다."),
+
+    //meet
+    ONGOING_NOT_FOUND(HttpStatus.OK, "MEET_NONE", "진행 중인 회의가 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
