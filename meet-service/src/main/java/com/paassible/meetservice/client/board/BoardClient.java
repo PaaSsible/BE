@@ -4,6 +4,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 @FeignClient(name = "board-service", url = "${board-service.url}")
 public interface BoardClient {
 
@@ -13,4 +15,6 @@ public interface BoardClient {
     @GetMapping("/boards/internal/{boardId}/user/{userId}/exists")
     void validateUserInBoard(@PathVariable Long boardId, @PathVariable Long userId);
 
+    @GetMapping("/boards/internal/{boardId}/members")
+    List<BoardMemberResponse> getBoardMembers(@PathVariable Long boardId);
 }

@@ -11,6 +11,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -32,10 +37,10 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/", "/index.html", "/test.html", "/css/**", "/js/**").permitAll()
                         .requestMatchers(
-                                "/meet/swagger-ui/**",
-                                "/meet/v3/api-docs/**"
+                                "/meets/swagger-ui/**",
+                                "/meets/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers("/meet/**").authenticated()
+                        .requestMatchers("/meets/**").authenticated()
                         .anyRequest().authenticated()
                 )
 

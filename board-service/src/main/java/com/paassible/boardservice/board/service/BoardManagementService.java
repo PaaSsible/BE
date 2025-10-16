@@ -98,6 +98,28 @@ public class BoardManagementService {
                 .toList();
     }
 
+
+    public List<BoardMemberResponse> getUsersInBoard(Long boardId) {
+
+        List<BoardMember> userBoards = boardMemberService.getBoardMembersByBoard(boardId);
+
+        return userBoards.stream()
+                .map(ub -> {
+                    String userName;
+                    String profileImageUrl;
+                    if (ub.getStatus() == MemberStatus.INACTIVE) {
+                        userName = "알 수 없음";
+                        profileImageUrl = "default";
+                    } else {
+                        UserResponse user = userClient.getUser(ub.getUserId());
+                        userName = user.getNickname();
+                        profileImageUrl = user.getProfileImageUrl();
+                    }
+                    return BoardMemberResponse.from(ub.getUserId(), userName, profileImageUrl, ub);
+                })
+                .toList();
+    }
+
     public List<BoardResponse> getBoardsByUser(Long userId, BoardStatus status, String keyword) {
         List<BoardMember> boardMembers = boardMemberService.getBoardMembersByUser(userId);
 
