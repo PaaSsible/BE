@@ -1,6 +1,6 @@
-package com.paassible.common.file.config;
+package com.paassible.userservice.file.config;
 
-import com.paassible.common.file.dto.S3Properties;
+import com.paassible.userservice.file.dto.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

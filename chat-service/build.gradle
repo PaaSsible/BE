@@ -30,6 +30,9 @@ dependencies {
 
     // openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // awssdk
+    implementation 'software.amazon.awssdk:s3:2.25.61'
 }
 
 dependencyManagement {

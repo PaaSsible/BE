@@ -1,6 +1,6 @@
-package com.paassible.common.file.service;
+package com.paassible.userservice.file.service;
 
-import com.paassible.common.file.dto.S3Properties;
+import com.paassible.userservice.file.dto.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

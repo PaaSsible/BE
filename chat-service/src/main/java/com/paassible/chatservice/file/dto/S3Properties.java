@@ -1,4 +1,4 @@
-package com.paassible.common.file.dto;
+package com.paassible.chatservice.file.dto;
 
 import lombok.Getter;
 import lombok.Setter;
