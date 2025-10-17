@@ -1,8 +1,8 @@
 package com.paassible.userservice.user.service;
 
 import com.paassible.common.exception.CustomException;
-import com.paassible.common.file.service.ObjectStorageService;
 import com.paassible.common.response.ErrorCode;
+import com.paassible.userservice.file.service.ObjectStorageService;
 import com.paassible.userservice.user.dto.PortfolioRequest;
 import com.paassible.userservice.user.dto.PortfolioResponse;
 import com.paassible.userservice.user.entity.Portfolio;

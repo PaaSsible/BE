@@ -1,11 +1,11 @@
 package com.paassible.userservice.user.service;
 
-import com.paassible.common.file.service.ObjectStorageService;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.common.security.jwt.Role;
 import com.paassible.userservice.auth.oauth.GoogleUserInfo;
 import com.paassible.userservice.client.PositionClient;
 import com.paassible.userservice.client.StackClient;
+import com.paassible.userservice.file.service.ObjectStorageService;
 import com.paassible.userservice.user.dto.ProfileRequest;
 import com.paassible.userservice.user.dto.UserResponse;
 import com.paassible.userservice.user.entity.User;
