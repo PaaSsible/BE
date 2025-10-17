@@ -35,6 +35,15 @@ jwt:
   access-expiration: ${JWT_ACCESS_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
+nhncloud:
+  s3:
+    access-key: ${S3_ACCESS_KEY}
+    secret-key: ${S3_SECRET_KEY}
+    endpoint: ${S3_ENDPOINT}
+    region: ${S3_REGION}
+    bucket: ${S3_BUCKET}
+    tenant-id: ${S3_TENANT_ID}
+
 user-service:
   url: http://user-service.user-service:8080
 
