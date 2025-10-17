@@ -5,6 +5,7 @@ import com.paassible.common.security.jwt.Role;
 import com.paassible.userservice.auth.oauth.GoogleUserInfo;
 import com.paassible.userservice.client.PositionClient;
 import com.paassible.userservice.client.StackClient;
+import com.paassible.userservice.file.service.ObjectStorageService;
 import com.paassible.userservice.user.dto.ProfileRequest;
 import com.paassible.userservice.user.dto.UserResponse;
 import com.paassible.userservice.user.entity.User;
@@ -27,6 +28,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final PositionClient positionClient;
     private final StackClient stackClient;
+
+    private final ObjectStorageService fileStorageService;
+
+    public static final String DEFAULT_PROFILE_IMAGE_URL = "https://example.com/images/default-profile.png";
 
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
@@ -84,10 +89,7 @@ public class UserService {
     public void updateProfile(Long userId, ProfileRequest request, MultipartFile image) {
         User user = getUser(userId);
 
-        String profileImageUrl = user.getProfileImageUrl();
-        if (image != null && !image.isEmpty()) {
-            profileImageUrl = saveProfileImage(image);
-        }
+        String profileImageUrl = updateProfileImage(user.getProfileImageUrl(), image);
 
         List<Long> techStackIds = request.getTechStackIds() != null
                 ? request.getTechStackIds()
@@ -100,9 +102,14 @@ public class UserService {
         }
     }
 
-    private String saveProfileImage(MultipartFile image) {
-        // s3에 저정하는식으로 수정 필요
-        return "url";
+    private String updateProfileImage(String profileImageUrl, MultipartFile image) {
+        if (image != null && !image.isEmpty()) {
+            if (profileImageUrl != null && !profileImageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
+                fileStorageService.deleteFile(profileImageUrl);
+            }
+            profileImageUrl = fileStorageService.upload("user", image);
+        }
+        return profileImageUrl;
     }
 
     @Transactional

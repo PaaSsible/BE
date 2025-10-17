@@ -2,6 +2,7 @@ package com.paassible.userservice.user.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
+import com.paassible.userservice.file.service.ObjectStorageService;
 import com.paassible.userservice.user.dto.PortfolioRequest;
 import com.paassible.userservice.user.dto.PortfolioResponse;
 import com.paassible.userservice.user.entity.Portfolio;
@@ -20,6 +21,8 @@ public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final UserService userService;
+
+    private final ObjectStorageService fileStorageService;
 
     @Transactional
     public void createPortfolio(Long userId, PortfolioRequest request, MultipartFile file) {
@@ -77,7 +80,6 @@ public class PortfolioService {
     }
 
     private String saveFile(MultipartFile file) {
-        // s3에 저정하는식으로 수정 필요
-        return "url";
+        return fileStorageService.upload("portfolio", file);
     }
 }
