@@ -24,6 +24,7 @@ public enum SuccessCode implements BaseResponseCode {
     READ(HttpStatus.OK, "READ", "메시지 읽음 처리가 되었습니다."),
 
     //meet
+    HOST_TRANSFERRED(HttpStatus.OK, "HOST_TRANSFERRED", "회의 호스트가 변경되었습니다."),
     ONGOING_NOT_FOUND(HttpStatus.OK, "MEET_NONE", "진행 중인 회의가 없습니다.");
 
     private final HttpStatus httpStatus;

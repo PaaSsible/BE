@@ -1,3 +1,5 @@
 package com.paassible.meetservice.meet.event;
 
-public record ParticipantJoinedEvent(Long meetId, Long userId) {}
+import com.paassible.meetservice.meet.entity.Meet;
+
+public record ParticipantJoinedEvent(Meet meet, Long userId) {}

@@ -75,6 +75,8 @@ public enum ErrorCode implements BaseResponseCode {
     MEET_ALREADY_ENDED(HttpStatus.BAD_REQUEST, "M004", "이미 종료된 회의입니다."),
     PARTICIPANT_ALREADY_LEFT(HttpStatus.CONFLICT, "M005", "이미 퇴장한 참가자입니다."),
     MEET_ALREADY_EXISTS(HttpStatus.CONFLICT, "M006", "이미 진행 중인 회의가 존재합니다."),
+    MEET_NOT_HOST(HttpStatus.FORBIDDEN, "M007", "호스트만 가능한 기능입니다."),
+
 
     // chat
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CR001", "존재하지 않는 채팅방입니다."),

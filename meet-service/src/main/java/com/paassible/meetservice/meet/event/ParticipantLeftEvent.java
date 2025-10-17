@@ -1,3 +1,5 @@
 package com.paassible.meetservice.meet.event;
 
-public record ParticipantLeftEvent(Long meetId, Long userId){}
+import com.paassible.meetservice.meet.entity.Meet;
+
+public record ParticipantLeftEvent(Meet meet, Long userId){}

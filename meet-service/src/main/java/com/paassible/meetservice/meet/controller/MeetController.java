@@ -3,14 +3,13 @@ package com.paassible.meetservice.meet.controller;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
-import com.paassible.meetservice.meet.dto.MeetCreateRequest;
-import com.paassible.meetservice.meet.dto.MeetCreateResponse;
-import com.paassible.meetservice.meet.dto.MeetJoinResponse;
-import com.paassible.meetservice.meet.dto.MeetOngoingResponse;
+import com.paassible.meetservice.meet.dto.*;
 import com.paassible.meetservice.meet.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +59,15 @@ public class MeetController {
             return ResponseEntity.ok(ApiResponse.success(SuccessCode.ONGOING_NOT_FOUND, null));
         }
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
 
+    @PatchMapping("/{meetId}/host")
+    @Operation(summary = "회의 호스트 위임", description = "현재 호스트가 다른 참가자에게 호스트 권한을 넘깁니다.")
+    public ResponseEntity<ApiResponse<Void>> transferHost(
+            @AuthenticationPrincipal UserJwtDto user,
+            @PathVariable Long meetId,
+            @RequestBody @Valid HostTransferRequest request){
+        meetService.transferHost(meetId, user.getUserId(), request.newHostId());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.HOST_TRANSFERRED));
     }
 }
