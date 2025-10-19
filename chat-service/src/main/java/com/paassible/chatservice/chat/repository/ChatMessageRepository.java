@@ -26,6 +26,13 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             Pageable pageable
     );
 
+    @Query("""
+    SELECT m FROM ChatMessage m
+    WHERE m.roomId = :roomId AND m.createdAt > :createdAt
+    ORDER BY m.createdAt ASC
+    """)
+    List<ChatMessage> findMessagesAfter(Long roomId, LocalDateTime createdAt, Pageable pageable);
+
     boolean existsByIdAndRoomId(Long id, Long roomId);
 
     ChatMessage findTopByRoomIdAndTypeNotOrderByCreatedAtDesc(Long roomId, MessageType type);
@@ -34,4 +41,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     int countUnreadMessages(@Param("roomId") Long roomId, @Param("lastReadId") Long lastReadId);
 
     int countByRoomId(Long roomId);
+
+    @Query("SELECT m.id FROM ChatMessage m " +
+            "WHERE m.roomId = :roomId AND m.content LIKE %:keyword% " +
+            "ORDER BY m.createdAt ASC")
+    List<Long> searchIdsByKeyword(
+            @Param("roomId") Long roomId,
+            @Param("keyword") String keyword);
 }

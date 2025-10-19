@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -28,6 +29,7 @@ public class ChatRoomMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomService chatRoomService;
     private final RoomParticipantService roomParticipantService;
+    private final ChatMessageMapper chatMessageMapper;
 
     private final UserClient userClient;
     private final ObjectStorageService fileStorageService;
@@ -50,7 +52,7 @@ public class ChatRoomMessageService {
         return ChatMessageResponse.from(msg, user, 0L);
     }
 
-    public CursorPageResponse<ChatMessageResponse> getMessages(Long userId, Long roomId, Long cursor, int size) {
+    public CursorPageResponse<ChatMessageResponse> getMessages(Long userId, Long roomId, Long cursor, int size, String direction) {
         chatRoomService.validateRoom(roomId);
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
@@ -62,7 +64,12 @@ public class ChatRoomMessageService {
         } else {
             ChatMessage cursorMessage = chatMessageRepository.findById(cursor)
                     .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CURSOR));
-            messages = chatMessageRepository.findMessagesBefore(roomId, cursorMessage.getCreatedAt(), pageable);
+
+            if ("down".equals(direction)) {
+                messages = chatMessageRepository.findMessagesAfter(roomId, cursorMessage.getCreatedAt(), pageable);
+            } else {
+                messages = chatMessageRepository.findMessagesBefore(roomId, cursorMessage.getCreatedAt(), pageable);
+            }
         }
 
         boolean hasNext = messages.size() > size;
@@ -70,17 +77,45 @@ public class ChatRoomMessageService {
             messages = messages.subList(0, size);
         }
 
-        Long nextCursor = hasNext ? messages.get(messages.size() - 1).getId() : null;
+        messages.sort(Comparator.comparing(ChatMessage::getCreatedAt));
 
-        List<ChatMessageResponse> responseItems = messages.stream()
-                .map(m -> {
-                    UserResponse user = userClient.getUser(m.getSenderId());
-                    Long readCount = roomParticipantService.countReaders(m.getRoomId(), user.getId(), m.getId());
-                    return ChatMessageResponse.from(m, user, readCount);
-                })
-                .toList();
+        Long nextCursor = null;
+        if (!messages.isEmpty()) {
+            if ("down".equals(direction)) {
+                nextCursor = messages.get(messages.size() - 1).getId();
+            } else {
+                nextCursor = messages.get(0).getId();
+            }
+        }
 
+        List<ChatMessageResponse> responseItems = chatMessageMapper.toResponseList(messages);
         return new CursorPageResponse<>(responseItems, nextCursor, hasNext);
+    }
+
+    public MessageSearchResponse searchMessages(Long userId, Long roomId, String keyword) {
+        chatRoomService.validateRoom(roomId);
+        roomParticipantService.validateRoomParticipant(roomId, userId);
+
+        List<Long> ids = chatMessageRepository.searchIdsByKeyword(roomId, keyword);
+        return new MessageSearchResponse(ids.size(), ids);
+    }
+
+    public MessageAroundResponse getAroundMessages(Long userId, Long roomId, Long messageId, int limit) {
+        chatRoomService.validateRoom(roomId);
+        validateMessageInRoom(messageId, roomId);
+        roomParticipantService.validateRoomParticipant(roomId, userId);
+
+        ChatMessage center = chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_MESSAGE_NOT_FOUND));
+
+        List<ChatMessage> before = chatMessageRepository.findMessagesBefore(roomId, center.getCreatedAt(), PageRequest.of(0, limit / 2));
+        List<ChatMessage> after = chatMessageRepository.findMessagesAfter(roomId, center.getCreatedAt(), PageRequest.of(0, limit / 2));
+
+        return new MessageAroundResponse(
+                chatMessageMapper.toResponseList(before),
+                chatMessageMapper.toResponse(center),
+                chatMessageMapper.toResponseList(after)
+        );
     }
 
     @Transactional
