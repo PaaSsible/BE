@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -61,7 +60,10 @@ public class MeetService {
             participantRepository.save(host);
             savedMeet.incrementParticipantCount();
 
-            eventPublisher.publishEvent(new ParticipantJoinedEvent(savedMeet, userId));
+            eventPublisher.publishEvent(new ParticipantJoinedEvent(
+                    savedMeet.getId(),
+                    savedMeet.getBoardId(),
+                    userId));
 
             return MeetCreateResponse.from(savedMeet, host);
 
@@ -94,7 +96,12 @@ public class MeetService {
                         return participantRepository.save(Participant.create(meetId, userId));
                     });
 
-            eventPublisher.publishEvent(new ParticipantJoinedEvent(meet, userId));
+            eventPublisher.publishEvent(
+                    new ParticipantJoinedEvent(
+                            meet.getId(),
+                            meet.getBoardId(),
+                            userId
+                    ));
 
             return MeetJoinResponse.from(participant);
 
@@ -103,7 +110,7 @@ public class MeetService {
         }
     }
 
-    public void leaveMeet(Long meetId, Long userId) {
+    public LeaveResponse leaveMeet(Long meetId, Long userId) {
 
         Meet meet = meetRepository.findByIdWithLock(meetId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_FOUND));
@@ -115,16 +122,48 @@ public class MeetService {
         Participant participant = meetValidator.getParticipantOrThrow(meetId, userId);
         meetValidator.ensureParticipantJoined(participant);
 
+        boolean isHost = meet.getHostId().equals(userId);
+
+        //혼자만 남은 경우 - 즉시 종료
+        if(meet.getParticipantCount() ==1){
+            participant.leave();
+            meet.decrementParticipantCount();
+            meet.end();
+
+            eventPublisher.publishEvent(new ParticipantLeftEvent(
+                    meet.getId(),
+                    meet.getBoardId(),
+                    userId
+            ));
+            return LeaveResponse.ended();
+        }
+
+        //호스트인 경우 - 위임 필요
+        if(isHost){
+            List<Long> candidateIds = participantRepository
+                    .findActiveUserIdsByMeetId(meetId, userId);
+
+            List<LeaveResponse.CandidateInfo> candidates = candidateIds.stream()
+                    .map(id ->{
+                        UserResponse userInfo = userClient.getUser(id);
+                        return new LeaveResponse.CandidateInfo(id, userInfo.getNickname());
+                    })
+                    .toList();
+
+            return LeaveResponse.transferRequired(candidates);
+        }
+
+        //일반 참가자 - 즉시 퇴장
         participant.leave();
         meet.decrementParticipantCount();
 
-        if(meet.isEmpty()) {
-            meet.end();
-        }
-
-        eventPublisher.publishEvent(new ParticipantLeftEvent(meet, userId));
+        eventPublisher.publishEvent(new ParticipantLeftEvent(
+                meet.getId(),
+                meet.getBoardId(),
+                userId
+        ));
+        return LeaveResponse.left();
     }
-
 
     @Transactional(readOnly = true)
     public MeetOngoingResponse getOngoingMeetByBoard(Long boardId){
@@ -151,29 +190,42 @@ public class MeetService {
     }
 
     @Transactional
-    public void transferHost(Long meetId, Long currentHostId, Long newHostId){
+    public void transferAndLeave(Long meetId, Long currentHostId, Long newHostId){
         Meet meet = meetRepository.findByIdWithLock(meetId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_FOUND));
+                .orElseThrow(()-> new CustomException(ErrorCode.MEET_NOT_FOUND));
 
-        if(!meet.getHostId().equals(currentHostId)) {
-            throw new CustomException(ErrorCode.MEET_NOT_HOST);
+        if(!meet.getHostId().equals(currentHostId)){
+            throw new CustomException(ErrorCode.MEET_ALREADY_ENDED);
         }
 
         Participant newHost = participantRepository.findByMeetIdAndUserId(meetId, newHostId)
                 .orElseThrow(()-> new CustomException(ErrorCode.MEET_NOT_PARTICIPANT));
-        if(newHost.getStatus() != ParticipantStatus.JOINED) {
+
+        if(newHost.getStatus() != ParticipantStatus.JOINED){
             throw new CustomException(ErrorCode.PARTICIPANT_ALREADY_LEFT);
         }
 
+        Participant oldHost = participantRepository.findByMeetIdAndUserId(meetId, currentHostId)
+                .orElseThrow(()-> new CustomException(ErrorCode.MEET_NOT_PARTICIPANT));
+
         meet.updateHost(newHostId);
-        meetRepository.save(meet);
+
+        oldHost.leave();
+        meet.decrementParticipantCount();
+
+        eventPublisher.publishEvent(new ParticipantLeftEvent(
+                meet.getId(),
+                meet.getBoardId(),
+                currentHostId
+        ));
 
         UserResponse newHostInfo = userClient.getUser(newHostId);
-
         simpMessagingTemplate.convertAndSend(
                 "/topic/meet/" + meetId + "/host",
                 new HostChangedMessage(meetId, newHostId, newHostInfo.getNickname())
         );
     }
+
+
 
 }

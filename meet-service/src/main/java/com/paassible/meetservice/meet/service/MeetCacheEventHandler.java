@@ -3,7 +3,6 @@ package com.paassible.meetservice.meet.service;
 import com.paassible.meetservice.client.board.BoardClient;
 import com.paassible.meetservice.client.board.BoardMemberResponse;
 import com.paassible.meetservice.meet.dto.ParticipantStatusMessage;
-import com.paassible.meetservice.meet.entity.Meet;
 import com.paassible.meetservice.meet.event.ParticipantLeftEvent;
 import com.paassible.meetservice.meet.event.ParticipantJoinedEvent;
 import lombok.RequiredArgsConstructor;
@@ -35,39 +34,39 @@ public class MeetCacheEventHandler {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleParticipantJoined (ParticipantJoinedEvent event) {
-        String key = participantsKey(event.meet().getId());
+        String key = participantsKey(event.meetId());
         try{
             redisTemplate.opsForSet().add(key, event.userId().toString());
-            broadcastCurrentStatus(event.meet());
+            broadcastCurrentStatus(event.meetId(), event.boardId());
         }catch(Exception e){
             log.warn("Failed to update Redis on join (meetId={}, userId={})",
-                    event.meet().getId(), event.userId(), e);
+                    event.meetId(), event.userId(), e);
         }
     }
 
 @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleParticipantLeft(ParticipantLeftEvent event) {
-        String key = participantsKey(event.meet().getId());
+        String key = participantsKey(event.meetId());
         try{
             redisTemplate.opsForSet().remove(key, event.userId().toString());
             Long size = redisTemplate.opsForSet().size(key);
             if(size != null && size ==0){
                 redisTemplate.delete(key);
             }
-            broadcastCurrentStatus(event.meet());
+            broadcastCurrentStatus(event.meetId(), event.boardId());
         }catch(Exception e){
             log.warn("Failed to update Redis on leave (meetId={}, userId={})",
-                    event.meet().getId(), event.userId(), e);
+                    event.meetId(), event.userId(), e);
         }
     }
 
 
-    private void broadcastCurrentStatus(Meet meet) {
+    private void broadcastCurrentStatus(Long meetId, Long boardId) {
 
         try {
-            List<BoardMemberResponse> allMembers = boardClient.getBoardMembers(meet.getBoardId());
+            List<BoardMemberResponse> allMembers = boardClient.getBoardMembers(boardId);
             Set<String> redisMembers =
-                    redisTemplate.opsForSet().members("meeting:" + meet.getId() + ":participants");
+                    redisTemplate.opsForSet().members("meeting:" + meetId + ":participants");
 
             List<Long> joinedIds = redisMembers == null
                     ? List.of()
@@ -84,7 +83,7 @@ public class MeetCacheEventHandler {
                     .sorted(Comparator.comparing(BoardMemberResponse::getUserName))
                     .toList();
 
-            broadcastParticipantStatus(meet.getId(), presentMembers, absentMembers);
+            broadcastParticipantStatus(meetId, presentMembers, absentMembers);
         } catch (Exception e) {
             e.printStackTrace();
         }

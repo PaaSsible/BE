@@ -42,11 +42,11 @@ public class MeetController {
 
     @DeleteMapping("/{meetId}/participants")
     @Operation(summary = "회의 나가기", description = "회의 나가기를 요청합니다.")
-    public ResponseEntity<ApiResponse<Void>> leaveMeet(
+    public ResponseEntity<ApiResponse<LeaveResponse>> leaveMeet(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long meetId){
-        meetService.leaveMeet(meetId,user.getUserId());
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
+        LeaveResponse response = meetService.leaveMeet(meetId,user.getUserId());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
     @GetMapping("/boards/{boardId}")
@@ -61,13 +61,14 @@ public class MeetController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
-    @PatchMapping("/{meetId}/host")
-    @Operation(summary = "회의 호스트 위임", description = "현재 호스트가 다른 참가자에게 호스트 권한을 넘깁니다.")
-    public ResponseEntity<ApiResponse<Void>> transferHost(
+    @PostMapping("/{meetId}/transfer-and-leave")
+    @Operation(summary = "회의 호스트 위임 후 퇴장", description = "현재 호스트가 다른 참가자에게 호스트 권한을 넘기고 회의를 나갑니다.")
+    public ResponseEntity<ApiResponse<Void>> transferAadLeave(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long meetId,
             @RequestBody @Valid HostTransferRequest request){
-        meetService.transferHost(meetId, user.getUserId(), request.newHostId());
+        meetService.transferAndLeave(meetId, user.getUserId(), request.newHostId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.HOST_TRANSFERRED));
     }
+
 }
