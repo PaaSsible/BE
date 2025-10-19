@@ -108,8 +108,10 @@ public class ChatRoomMessageService {
         ChatMessage center = chatMessageRepository.findById(messageId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_MESSAGE_NOT_FOUND));
 
-        List<ChatMessage> before = chatMessageRepository.findMessagesBefore(roomId, center.getCreatedAt(), PageRequest.of(0, limit / 2));
-        List<ChatMessage> after = chatMessageRepository.findMessagesAfter(roomId, center.getCreatedAt(), PageRequest.of(0, limit / 2));
+        List<ChatMessage> before = chatMessageRepository.findMessagesBefore(roomId, center.getCreatedAt(), PageRequest.of(0, limit));
+        before.sort(Comparator.comparing(ChatMessage::getCreatedAt));
+
+        List<ChatMessage> after = chatMessageRepository.findMessagesAfter(roomId, center.getCreatedAt(), PageRequest.of(0, limit));
 
         return new MessageAroundResponse(
                 chatMessageMapper.toResponseList(before),
