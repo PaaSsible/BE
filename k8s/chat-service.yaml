@@ -30,6 +30,13 @@ spec:
                 name: chat-service-secret
             - secretRef:
                 name: chat-db-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 300m
+              memory: 400Mi
 
 ---
 apiVersion: v1

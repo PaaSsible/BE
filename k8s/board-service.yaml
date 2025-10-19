@@ -30,6 +30,13 @@ spec:
                 name: board-service-secret
             - secretRef:
                 name: board-db-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 300m
+              memory: 400Mi
 
 ---
 apiVersion: v1
