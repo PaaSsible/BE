@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 "/users/test/**",
                                 "/users/internal/**"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/users/**").authenticated()
                         .anyRequest().permitAll()
                 )
