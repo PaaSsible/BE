@@ -2,6 +2,7 @@ package com.paassible.recruitservice.post.repository;
 
 import com.paassible.recruitservice.post.dto.PostListResponse;
 import com.paassible.recruitservice.post.dto.PostSearchRequest;
+import com.paassible.recruitservice.post.dto.RecruitInfo;
 import com.paassible.recruitservice.post.entity.Post;
 import com.paassible.recruitservice.post.entity.QPost;
 import com.paassible.recruitservice.post.entity.QRecruitment;
@@ -87,15 +88,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
     }
 
     private Page<PostListResponse> createPostListResponse(List<Post> posts, Pageable pageable, Long total) {
-        if(posts.isEmpty()){
-            return new PageImpl<>(Collections.emptyList(),pageable,total != null? total : 0);
+        if (posts.isEmpty()) {
+            return new PageImpl<>(Collections.emptyList(), pageable, total != null ? total : 0);
         }
 
-        List<Long> postIds = posts.stream().map(Post::getId).collect(Collectors.toList());
-        Map<Long, List<PostListResponse.RecruitSummary>> postRecruitments =
-                getRecruitmentsByPostIds(postIds);
+        List<Long> postIds = posts.stream()
+                .map(Post::getId)
+                .toList();
+
+
+        Map<Long, List<RecruitInfo>> postRecruitments = getRecruitmentsByPostIds(postIds);
+
         List<PostListResponse> results = posts.stream()
-                .map(p->new PostListResponse(
+                .map(p -> new PostListResponse(
                         p.getId(),
                         p.getTitle(),
                         p.getMainCategory(),
@@ -108,29 +113,31 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                         postRecruitments.getOrDefault(p.getId(), Collections.emptyList())
                 ))
                 .toList();
-        return new PageImpl<>(results, pageable, total != null? total : 0);
+
+        return new PageImpl<>(results, pageable, total != null ? total : 0);
     }
 
-    private Map<Long,List<PostListResponse.RecruitSummary>> getRecruitmentsByPostIds(List<Long> postIds) {
+    private Map<Long, List<RecruitInfo>> getRecruitmentsByPostIds(List<Long> postIds) {
         QRecruitment recruitment = QRecruitment.recruitment;
 
-        return queryFactory
-                .select(recruitment.postId, recruitment.recruitmentId,
-                        recruitment.positionId, recruitment.stackId)
+        var tuples = queryFactory
+                .select(recruitment.postId, recruitment.positionId, recruitment.stackId)
                 .from(recruitment)
                 .where(recruitment.postId.in(postIds))
-                .fetch()
-                .stream()
-                .filter(t->t.get(recruitment.postId)!= null)
+                .fetch();
+
+        return tuples.stream()
+                .filter(t -> t.get(recruitment.postId) != null)
                 .collect(Collectors.groupingBy(
-                        t->Objects.requireNonNull(t.get(recruitment.postId)),
-                        Collectors.mapping(
-                                t->new PostListResponse.RecruitSummary(
-                                        t.get(recruitment.recruitmentId),
-                                        t.get(recruitment.positionId),
-                                        t.get(recruitment.stackId)
+                        t -> Objects.requireNonNull(t.get(recruitment.postId)),
+                        Collectors.collectingAndThen(
+                                Collectors.groupingBy(
+                                        t -> t.get(recruitment.positionId),
+                                        Collectors.mapping(t -> t.get(recruitment.stackId), Collectors.toList())
                                 ),
-                                Collectors.toList()
+                                map -> map.entrySet().stream()
+                                        .map(e -> new RecruitInfo(e.getKey(), e.getValue()))
+                                        .toList()
                         )
                 ));
     }
