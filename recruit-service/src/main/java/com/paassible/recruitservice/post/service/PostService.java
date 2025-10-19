@@ -43,10 +43,10 @@ public class PostService {
     private final UserClient userClient;
 
 
+
     @Transactional(readOnly = true)
     public PagedPostListResponse getPosts(PostSearchRequest request) {
         Pageable pageable = PageRequest.of(request.page(), request.size());
-
         OrderSpecifier<?> orderSpecifier = getOrderSpecifier(request.sort());
 
         Page<PostListResponse> postsPage = postRepository.searchPosts(request, pageable, orderSpecifier);
@@ -62,6 +62,7 @@ public class PostService {
         return new PagedPostListResponse(postsPage.getContent(), pageInfo);
     }
 
+
     private OrderSpecifier<?> getOrderSpecifier(String sort) {
         QPost post = QPost.post;
 
@@ -74,15 +75,16 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PagedPostListResponse getMyPosts(Long userId,Pageable pageable) {
+    public PagedPostListResponse getMyPosts(Long userId, Pageable pageable) {
         Pageable sortedPageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "createdAt")
-                );
+        );
 
-        Page<Post> posts = postRepository. findByWriterIdAndClosedFalse(userId, sortedPageable);
-        if(posts.isEmpty()){
+        Page<Post> posts = postRepository.findByWriterIdAndClosedFalse(userId, sortedPageable);
+
+        if (posts.isEmpty()) {
             return new PagedPostListResponse(
                     Collections.emptyList(),
                     new PagedPostListResponse.PageInfo(
@@ -95,26 +97,31 @@ public class PostService {
             );
         }
 
+
         List<Long> postIds = posts.getContent().stream()
                 .map(Post::getId)
                 .toList();
 
         List<Recruitment> recruitments = recruitmentRepository.findByPostIdIn(postIds);
-        Map<Long, List<PostListResponse.RecruitSummary>> recruitmentsByPost =
-                recruitments.stream()
-                        .collect(Collectors.groupingBy(
-                                Recruitment::getPostId,
-                                Collectors.mapping(
-                                        r -> new PostListResponse.RecruitSummary(
-                                                r.getRecruitmentId(),
-                                                r.getPositionId(),
-                                                r.getStackId()
-                                        ),
-                                        Collectors.toList()
-                                )
-                        ));
+
+
+        Map<Long, List<RecruitInfo>> recruitmentsByPost = recruitments.stream()
+                .collect(Collectors.groupingBy(
+                        Recruitment::getPostId,
+                        Collectors.collectingAndThen(
+                                Collectors.groupingBy(
+                                        Recruitment::getPositionId,
+                                        Collectors.mapping(Recruitment::getStackId, Collectors.toList())
+                                ),
+                                map -> map.entrySet().stream()
+                                        .map(e -> new RecruitInfo(e.getKey(), e.getValue()))
+                                        .toList()
+                        )
+                ));
+
+
         List<PostListResponse> results = posts.getContent().stream()
-                .map(p->new PostListResponse(
+                .map(p -> new PostListResponse(
                         p.getId(),
                         p.getTitle(),
                         p.getMainCategory(),
@@ -135,6 +142,7 @@ public class PostService {
                 posts.getSize(),
                 posts.hasNext()
         );
+
         return new PagedPostListResponse(results, pageInfo);
     }
 
