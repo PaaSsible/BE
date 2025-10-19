@@ -1,8 +1,6 @@
 package com.paassible.chatservice.chat.controller;
 
-import com.paassible.chatservice.chat.dto.ChatMessageResponse;
-import com.paassible.chatservice.chat.dto.UploadResponse;
-import com.paassible.chatservice.chat.dto.MessageReadDetailResponse;
+import com.paassible.chatservice.chat.dto.*;
 import com.paassible.chatservice.chat.entity.enums.MessageType;
 import com.paassible.chatservice.chat.service.ChatRoomMessageService;
 import com.paassible.common.dto.CursorPageResponse;
@@ -24,15 +22,40 @@ public class ChatMessageController {
 
     private final ChatRoomMessageService chatMessageService;
 
+    @GetMapping("/rooms/{roomId}/search")
+    @Operation(summary = "채팅방 메시지 검색", description = "채팅방의 메시지 내용을 검색한다.")
+    public ResponseEntity<ApiResponse<MessageSearchResponse>> searchMessageIds(
+            @AuthenticationPrincipal UserJwtDto user,
+            @PathVariable Long roomId,
+            @RequestParam String keyword
+    ) {
+        MessageSearchResponse response = chatMessageService.searchMessages(user.getUserId(), roomId, keyword);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
+
+    @GetMapping("/rooms/{roomId}/messages/{messageId}/around")
+    @Operation(summary = "채팅방 메시지 검색 조회", description = "채팅방의 검색된 메시지의 주변 메시지를 조회한다.")
+    public ResponseEntity<ApiResponse<MessageAroundResponse>> getAroundMessages(
+            @AuthenticationPrincipal UserJwtDto user,
+            @PathVariable Long roomId,
+            @PathVariable Long messageId,
+            @RequestParam(defaultValue = "20") int limit
+    ) {
+        MessageAroundResponse response = chatMessageService.getAroundMessages(user.getUserId(), roomId, messageId, limit);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+
+    }
+
     @GetMapping("/rooms/{roomId}/messages")
     @Operation(summary = "채팅방 상세 조회", description = "채팅방의 메시지 목록을 조회한다.")
     public ResponseEntity<ApiResponse<CursorPageResponse<ChatMessageResponse>>> getMessages(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long roomId,
             @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            String direction
     ) {
-        CursorPageResponse<ChatMessageResponse> response = chatMessageService.getMessages(user.getUserId(), roomId, cursor, size);
+        CursorPageResponse<ChatMessageResponse> response = chatMessageService.getMessages(user.getUserId(), roomId, cursor, size, direction);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
