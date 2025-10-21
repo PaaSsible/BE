@@ -47,24 +47,26 @@ public class CommentService {
     }
 
     public CommentListResponse getComments(Long postId, Long userId) {
-
         List<Comment> allComments = commentRepository.findByPostId(postId);
+
         List<Comment> parents = allComments.stream()
-                .filter(c->c.getParentId() == null)
+                .filter(c -> c.getParentId() == null)
                 .toList();
 
         List<CommentResponse> responses = parents.stream()
                 .map(parent -> {
-                    List<CommentResponse> childResponse = allComments.stream()
-                            .filter(c->parent.getId().equals(c.getParentId()))
-                            .map(child ->CommentResponse.from(child, List.of()))
+                    List<CommentResponse> childResponses = allComments.stream()
+                            .filter(c -> parent.getId().equals(c.getParentId()))
+                            .map(child -> CommentResponse.from(child, List.of()))
                             .toList();
-                    return CommentResponse.from(parent, childResponse);
+
+                    return CommentResponse.from(parent, childResponses);
                 })
                 .toList();
 
-        return new CommentListResponse(parents.size(), responses);
+        return new CommentListResponse(userId,allComments.size(), responses);
     }
+
 
     public void updateComment(Long commentId, Long userId, String newContent){
         Comment comment = commentRepository.findById(commentId)
