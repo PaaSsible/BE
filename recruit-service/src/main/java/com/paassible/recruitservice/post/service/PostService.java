@@ -178,6 +178,8 @@ public class PostService {
                 post.getMonths(),
                 post.getWriterId(),
                 user.getNickname(),
+                post.getCreatedAt(),
+                post.getUpdatedAt(),
                 post.getViewCount(),
                 post.getApplicationCount(),
                 recruitInfos
