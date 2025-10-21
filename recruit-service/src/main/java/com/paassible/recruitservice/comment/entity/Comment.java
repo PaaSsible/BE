@@ -20,6 +20,9 @@ public class Comment extends BaseEntity {
     private Long writerId;
 
     @Column(nullable = false)
+    private String writerName;
+
+    @Column(nullable = false)
     private Long postId;
 
     private Long parentId;
@@ -34,18 +37,19 @@ public class Comment extends BaseEntity {
 
     protected Comment() {}
 
-    private Comment(String content, Long writerId, Long postId, Long parentId, int depth) {
+    private Comment(String content, Long writerId, String userName,Long postId, Long parentId, int depth) {
         this.content = content;
         this.writerId = writerId;
+        this.writerName = userName;
         this.postId = postId;
         this.parentId = parentId;
         this.depth = depth;
         this.deleted = false;
     }
 
-    public static Comment create(String content, Long writerId, Long postId, Long parentId) {
+    public static Comment create(String content, Long writerId, String userName, Long postId, Long parentId) {
         int depth = (parentId == null) ? 0 : 1;
-        return new Comment(content, writerId, postId, parentId, depth);
+        return new Comment(content, writerId, userName, postId, parentId, depth);
     }
     public void updateContent(String newContent) {
         if (!this.deleted) {

@@ -13,6 +13,7 @@ import java.util.Collections;
 @AllArgsConstructor
 public class UserJwtDto {
     private Long userId;
+    private String username;
     private Role role;
     private boolean agreedToTerms;
 

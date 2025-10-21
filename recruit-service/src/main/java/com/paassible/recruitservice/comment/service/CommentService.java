@@ -22,7 +22,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    public void createComment(Long postId, CommentCreateRequest request,Long userId) {
+    public void createComment(Long postId, CommentCreateRequest request,Long userId, String userName) {
 
         postRepository.findById(postId).orElseThrow(
                 ()->new CustomException(ErrorCode.POST_NOT_FOUND));
@@ -38,6 +38,7 @@ public class CommentService {
         Comment comment = Comment.create(
                 request.content(),
                 userId,
+                userName,
                 postId,
                 request.parentId()
         );
@@ -45,21 +46,27 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public CommentListResponse getComments(Long postId) {
-        List<Comment> parents = commentRepository.findByPostIdAndParentIdIsNull(postId);
+    public CommentListResponse getComments(Long postId, Long userId) {
+        List<Comment> allComments = commentRepository.findByPostId(postId);
+
+        List<Comment> parents = allComments.stream()
+                .filter(c -> c.getParentId() == null)
+                .toList();
 
         List<CommentResponse> responses = parents.stream()
-                .map(parent ->{
-                    List<Comment> children = commentRepository.findByParentId(parent.getId());
-                    List<CommentResponse> childResponses = children.stream()
-                            .map(child->CommentResponse.from(child,List.of()))
+                .map(parent -> {
+                    List<CommentResponse> childResponses = allComments.stream()
+                            .filter(c -> parent.getId().equals(c.getParentId()))
+                            .map(child -> CommentResponse.from(child, List.of()))
                             .toList();
+
                     return CommentResponse.from(parent, childResponses);
                 })
                 .toList();
 
-        return new CommentListResponse(parents.size(), responses);
+        return new CommentListResponse(userId,allComments.size(), responses);
     }
+
 
     public void updateComment(Long commentId, Long userId, String newContent){
         Comment comment = commentRepository.findById(commentId)
