@@ -134,7 +134,7 @@ public class ChatRoomMessageService {
             participant.updateLastReadMessageId(lastMessageId);
 
             MessageReadResponse response = MessageReadResponse.from(userId, oldLastReadMessageId, lastMessageId);
-            messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/reads", response);
+            messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/read", response);
         }
     }
 
