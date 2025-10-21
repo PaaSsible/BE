@@ -9,21 +9,19 @@ import lombok.Getter;
 public class PortfolioResponse {
     private Long id;
     private Long userId;
+    private String positionName;
     private String title;
+    private String summary;
     private String description;
-    private String fileUrl;
-    private String fileName;
-    private String fileType;
 
-    public static PortfolioResponse from(Portfolio portfolio) {
+    public static PortfolioResponse from(Portfolio portfolio, String positionName) {
         return PortfolioResponse.builder()
                 .id(portfolio.getId())
                 .userId(portfolio.getUserId())
+                .positionName(positionName)
                 .title(portfolio.getTitle())
+                .summary(portfolio.getSummary())
                 .description(portfolio.getDescription())
-                .fileUrl(portfolio.getFileUrl())
-                .fileName(portfolio.getFileName())
-                .fileType(portfolio.getFileType())
                 .build();
     }
 }

@@ -7,30 +7,30 @@ import com.paassible.userservice.user.dto.PortfolioRequest;
 import com.paassible.userservice.user.dto.PortfolioResponse;
 import com.paassible.userservice.user.service.PortfolioService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users/portfolios")
+@Tag(name = "포트폴리오 API", description = "조회, 업로드, 수정, 삭제")
 public class PortfolioController {
 
     private final PortfolioService portfolioService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "포트폴리도 업로드", description = "포트폴리오를 업로드 한다.")
+    @Operation(summary = "포트폴리오 업로드", description = "포트폴리오를 업로드 한다.")
     public ResponseEntity<ApiResponse<Void>> createPortfolio(
             @AuthenticationPrincipal UserJwtDto user,
-            @RequestPart("request") PortfolioRequest request,
-            @RequestPart("file") MultipartFile file) {
+            @RequestPart("request") PortfolioRequest request) {
 
-        portfolioService.createPortfolio(user.getUserId(), request, file);
+        portfolioService.createPortfolio(user.getUserId(), request);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED));
     }
 
@@ -39,10 +39,9 @@ public class PortfolioController {
     public ResponseEntity<ApiResponse<Void>> updatePortfolio(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long portfolioId,
-            @RequestPart("request") PortfolioRequest request,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
+            @RequestPart("request") PortfolioRequest request) {
 
-        portfolioService.updatePortfolio(user.getUserId(), portfolioId, request, file);
+        portfolioService.updatePortfolio(user.getUserId(), portfolioId, request);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
@@ -60,6 +59,13 @@ public class PortfolioController {
     @Operation(summary = "포트폴리오 조회", description = "해당 유저의 포트폴리오를 조회한다.")
     public ResponseEntity<ApiResponse<List<PortfolioResponse>>> getPortfoliosByUser(@PathVariable Long userId) {
         List<PortfolioResponse> response = portfolioService.getPortfoliosByUser(userId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
+
+    @GetMapping("/{portfolioId}")
+    @Operation(summary = "포트폴리오 상세 조회", description = "해당 유저의 포트폴리오를 상세 조회한다.")
+    public ResponseEntity<ApiResponse<PortfolioResponse>> getPortfolioDetail(@PathVariable Long portfolioId) {
+        PortfolioResponse response = portfolioService.getPortfolioDetail(portfolioId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }

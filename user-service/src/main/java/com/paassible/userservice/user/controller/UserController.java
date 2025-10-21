@@ -30,11 +30,10 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("/profile")
+    @GetMapping("/profile/{userId}")
     @Operation(summary = "유저 프로필 조회", description = "유저의 프로필을 조회한다.")
-    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(
-            @AuthenticationPrincipal UserJwtDto user) {
-        UserResponse response = userService.getProfile(user.getUserId());
+    public ResponseEntity<ApiResponse<UserResponse>> getProfile(@PathVariable Long userId) {
+        UserResponse response = userService.getProfile(userId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
