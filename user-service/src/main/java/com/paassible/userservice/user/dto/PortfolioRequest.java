@@ -4,9 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class PortfolioRequest {
+    private Long positionId;
     private String title;
+    private String summary;
     private String description;
-    private String fileUrl;
-    private String fileName;
-    private String fileType;
 }

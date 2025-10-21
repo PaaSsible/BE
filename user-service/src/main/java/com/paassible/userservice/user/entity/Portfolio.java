@@ -16,24 +16,18 @@ public class Portfolio {
 
     private Long userId;
 
+    private Long positionId;
+
     private String title;
+
+    private String summary;
 
     private String description;
 
-    private String fileUrl;
-
-    private String fileName;
-
-    private String fileType;
-
-    public void updateInfo(String title, String description) {
+    public void updateInfo(Long positionId, String title, String summary, String description) {
+        this.positionId = positionId;
         this.title = title;
+        this.summary = summary;
         this.description = description;
-    }
-
-    public void updateFile(String fileUrl, String fileName, String fileType) {
-        this.fileUrl = fileUrl;
-        this.fileName = fileName;
-        this.fileType = fileType;
     }
 }
