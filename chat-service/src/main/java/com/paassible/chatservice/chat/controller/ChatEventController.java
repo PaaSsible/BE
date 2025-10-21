@@ -21,18 +21,14 @@ import java.security.Principal;
 public class ChatEventController {
 
     private final ChatRoomMessageService chatRoomMessageService;
-    private final ChatRoomService chatRoomService;
 
     @PatchMapping("/rooms/{roomId}/read")
     @Operation(summary = "메시지 읽음 처리", description = "특정 채팅방에서 사용자의 마지막 읽은 메시지를 갱신한다.")
     public ResponseEntity<ApiResponse<Void>> markAsRead(
+            @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long roomId,
-            @RequestBody MessageReadRequest request,
-            Principal principal) {
-        UsernamePasswordAuthenticationToken authentication = (UsernamePasswordAuthenticationToken) principal;
-        Long userId = (Long) authentication.getPrincipal();
-
-        chatRoomMessageService.markAsRead(userId, roomId, request.getLastMessageId());
+            @RequestBody MessageReadRequest request) {
+        chatRoomMessageService.markAsRead(user.getUserId(), roomId, request.getLastMessageId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.READ));
     }
 }
