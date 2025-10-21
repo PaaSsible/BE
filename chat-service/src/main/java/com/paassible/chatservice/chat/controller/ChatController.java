@@ -30,6 +30,6 @@ public class ChatController {
         Long userId = (Long) authentication.getPrincipal();
 
         ChatMessageResponse response = chatMessageService.saveMessage(roomId, userId, request);
-        messagingTemplate.convertAndSend("/topic/chats/rooms" + roomId, response);
+        messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId, response);
     }
 }
