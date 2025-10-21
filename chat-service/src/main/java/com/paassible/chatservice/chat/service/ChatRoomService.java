@@ -181,7 +181,7 @@ public class ChatRoomService {
                 .build();
         chatMessageRepository.save(systemMsg);
 
-        messagingTemplate.convertAndSend("/topic/chats/rooms" + roomId + "/system",
+        messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/system",
                 SystemMessageResponse.from(systemMsg));
 
         if (!roomParticipantService.existsByRoomId(roomId)) {

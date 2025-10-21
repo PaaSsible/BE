@@ -39,6 +39,7 @@ public class ChatRoomMessageService {
     @Transactional
     public ChatMessageResponse saveMessage(Long roomId, Long userId, ChatMessageRequest request) {
         chatRoomService.validateRoom(roomId);
+        roomParticipantService.validateRoomParticipant(roomId, userId);
         UserResponse user = userClient.getUser(userId);
 
         ChatMessage msg = ChatMessage.builder()
@@ -127,15 +128,14 @@ public class ChatRoomMessageService {
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
         RoomParticipant participant = roomParticipantService.getRoomParticipant(roomId, userId);
-        if (participant.getLastReadMessageId() == null ||
-                participant.getLastReadMessageId() < lastMessageId) {
+
+        Long oldLastReadMessageId = participant.getLastReadMessageId();
+        if ( oldLastReadMessageId == null || oldLastReadMessageId < lastMessageId) {
             participant.updateLastReadMessageId(lastMessageId);
+
+            MessageReadResponse response = MessageReadResponse.from(userId, oldLastReadMessageId, lastMessageId);
+            messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/reads", response);
         }
-
-        long readCount = roomParticipantService.countReaders(roomId, userId, lastMessageId);
-
-        MessageReadResponse response = MessageReadResponse.from(lastMessageId, readCount);
-        messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/reads", response);
     }
 
     @Transactional(readOnly = true)

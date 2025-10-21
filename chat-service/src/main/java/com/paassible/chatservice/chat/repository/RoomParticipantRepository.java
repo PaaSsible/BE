@@ -16,7 +16,7 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
 
     Optional<RoomParticipant> findByRoomIdAndUserId(Long roomId, Long userId);
 
-    boolean existsByRoomIdAndUserId(Long roomId,Long userId);
+    boolean existsByRoomIdAndUserId(Long roomId, Long userId);
 
     @Query("select rp from RoomParticipant rp where rp.roomId = :roomId")
     List<RoomParticipant> findAllByRoomId(@Param("roomId") Long roomId);

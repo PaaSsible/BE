@@ -8,13 +8,15 @@ import lombok.Setter;
 @Setter
 @Builder
 public class MessageReadResponse {
-    private Long lastMessageId;
-    private Long readCount;
+    private Long userId;
+    private Long oldLastReadMessageId;
+    private Long newLastReadMessageId;
 
-    public static MessageReadResponse from(Long lastMessageId, Long readCount) {
+    public static MessageReadResponse from(Long userId, Long oldLastReadMessageId, Long newLastReadMessageId) {
         return MessageReadResponse.builder()
-                .lastMessageId(lastMessageId)
-                .readCount(readCount)
+                .userId(userId)
+                .oldLastReadMessageId(oldLastReadMessageId)
+                .newLastReadMessageId(newLastReadMessageId)
                 .build();
     }
 }
