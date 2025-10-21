@@ -45,16 +45,20 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public CommentListResponse getComments(Long postId) {
-        List<Comment> parents = commentRepository.findByPostIdAndParentIdIsNull(postId);
+    public CommentListResponse getComments(Long postId, Long userId) {
+
+        List<Comment> allComments = commentRepository.findByPostId(postId);
+        List<Comment> parents = allComments.stream()
+                .filter(c->c.getParentId() == null)
+                .toList();
 
         List<CommentResponse> responses = parents.stream()
-                .map(parent ->{
-                    List<Comment> children = commentRepository.findByParentId(parent.getId());
-                    List<CommentResponse> childResponses = children.stream()
-                            .map(child->CommentResponse.from(child,List.of()))
+                .map(parent -> {
+                    List<CommentResponse> childResponse = allComments.stream()
+                            .filter(c->parent.getId().equals(c.getParentId()))
+                            .map(child ->CommentResponse.from(child, List.of()))
                             .toList();
-                    return CommentResponse.from(parent, childResponses);
+                    return CommentResponse.from(parent, childResponse);
                 })
                 .toList();
 
