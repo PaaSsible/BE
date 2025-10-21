@@ -2,12 +2,16 @@ package com.paassible.boardservice.task.service;
 
 import com.paassible.boardservice.board.service.BoardMemberService;
 import com.paassible.boardservice.task.dto.TaskVisualizationResponse;
+import com.paassible.boardservice.task.dto.WeeklyGoalResponse;
 import com.paassible.boardservice.task.entity.enums.TaskStatus;
 import com.paassible.boardservice.task.repository.TaskCountProjection;
 import com.paassible.boardservice.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -47,5 +51,22 @@ public class TaskVisualizationService {
         int completedRate = total == 0 ? 0 : (completedCount * 100) / total;
 
         return TaskVisualizationResponse.from(completedRate, total, tasks);
+    }
+
+    @Transactional(readOnly = true)
+    public WeeklyGoalResponse getWeeklyGoalRate(Long userId, Long boardId) {
+        boardMemberService.validateUserInBoard(userId, boardId);
+
+        LocalDate startOfWeek = LocalDate.now().with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = LocalDate.now().with(DayOfWeek.SUNDAY);
+
+        long totalThisWeek = taskRepository.countByBoardIdAndDueDateBetween(boardId, startOfWeek, endOfWeek);
+        long completedThisWeek = taskRepository.countByBoardIdAndDueDateBetweenAndStatus(
+                boardId, startOfWeek, endOfWeek, TaskStatus.COMPLETED
+        );
+
+        double weeklyRate = totalThisWeek == 0 ? 0.0 : (double) completedThisWeek / totalThisWeek * 100;
+
+        return new WeeklyGoalResponse(weeklyRate);
     }
 }
