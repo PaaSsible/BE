@@ -22,7 +22,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
 
-    public void createComment(Long postId, CommentCreateRequest request,Long userId) {
+    public void createComment(Long postId, CommentCreateRequest request,Long userId, String userName) {
 
         postRepository.findById(postId).orElseThrow(
                 ()->new CustomException(ErrorCode.POST_NOT_FOUND));
@@ -38,6 +38,7 @@ public class CommentService {
         Comment comment = Comment.create(
                 request.content(),
                 userId,
+                userName,
                 postId,
                 request.parentId()
         );

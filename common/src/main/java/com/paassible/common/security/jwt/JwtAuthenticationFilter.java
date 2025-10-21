@@ -26,10 +26,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && jwtUtil.validateToken(token)) {
             Long id = jwtUtil.getUserId(token);
+            String username = jwtUtil.getUsername(token);
             Role role = Role.valueOf(jwtUtil.getRole(token));
             boolean agreedToTerms = jwtUtil.getAgreedToTerms(token);
 
-            UserJwtDto user = new UserJwtDto(id, role, agreedToTerms);
+            UserJwtDto user = new UserJwtDto(id, username, role, agreedToTerms);
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(

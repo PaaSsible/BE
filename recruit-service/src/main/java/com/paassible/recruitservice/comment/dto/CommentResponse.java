@@ -8,6 +8,7 @@ public record CommentResponse(
         Long id,
         String content,
         Long writerId,
+        String writerName,
         boolean deleted,
         List<CommentResponse> children
 ) {
@@ -16,6 +17,7 @@ public record CommentResponse(
                 comment.getId(),
                 comment.isDeleted() ? null : comment.getContent(),
                 comment.getWriterId(),
+                comment.getWriterName(),
                 comment.isDeleted(),
                 children
         );

@@ -29,14 +29,16 @@ public class CommentController {
             @Valid @RequestBody CommentCreateRequest request,
             @AuthenticationPrincipal UserJwtDto user
     ) {
-        commentService.createComment(postId, request, user.getUserId());
+        commentService.createComment(postId, request, user.getUserId(),user.getUsername());
         return ApiResponse.success(SuccessCode.OK);
     }
 
     @GetMapping("/{postId}/comments")
     @Operation(summary = "댓글 조회")
-    public ApiResponse<CommentListResponse> getComments(@PathVariable Long postId) {
-       CommentListResponse response = commentService.getComments(postId);
+    public ApiResponse<CommentListResponse> getComments(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal UserJwtDto user) {
+       CommentListResponse response = commentService.getComments(postId, user.getUserId());
         return ApiResponse.success(SuccessCode.OK,response);
     }
 

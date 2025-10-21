@@ -68,7 +68,7 @@ public class UserController {
     @Operation(summary = "유저 엑세스 토큰 발급(테스트용)")
     public ResponseEntity<String> getCurrentUser(@PathVariable Long userId) {
         User user = userService.getUser(userId);
-        String accessToken = jwtUtil.createAccessToken(userId, user.getRole(), user.isAgreedToTerms());
+        String accessToken = jwtUtil.createAccessToken(userId, user.getNickname(), user.getRole(), user.isAgreedToTerms());
         return ResponseEntity.ok(accessToken);
     }
 }
