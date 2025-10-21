@@ -4,7 +4,7 @@ import com.paassible.boardservice.task.entity.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -21,7 +21,7 @@ public class Task {
 
     private String description;
 
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
@@ -32,7 +32,7 @@ public class Task {
         this.status = status;
     }
 
-    public void updateTask(String title, LocalDateTime dueDate) {
+    public void updateTask(String title, LocalDate dueDate) {
         this.title = title;
         this.dueDate = dueDate;
     }
