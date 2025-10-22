@@ -1,16 +1,13 @@
 package com.paassible.boardservice.board.service;
 
 
-import com.paassible.boardservice.board.dto.BoardEntryResponse;
+import com.paassible.boardservice.board.dto.*;
 import com.paassible.boardservice.board.entity.enums.BoardStatus;
 import com.paassible.boardservice.board.entity.enums.MemberStatus;
 import com.paassible.boardservice.board.entity.enums.ProjectRole;
 import com.paassible.boardservice.client.ChatClient;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.client.UserResponse;
-import com.paassible.boardservice.board.dto.BoardMemberResponse;
-import com.paassible.boardservice.board.dto.BoardRequest;
-import com.paassible.boardservice.board.dto.BoardResponse;
 import com.paassible.boardservice.board.entity.Board;
 import com.paassible.boardservice.board.entity.BoardMember;
 import com.paassible.boardservice.board.exception.BoardException;
@@ -76,8 +73,14 @@ public class BoardManagementService {
         //chatClient.addParticipant(userId, boardId);
     }
 
+    public BoardDetailResponse getBoard(Long userId, Long boardId) {
+        boardMemberService.validateUserInBoard(userId, boardId);
+        Board board = boardService.getBoard(boardId);
+        return BoardDetailResponse.from(board);
+    }
+
     public List<BoardMemberResponse> getUsersByBoard(Long userId, Long boardId) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
 
         List<BoardMember> userBoards = boardMemberService.getBoardMembersByBoard(boardId);
 
