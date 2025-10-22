@@ -1,9 +1,6 @@
 package com.paassible.boardservice.board.controller;
 
-import com.paassible.boardservice.board.dto.BoardEntryResponse;
-import com.paassible.boardservice.board.dto.BoardMemberResponse;
-import com.paassible.boardservice.board.dto.BoardRequest;
-import com.paassible.boardservice.board.dto.BoardResponse;
+import com.paassible.boardservice.board.dto.*;
 import com.paassible.boardservice.board.entity.enums.BoardStatus;
 import com.paassible.boardservice.board.service.BoardManagementService;
 import com.paassible.boardservice.board.service.BoardMemberService;
@@ -14,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +50,14 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
     }
 
+    @GetMapping("/{boardId}")
+    @Operation(summary = "보드 상세 조회", description = "프로젝트 보드를 수정합니다.")
+    public ResponseEntity<ApiResponse<BoardDetailResponse>> updateBoard(@AuthenticationPrincipal UserJwtDto user,
+                                                                        @PathVariable Long boardId) {
+        BoardDetailResponse response = boardManagementService.getBoard(user.getUserId(), boardId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
+
     @DeleteMapping("/{boardId}/members")
     @Operation(summary = "보드 탈퇴", description = "프로젝트 보드를 탈퇴합니다.")
     public ResponseEntity<ApiResponse<Void>> leaveBoard(@AuthenticationPrincipal UserJwtDto user,
@@ -89,7 +93,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
-    @GetMapping("/{boardId}")
+    @GetMapping("/{boardId}/enter")
     @Operation(summary = "보드 진입", description = "사용자가 보드에 진입할 때 포지션 설정 여부를 확인한다.")
     public ResponseEntity<ApiResponse<BoardEntryResponse>> enterBoard(@AuthenticationPrincipal UserJwtDto user,
                                                                       @PathVariable Long boardId) {
