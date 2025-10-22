@@ -19,9 +19,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/ws/");
+
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
+
+
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/ws/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+
         String token = resolveToken(request);
 
         if (token != null && jwtUtil.validateToken(token)) {

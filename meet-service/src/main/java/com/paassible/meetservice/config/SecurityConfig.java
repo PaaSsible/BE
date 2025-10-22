@@ -5,6 +5,7 @@ import com.paassible.common.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,8 +33,9 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/ws/**"
+                                "/ws/**", "/ws/meet/**"
                         ).permitAll()
                         .requestMatchers("/", "/index.html", "/test.html", "/css/**", "/js/**").permitAll()
                         .requestMatchers(
@@ -44,11 +46,27 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class);
 
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173"
+        ));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
