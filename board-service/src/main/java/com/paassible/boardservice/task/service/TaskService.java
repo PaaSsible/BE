@@ -1,9 +1,7 @@
 package com.paassible.boardservice.task.service;
 
 import com.paassible.boardservice.board.exception.BoardException;
-import com.paassible.boardservice.task.dto.TaskDescriptionRequest;
-import com.paassible.boardservice.task.dto.TaskRequest;
-import com.paassible.boardservice.task.dto.TaskStatusRequest;
+import com.paassible.boardservice.task.dto.*;
 import com.paassible.boardservice.task.entity.Task;
 import com.paassible.boardservice.task.entity.enums.TaskStatus;
 import com.paassible.boardservice.task.exception.TaskException;
@@ -11,7 +9,6 @@ import com.paassible.boardservice.task.repository.TaskRepository;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

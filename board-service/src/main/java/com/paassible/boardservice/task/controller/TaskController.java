@@ -96,4 +96,12 @@ public class TaskController {
         TaskVisualizationResponse response = taskVisualizationService.getTaskVisualization(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
+
+    @GetMapping("/reports/weekly")
+    @Operation(summary = "주간 목표 달성률", description = "주간 목표 달성률을 시각화합니다.")
+    public ResponseEntity<ApiResponse<WeeklyGoalResponse>> getWeeklyGoalRate(@AuthenticationPrincipal UserJwtDto user,
+                                                                                       @PathVariable Long boardId) {
+        WeeklyGoalResponse response = taskVisualizationService.getWeeklyGoalRate(user.getUserId(), boardId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
+    }
 }

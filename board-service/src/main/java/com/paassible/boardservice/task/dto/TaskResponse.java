@@ -4,7 +4,7 @@ import com.paassible.boardservice.task.entity.Task;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -13,7 +13,7 @@ public class TaskResponse {
     private Long id;
     private String title;
     private String description;
-    private LocalDateTime dueDate;
+    private LocalDate dueDate;
     private String status;
     private Long boardId;
     private List<AssigneeDto> assignees;
