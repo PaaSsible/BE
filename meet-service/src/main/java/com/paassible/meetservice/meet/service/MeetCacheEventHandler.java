@@ -34,8 +34,8 @@ public class MeetCacheEventHandler {
 
 @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleParticipantLeft(ParticipantLeftEvent event) {
-        String key = participantsKey(event.meetId());
         try{
+            String key = participantsKey(event.meetId());
             redisTemplate.opsForSet().remove(key, event.userId().toString());
             Long size = redisTemplate.opsForSet().size(key);
             if(size != null && size ==0){

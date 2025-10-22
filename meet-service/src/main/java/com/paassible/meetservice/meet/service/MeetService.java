@@ -2,8 +2,10 @@ package com.paassible.meetservice.meet.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
+import com.paassible.meetservice.chat.dto.ChatMessage;
 import com.paassible.meetservice.client.board.BoardClient;
 import com.paassible.meetservice.client.board.BoardMemberResponse;
+import com.paassible.meetservice.util.ChatKeys;
 import com.paassible.meetservice.meet.dto.*;
 import com.paassible.meetservice.meet.entity.Meet;
 import com.paassible.meetservice.meet.entity.MeetingStatus;
@@ -40,10 +42,14 @@ public class MeetService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final BoardClient boardClient;
     private final RedisTemplate<String,String> redisTemplate;
+    private final RedisTemplate<String,String> chatRedisTemplate;
+    private final RedisTemplate<String, String> stringRedis;
+    private final RedisTemplate<String, ChatMessage> chatRedis;
 
     public MeetCreateResponse createMeet(Long userId, MeetCreateRequest request) {
 
         meetValidator.validateUserInBoard(request.boardId(), userId);
+        meetValidator.ensureNoActiveMeetInBoard(request.boardId());
 
         Meet meet = Meet.create(
                 request.boardId(),
@@ -52,7 +58,6 @@ public class MeetService {
         );
 
         try {
-
             Meet savedMeet = meetRepository.save(meet);
             Participant host = Participant.create(savedMeet.getId(), userId);
             participantRepository.save(host);
@@ -152,11 +157,34 @@ public class MeetService {
         meet.decrementParticipantCount();
 
         if(meet.isEmpty()) {
+            endMeet(meetId);
             meet.end();
         }
 
         eventPublisher.publishEvent(new ParticipantLeftEvent(meetId, userId));
         broadcastCurrentStatus(meet);
+    }
+
+    @Transactional
+    public void endMeet(Long meetId){
+
+        try{
+            chatRedisTemplate.delete(ChatKeys.publicChat(meetId));
+        }catch (Exception e){
+            log.error("종료된 회의의 공개 채팅 히스토리를 삭제하는데 실패 meetId={}", meetId,e);
+        }
+
+        try {
+            Set<String> dmUsers = stringRedis.opsForSet().members(ChatKeys.dmUsersIndex(meetId));
+            if (dmUsers != null) {
+                for (String uid : dmUsers) {
+                    chatRedis.delete(ChatKeys.dmChat(meetId, Long.valueOf(uid)));
+                }
+            }
+            stringRedis.delete(ChatKeys.dmUsersIndex(meetId));
+        } catch (Exception e) {
+            log.error("Failed to delete DM chats. meetId={}", meetId, e);
+        }
     }
 
 
