@@ -1,28 +1,52 @@
 package com.paassible.meetservice.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import com.paassible.meetservice.chat.dto.ChatMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory cf) {
-        RedisTemplate<String, String> template = new RedisTemplate<>();
-        template.setConnectionFactory(cf);
+    @Bean("chatRedis")
+    public RedisTemplate<String, ChatMessage> chatRedisTemplate(RedisConnectionFactory cf) {
+        RedisTemplate<String, ChatMessage> t = new RedisTemplate<>();
+        t.setConnectionFactory(cf);
 
-        StringRedisSerializer s = new StringRedisSerializer();
-        template.setKeySerializer(s);
-        template.setValueSerializer(s);
-        template.setHashKeySerializer(s);
-        template.setHashValueSerializer(s);
+        t.setKeySerializer(new StringRedisSerializer());
 
-        template.setDefaultSerializer(s);
+        ObjectMapper om = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                .build();
 
-        template.afterPropertiesSet();
-        return template;
+        Jackson2JsonRedisSerializer<ChatMessage> valueSer =
+                new Jackson2JsonRedisSerializer<>(om, ChatMessage.class);
+
+        t.setValueSerializer(valueSer);
+        t.setHashKeySerializer(new StringRedisSerializer());
+        t.setHashValueSerializer(valueSer);
+        t.afterPropertiesSet();
+        return t;
+    }
+
+    @Primary
+    @Bean("stringRedis")
+    public RedisTemplate<String, String> stringRedisTemplate(RedisConnectionFactory cf) {
+        RedisTemplate<String, String> t = new RedisTemplate<>();
+        t.setConnectionFactory(cf);
+        t.setKeySerializer(new StringRedisSerializer());
+        t.setValueSerializer(new StringRedisSerializer());
+        t.afterPropertiesSet();
+        return t;
     }
 }
