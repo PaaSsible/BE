@@ -12,7 +12,7 @@ COPY common common
 RUN chmod +x ./gradlew && sed -i 's/\r$//' ./gradlew
 
 RUN ./gradlew :user-service:bootJar -x test
-
+RUN rm -rf /home/gradle/.gradle
 
 FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
