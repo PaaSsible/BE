@@ -27,7 +27,7 @@ public class TaskVisualizationService {
     public TaskVisualizationResponse getTaskVisualization(Long userId, Long boardId) {
         boardMemberService.validateUserInBoard(userId, boardId);
 
-        List<TaskCountProjection> taskCounts = taskRepository.countTasksByStatus();
+        List<TaskCountProjection> taskCounts = taskRepository.countTasksByStatus(boardId);
 
         Map<String, Integer> countMap = taskCounts.stream()
                 .collect(Collectors.toMap(TaskCountProjection::getStatus, TaskCountProjection::getCount));
