@@ -9,9 +9,9 @@ import lombok.Getter;
 public class MessageReadUserResponse {
     private String nickname;
 
-    public static MessageReadUserResponse from(UserResponse user) {
+    public static MessageReadUserResponse from(String nickname) {
         return MessageReadUserResponse.builder()
-                .nickname(user.getNickname())
+                .nickname(nickname)
                 .build();
     }
 }

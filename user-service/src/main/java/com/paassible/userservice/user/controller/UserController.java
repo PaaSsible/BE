@@ -68,6 +68,7 @@ public class UserController {
     public ResponseEntity<String> getCurrentUser(@PathVariable Long userId) {
         User user = userService.getUser(userId);
         String accessToken = jwtUtil.createAccessToken(userId, user.getNickname(), user.getRole(), user.isAgreedToTerms());
+        jwtUtil.createRefreshToken(userId);
         return ResponseEntity.ok(accessToken);
     }
 }

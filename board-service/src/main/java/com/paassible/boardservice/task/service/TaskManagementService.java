@@ -30,7 +30,7 @@ public class TaskManagementService {
 
     @Transactional
     public void createTask(Long userId, Long boardId, TaskRequest request) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
         Task task = taskService.createTask(boardId, request);
         taskAssigneeService.assignUsers(task.getId(), request.getAssigneeIds());
         taskPositionService.assignPositions(task.getId(), request.getPositionIds());
@@ -38,7 +38,7 @@ public class TaskManagementService {
 
     @Transactional
     public void updateTask(Long userId, Long boardId, Long taskId, TaskRequest request) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
         Task task = taskService.updateTask(boardId, taskId, request);
         taskAssigneeService.reassignUsers(task.getId(), request.getAssigneeIds());
         taskPositionService.reassignPositions(task.getId(), request.getPositionIds());
@@ -46,33 +46,34 @@ public class TaskManagementService {
 
     @Transactional
     public void updateTaskDescription(Long userId, Long boardId, Long taskId, TaskDescriptionRequest request) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
         taskService.updateTaskDescription(boardId, taskId, request);
     }
 
     @Transactional
     public void updateTaskStatus(Long userId, Long boardId, Long taskId, TaskStatusRequest request) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
         taskService.updateTaskStatus(boardId, taskId, request);
     }
 
     @Transactional
     public void deleteTask(Long userId, Long boardId, Long taskId) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
         taskAssigneeService.deleteByTaskId(taskId);
+        taskPositionService.deleteByTaskId(taskId);
         taskService.deleteTask(boardId, taskId);
     }
 
     @Transactional(readOnly = true)
     public TaskResponse getTask(Long userId, Long boardId, Long taskId) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
         Task task = taskService.getTask(taskId);
         return toResponse(task);
     }
 
     @Transactional(readOnly = true)
     public List<TaskResponse> getByBoard(Long userId, Long boardId) {
-        boardMemberService.validateUserInBoard(boardId, userId);
+        boardMemberService.validateUserInBoard(userId, boardId);
         List<Task> tasks = taskService.getTasksByBoard(boardId);
         return tasks.stream()
                 .map(this::toResponse)

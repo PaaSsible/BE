@@ -39,4 +39,8 @@ public class TaskPositionService {
                 .map(TaskPosition::getPositionId)
                 .toList();
     }
+
+    public void deleteByTaskId(Long taskId) {
+        taskPositionRepository.deleteByTaskId(taskId);
+    }
 }

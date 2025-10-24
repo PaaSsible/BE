@@ -31,7 +31,7 @@ public class CommentService {
     private final UserClient userClient;
 
     public void createComment(Long userId, Long boardId, Long taskId, CommentRequest request) {
-        userBoardService.validateUserInBoard(boardId, userId);
+        userBoardService.validateUserInBoard(userId, boardId);
 
         Task task = taskService.getTask(taskId);
         if (!task.getBoardId().equals(boardId)) {
@@ -48,7 +48,7 @@ public class CommentService {
 
     @Transactional
     public void updateComment(Long userId, Long boardId, Long taskId, Long commentId, CommentRequest request) {
-        userBoardService.validateUserInBoard(boardId, userId);
+        userBoardService.validateUserInBoard(userId, boardId);
 
         Comment comment = commentRepository.findComment(commentId, taskId, boardId)
                 .orElseThrow(() -> new TaskException(ErrorCode.TASK_COMMENT_NOT_FOUND));
@@ -61,7 +61,7 @@ public class CommentService {
     }
 
     public void deleteComment(Long userId, Long boardId, Long taskId, Long commentId) {
-        userBoardService.validateUserInBoard(boardId, userId);
+        userBoardService.validateUserInBoard(userId, boardId);
 
         Comment comment = commentRepository.findComment(commentId, taskId, boardId)
                 .orElseThrow(() -> new TaskException(ErrorCode.TASK_COMMENT_NOT_FOUND));
@@ -74,7 +74,7 @@ public class CommentService {
     }
 
     public List<CommentResponse> getCommentsByTask(Long userId, Long boardId, Long taskId) {
-        userBoardService.validateUserInBoard(boardId, userId);
+        userBoardService.validateUserInBoard(userId, boardId);
 
         return commentRepository.findComments(taskId, boardId).stream()
                 .map(comment -> {

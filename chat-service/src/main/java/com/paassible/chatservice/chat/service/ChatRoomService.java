@@ -101,8 +101,6 @@ public class ChatRoomService {
 
     @Transactional
     public void createGroupChat(Long userId, Long boardId, String boardName) {
-        boardClient.validateUserInBoard(userId, boardId);
-
         ChatRoom room = ChatRoom.builder()
                 .type(RoomType.GROUP)
                 .name(boardName)

@@ -133,8 +133,11 @@ public class ChatRoomMessageService {
         if ( oldLastReadMessageId == null || oldLastReadMessageId < lastMessageId) {
             participant.updateLastReadMessageId(lastMessageId);
 
-            MessageReadResponse response = MessageReadResponse.from(userId, oldLastReadMessageId, lastMessageId);
-            messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/read", response);
+            ChatMessage message = getChatMessage(lastMessageId);
+            if (!message.getSenderId().equals(userId)) {
+                MessageReadResponse response = MessageReadResponse.from(userId, oldLastReadMessageId, lastMessageId);
+                messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/read", response);
+            }
         }
     }
 
@@ -145,13 +148,21 @@ public class ChatRoomMessageService {
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
         List<RoomParticipant> participants = roomParticipantService.getAllByRoomId(roomId);
+        ChatMessage message = getChatMessage(messageId);
+
         List<MessageReadUserResponse> readUsers = participants.stream()
+                .filter(p -> !p.getUserId().equals(message.getSenderId()))
                 .filter(p -> p.getLastReadMessageId() != null && p.getLastReadMessageId() >= messageId)
-                .map(p -> userClient.getUser(p.getUserId()))
+                .map(p -> userClient.getUser(p.getUserId()).getNickname())
                 .map(MessageReadUserResponse::from)
                 .toList();
 
         return MessageReadDetailResponse.from(messageId, readUsers);
+    }
+
+    public ChatMessage getChatMessage(Long messageId) {
+        return chatMessageRepository.findById(messageId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_MESSAGE_NOT_FOUND));
     }
 
     public void validateMessageInRoom(Long messageId, Long roomId) {

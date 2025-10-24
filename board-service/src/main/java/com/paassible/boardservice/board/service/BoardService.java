@@ -50,6 +50,7 @@ public class BoardService {
         if (!boardRepository.existsById(boardId)) {
             throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
         }
+        // 보드 삭제 시 추가로 삭제 필요
         boardRepository.deleteById(boardId);
     }
 

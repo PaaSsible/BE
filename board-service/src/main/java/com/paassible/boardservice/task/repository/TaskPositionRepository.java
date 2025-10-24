@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface TaskPositionRepository extends JpaRepository<TaskPosition, Long> {
     List<TaskPosition> findByTaskId(Long taskId);
+
+    void deleteByTaskId(Long taskId);
 }

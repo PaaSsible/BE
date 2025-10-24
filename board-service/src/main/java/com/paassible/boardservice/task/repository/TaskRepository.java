@@ -4,6 +4,7 @@ import com.paassible.boardservice.task.entity.Task;
 import com.paassible.boardservice.task.entity.enums.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -16,8 +17,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t.status AS status, COUNT(t) AS count " +
             "FROM Task t " +
+            "WHERE t.boardId = :boardId " +
             "GROUP BY t.status")
-    List<TaskCountProjection> countTasksByStatus();
+    List<TaskCountProjection> countTasksByStatus(@Param("boardId") Long boardId);
 
     long countByBoardIdAndDueDateBetween(Long boardId, LocalDate start, LocalDate end);
 
