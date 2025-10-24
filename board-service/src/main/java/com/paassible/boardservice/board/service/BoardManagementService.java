@@ -70,7 +70,7 @@ public class BoardManagementService {
             throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
         }
         boardMemberService.assignUserToBoard(userId, boardId);
-        //chatClient.addParticipant(userId, boardId);
+        chatClient.addParticipant(userId, boardId);
     }
 
     public BoardDetailResponse getBoard(Long userId, Long boardId) {
