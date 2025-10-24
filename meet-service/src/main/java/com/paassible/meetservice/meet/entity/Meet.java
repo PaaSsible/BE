@@ -58,4 +58,8 @@ public class Meet extends BaseEntity {
         this.status = MeetingStatus.ENDED;
         this.endTime = LocalDateTime.now();
     }
+
+    public void updateHost(Long newHostId){
+        this.hostId = newHostId;
+    }
 }

@@ -1,6 +1,7 @@
 package com.paassible.meetservice.meet.repository;
 
 import com.paassible.meetservice.meet.entity.Participant;
+import com.paassible.meetservice.meet.entity.ParticipantStatus;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -23,4 +24,14 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     @Query("select p.userId from Participant p where p.meetId = :meetId and p.status = 'JOINED'")
     List<Long> findJoinedUserIdsByMeetId(Long meetId);
+
+    List<Participant> findByMeetIdAndStatus (Long meetId, ParticipantStatus status);
+
+    @Query("""
+        SELECT p.userId FROM Participant  p
+        WHERE p.meetId = :meetId
+        AND p.status = 'JOINED'
+        AND p.userId != :excludeUserId 
+    """)
+    List<Long> findActiveUserIdsByMeetId(Long meetId,Long excludeUserId);
 }

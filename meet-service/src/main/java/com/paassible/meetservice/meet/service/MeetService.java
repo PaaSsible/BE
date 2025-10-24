@@ -5,6 +5,9 @@ import com.paassible.common.response.ErrorCode;
 import com.paassible.meetservice.chat.dto.ChatMessage;
 import com.paassible.meetservice.client.board.BoardClient;
 import com.paassible.meetservice.client.board.BoardMemberResponse;
+import com.paassible.meetservice.client.user.UserClient;
+import com.paassible.meetservice.client.user.UserResponse;
+import com.paassible.meetservice.meet.message.HostChangedMessage;
 import com.paassible.meetservice.util.ChatKeys;
 import com.paassible.meetservice.meet.dto.*;
 import com.paassible.meetservice.meet.entity.Meet;
@@ -25,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +47,8 @@ public class MeetService {
     private final RedisTemplate<String,String> chatRedisTemplate;
     private final RedisTemplate<String, String> stringRedis;
     private final RedisTemplate<String, ChatMessage> chatRedis;
+    private final MeetCacheEventHandler meetCacheEventHandler;
+    private final UserClient userClient;
 
     public MeetCreateResponse createMeet(Long userId, MeetCreateRequest request) {
 
@@ -63,51 +67,18 @@ public class MeetService {
             participantRepository.save(host);
             savedMeet.incrementParticipantCount();
 
-            eventPublisher.publishEvent(new ParticipantJoinedEvent(savedMeet.getId(), userId));
-            broadcastCurrentStatus(savedMeet);
+            eventPublisher.publishEvent(new ParticipantJoinedEvent(
+                    savedMeet.getId(),
+                    savedMeet.getBoardId(),
+                    userId));
 
             return MeetCreateResponse.from(savedMeet, host);
 
         } catch (DataIntegrityViolationException e) {
             throw new CustomException(ErrorCode.MEET_ALREADY_EXISTS);
         }
-
-
     }
 
-    private void broadcastCurrentStatus(Meet meet) {
-
-        try {
-            List<BoardMemberResponse> allMembers = boardClient.getBoardMembers(meet.getBoardId());
-            Set<String> redisMembers =
-                    redisTemplate.opsForSet().members("meeting:" + meet.getId() + ":participants");
-
-            List<Long> joinedIds = redisMembers == null
-                    ? List.of()
-                    : redisMembers.stream().map(Long::valueOf).toList();
-
-
-            List<BoardMemberResponse> presentMembers = allMembers.stream()
-                    .filter(member -> joinedIds.contains(member.getUserId()))
-                    .toList();
-
-
-            List<BoardMemberResponse> absentMembers = allMembers.stream()
-                    .filter(member -> !joinedIds.contains(member.getUserId()))
-                    .sorted(Comparator.comparing(BoardMemberResponse::getUserName))
-                    .toList();
-
-            broadcastParticipantStatus(meet.getId(), presentMembers, absentMembers);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void broadcastParticipantStatus(Long meetId, List<BoardMemberResponse> presentMembers, List<BoardMemberResponse> absentMembers) {
-        ParticipantStatusMessage message = new ParticipantStatusMessage(presentMembers,absentMembers);
-        simpMessagingTemplate.convertAndSend("/topic/meet/"+meetId+"/status",message);
-    }
 
 
     public MeetJoinResponse joinMeet(Long meetId, Long userId) {
@@ -131,8 +102,10 @@ public class MeetService {
                         return participantRepository.save(Participant.create(meetId, userId));
                     });
 
-            eventPublisher.publishEvent(new ParticipantJoinedEvent(meetId, userId));
-            broadcastCurrentStatus(meet);
+            eventPublisher.publishEvent(new ParticipantJoinedEvent(
+                    meet.getId(),
+                    meet.getBoardId(),
+                    userId));
 
             return MeetJoinResponse.from(participant);
 
@@ -141,7 +114,7 @@ public class MeetService {
         }
     }
 
-    public void leaveMeet(Long meetId, Long userId) {
+    public LeaveResponse leaveMeet(Long meetId, Long userId) {
 
         Meet meet = meetRepository.findByIdWithLock(meetId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_FOUND));
@@ -153,16 +126,47 @@ public class MeetService {
         Participant participant = meetValidator.getParticipantOrThrow(meetId, userId);
         meetValidator.ensureParticipantJoined(participant);
 
+        boolean isHost = meet.getHostId().equals(userId);
+
+        //혼자만 남은 경우 - 즉시 종료
+        if(meet.getParticipantCount() == 1){
+            participant.leave();
+            meet.decrementParticipantCount();
+            meet.end();
+            endMeet(meetId);
+
+            eventPublisher.publishEvent(new ParticipantLeftEvent(
+                    meet.getId(),
+                    meet.getBoardId(),
+                    userId
+            ));
+            return LeaveResponse.ended();
+        }
+
+        //호스트인 경우 - 위임 필요
+        if(isHost){
+            List<Long> candidateIds = participantRepository
+                    .findActiveUserIdsByMeetId(meetId, userId);
+
+            List<LeaveResponse.CandidateInfo> candidates = candidateIds.stream()
+                    .map(id -> {
+                        UserResponse userInfo = userClient.getUser(id);
+                        return new LeaveResponse.CandidateInfo(id, userInfo.getNickname());
+                    })
+                    .toList();
+            return LeaveResponse.transferRequired(candidates);
+        }
+
+        //일반 참가자 - 즉시 퇴장
         participant.leave();
         meet.decrementParticipantCount();
 
-        if(meet.isEmpty()) {
-            endMeet(meetId);
-            meet.end();
-        }
-
-        eventPublisher.publishEvent(new ParticipantLeftEvent(meetId, userId));
-        broadcastCurrentStatus(meet);
+        eventPublisher.publishEvent(new ParticipantLeftEvent(
+                meet.getId(),
+                meet.getBoardId(),
+                userId
+        ));
+        return LeaveResponse.left();
     }
 
     @Transactional
@@ -210,6 +214,45 @@ public class MeetService {
                 .toList();
 
         return MeetOngoingResponse.from(meet, presentMembers);
+    }
+
+    @Transactional
+    public void transferAndLeave(Long meetId, Long currentHostId, Long newHostId){
+        Meet meet = meetRepository.findByIdWithLock(meetId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_FOUND));
+
+        if(!meet.getHostId().equals(currentHostId)){
+            throw new CustomException(ErrorCode.MEET_NOT_HOST);
+        }
+
+        Participant newHost = participantRepository.findByMeetIdAndUserId(meetId, newHostId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_PARTICIPANT));
+
+        if(newHost.getStatus() != ParticipantStatus.JOINED){
+            throw new CustomException(ErrorCode.PARTICIPANT_ALREADY_LEFT);
+        }
+
+        Participant oldHost = participantRepository.findByMeetIdAndUserId(meetId, currentHostId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_PARTICIPANT));
+
+        meet.updateHost(newHostId);
+
+        oldHost.leave();
+        meet.decrementParticipantCount();
+
+        eventPublisher.publishEvent(new ParticipantLeftEvent(
+                meet.getId(),
+                meet.getBoardId(),
+                currentHostId
+        ));
+
+        UserResponse newHostInfo = userClient.getUser(newHostId);
+        simpMessagingTemplate.convertAndSend(
+                "/topic/meet/" + meetId + "/host",
+                new HostChangedMessage(meetId, newHostId, newHostInfo.getNickname())
+        );
+
+
     }
 
 }
