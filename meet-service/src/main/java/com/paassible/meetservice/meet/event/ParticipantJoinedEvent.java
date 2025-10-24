@@ -1,3 +1,6 @@
 package com.paassible.meetservice.meet.event;
 
-public record ParticipantJoinedEvent(Long meetId, Long userId) {}
+public record ParticipantJoinedEvent(
+        Long meetId,
+        Long boardId,
+        Long userId) {}
