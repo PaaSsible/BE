@@ -8,10 +8,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,6 +27,12 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers("/ws/**");
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 
@@ -34,14 +42,16 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(
-                                "/ws/**", "/ws/meet/**"
-                        ).permitAll()
+                        //.requestMatchers("/ws/**").permitAll()
+                        //.requestMatchers("/app/**").permitAll()
+                        //.requestMatchers("/topic/**").permitAll()
+                        //.requestMatchers("/queue/**").permitAll()
                         .requestMatchers("/", "/index.html", "/test.html", "/css/**", "/js/**").permitAll()
                         .requestMatchers(
                                 "/meets/swagger-ui/**",
                                 "/meets/v3/api-docs/**"
-                        ).permitAll()
+                        )
+                        .permitAll()
                         .requestMatchers("/meets/**").authenticated()
                         .anyRequest().authenticated()
                 )
