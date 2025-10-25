@@ -12,11 +12,9 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-
 
 @Slf4j
 @Configuration
@@ -24,14 +22,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-
     private final JwtUtil jwtUtil;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/meet")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
+                .setAllowedOriginPatterns("*");
     }
 
     @Override
@@ -41,7 +37,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setUserDestinationPrefix("/user");
     }
 
-
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(new ChannelInterceptor() {
@@ -49,6 +44,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor =
                         MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
 
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String authHeader = accessor.getFirstNativeHeader("Authorization");
@@ -59,13 +55,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         if (jwtUtil.validateToken(token)) {
                             Long userId = jwtUtil.getUserId(token);
                             accessor.setUser(() -> userId.toString());
-                            log.info("웹소켓 인증 성공: userId={}", userId);
                         } else {
-                            log.warn("JWT 토큰 유효하지 않음");
                             return null;
                         }
                     } else {
-                        log.warn("Authorization 헤더 없음");
+                        log.warn("❌ Authorization 헤더 없음 또는 형식 오류");
                         return null;
                     }
                 }

@@ -3,13 +3,11 @@ package com.paassible.meetservice.meet.controller;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
-import com.paassible.meetservice.meet.dto.MeetCreateRequest;
-import com.paassible.meetservice.meet.dto.MeetCreateResponse;
-import com.paassible.meetservice.meet.dto.MeetJoinResponse;
-import com.paassible.meetservice.meet.dto.MeetOngoingResponse;
+import com.paassible.meetservice.meet.dto.*;
 import com.paassible.meetservice.meet.service.MeetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,11 +41,11 @@ public class MeetController {
 
     @DeleteMapping("/{meetId}/participants")
     @Operation(summary = "회의 나가기", description = "회의 나가기를 요청합니다.")
-    public ResponseEntity<ApiResponse<Void>> leaveMeet(
+    public ResponseEntity<ApiResponse<LeaveResponse>> leaveMeet(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long meetId){
-        meetService.leaveMeet(meetId,user.getUserId());
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.DELETED));
+        LeaveResponse response = meetService.leaveMeet(meetId,user.getUserId());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
     @GetMapping("/boards/{boardId}")
@@ -62,4 +60,15 @@ public class MeetController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
 
     }
+
+    @PostMapping("/{meetId}/transfer-and-leave")
+    @Operation(summary = "회의 호스트 위임 후 퇴장", description = "현재 호스트가 다른 참가자에게 호스트 권한을 넘기고 회의를 나갑니다.")
+    public ResponseEntity<ApiResponse<Void>> transferAadLeave(
+            @AuthenticationPrincipal UserJwtDto user,
+            @PathVariable Long meetId,
+            @RequestBody @Valid HostTransferRequest request){
+        meetService.transferAndLeave(meetId, user.getUserId(), request.newHostId());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.HOST_TRANSFERRED));
+    }
+
 }

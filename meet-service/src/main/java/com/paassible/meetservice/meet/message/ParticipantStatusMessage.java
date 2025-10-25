@@ -1,4 +1,4 @@
-package com.paassible.meetservice.meet.dto;
+package com.paassible.meetservice.meet.message;
 
 import com.paassible.meetservice.client.board.BoardMemberResponse;
 import java.util.List;
