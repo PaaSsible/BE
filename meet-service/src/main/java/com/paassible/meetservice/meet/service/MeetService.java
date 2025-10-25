@@ -175,7 +175,7 @@ public class MeetService {
         try{
             chatRedisTemplate.delete(ChatKeys.publicChat(meetId));
         }catch (Exception e){
-            log.error("종료된 회의의 공개 채팅 히스토리를 삭제하는데 실패 meetId={}", meetId,e);
+            log.error("종료된 회의의 공개 채팅 히스토리를 삭제 하는데 실패 meetId={}", meetId,e);
         }
 
         try {
