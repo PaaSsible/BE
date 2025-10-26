@@ -32,6 +32,8 @@ spec:
                 name: meet-db-secret
             - secretRef:
                 name: meet-redis-secret
+            - secretRef:
+                name: livekit-secret
           resources:
             requests:
               cpu: 100m
@@ -82,3 +84,16 @@ spec:
                 name: meet-service
                 port:
                   number: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: livekit
+  namespace: meet-service
+spec:
+  selector:
+    app: livekit
+  ports:
+    - port: 7880
+      targetPort: 7880
