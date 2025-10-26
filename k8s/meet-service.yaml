@@ -30,6 +30,8 @@ spec:
                 name: meet-service-secret
             - secretRef:
                 name: meet-db-secret
+            - secretRef:
+                name: meet-redis-secret
           resources:
             requests:
               cpu: 100m
