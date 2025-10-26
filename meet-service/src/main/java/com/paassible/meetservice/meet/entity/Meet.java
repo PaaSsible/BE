@@ -1,6 +1,8 @@
 package com.paassible.meetservice.meet.entity;
 
 import com.paassible.common.entity.BaseEntity;
+import com.paassible.common.exception.CustomException;
+import com.paassible.common.response.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,6 +32,8 @@ public class Meet extends BaseEntity {
 
     @Column(nullable = false)
     private Integer participantCount = 0;
+
+    public boolean timerRunning = false;
 
     public void incrementParticipantCount() {
         this.participantCount++;
@@ -62,4 +66,23 @@ public class Meet extends BaseEntity {
     public void updateHost(Long newHostId){
         this.hostId = newHostId;
     }
+
+    public void startTimer() {
+        if (this.status != MeetingStatus.ONGOING) {
+            throw new CustomException(ErrorCode.MEET_NOT_ONGOING);
+        }
+        if (this.timerRunning) {
+            throw new CustomException(ErrorCode.MEET_ALREADY_HAS_TIMER);
+        }
+        this.timerRunning = true;
+    }
+
+    public void stopTimer() {
+        if (!this.timerRunning) {
+            throw new CustomException(ErrorCode.MEET_NO_RUNNING_TIMER);
+        }
+        this.timerRunning = false;
+    }
+
+
 }

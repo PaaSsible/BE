@@ -75,6 +75,11 @@ public enum ErrorCode implements BaseResponseCode {
     PARTICIPANT_ALREADY_LEFT(HttpStatus.CONFLICT, "M005", "이미 퇴장한 참가자입니다."),
     MEET_ALREADY_EXISTS(HttpStatus.CONFLICT, "M006", "이미 진행 중인 회의가 존재합니다."),
     MEET_NOT_HOST(HttpStatus.FORBIDDEN, "M007", "호스트만 가능한 기능입니다."),
+    MEET_NOT_ONGOING(HttpStatus.BAD_REQUEST, "M008", "회의가 진행 중이 아닙니다."),
+    MEET_ALREADY_HAS_TIMER(HttpStatus.BAD_REQUEST, "M009", "이미 타이머가 실행 중입니다."),
+    MEET_NO_RUNNING_TIMER(HttpStatus.BAD_REQUEST, "M010", "실행 중인 타이머가 없습니다."),
+    MEET_HOST_ONLY(HttpStatus.FORBIDDEN, "M011", "호스트만 타이머를 제어할 수 있습니다."),
+
   
     // file
     EMPTY_FILE_NAME(HttpStatus.BAD_REQUEST, "F001", "파일 이름이 비었습니다"),
