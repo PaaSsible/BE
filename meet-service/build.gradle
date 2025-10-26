@@ -42,7 +42,17 @@ dependencies {
     //websocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+    //livekit
+    implementation 'io.livekit:livekit-server:0.6.1'
+
+
+
 }
+
+repositories {
+    mavenCentral()
+}
+
 
 dependencyManagement {
     imports {

@@ -48,3 +48,10 @@ board-service:
 
 recruit-service:
   url: http://recruit-service.recruit-service:8080
+
+
+livekit:
+  url: ${LIVEKIT_URL}
+  api:
+    key: ${LIVEKIT_API_KEY}
+    secret: ${LIVEKIT_API_SECRET}
