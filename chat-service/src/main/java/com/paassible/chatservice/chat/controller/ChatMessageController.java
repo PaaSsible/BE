@@ -3,7 +3,7 @@ package com.paassible.chatservice.chat.controller;
 import com.paassible.chatservice.chat.dto.*;
 import com.paassible.chatservice.chat.entity.enums.MessageType;
 import com.paassible.chatservice.chat.service.ChatRoomMessageService;
-import com.paassible.common.dto.CursorPageResponse;
+import com.paassible.chatservice.chat.dto.CursorPageResponse;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
