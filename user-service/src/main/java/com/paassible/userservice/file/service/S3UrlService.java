@@ -22,5 +22,4 @@ public class S3UrlService {
         String storagePathPrefix = "AUTH_" + s3Properties.getTenantId() + "/" + s3Properties.getBucket() + "/";
         return fileUrl.substring(fileUrl.lastIndexOf(storagePathPrefix) + storagePathPrefix.length());
     }
-
 }

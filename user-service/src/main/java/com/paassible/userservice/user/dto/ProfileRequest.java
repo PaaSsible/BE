@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 public class ProfileRequest {
     private String nickname;
+    private String profileImageUrl;
     private Long positionId;
     private List<Long> techStackIds;
 

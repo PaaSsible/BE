@@ -86,30 +86,18 @@ public class UserService {
     }
 
     @Transactional
-    public void updateProfile(Long userId, ProfileRequest request, MultipartFile image) {
+    public void updateProfile(Long userId, ProfileRequest request) {
         User user = getUser(userId);
-
-        String profileImageUrl = updateProfileImage(user.getProfileImageUrl(), image);
 
         List<Long> techStackIds = request.getTechStackIds() != null
                 ? request.getTechStackIds()
                 : new ArrayList<>();
 
-        user.updateProfile(request, techStackIds, profileImageUrl);
+        user.updateProfile(request, techStackIds);
 
         if (user.getRole() == Role.PENDING) {
             user.updateRole(Role.MEMBER);
         }
-    }
-
-    private String updateProfileImage(String profileImageUrl, MultipartFile image) {
-        if (image != null && !image.isEmpty()) {
-            if (profileImageUrl != null && !profileImageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
-                fileStorageService.deleteFile(profileImageUrl);
-            }
-            profileImageUrl = fileStorageService.upload("user", image);
-        }
-        return profileImageUrl;
     }
 
     @Transactional
