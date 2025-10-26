@@ -1,5 +1,7 @@
 package com.paassible.meetservice.config;
 
+import com.paassible.common.exception.CustomException;
+import com.paassible.common.response.ErrorCode;
 import com.paassible.common.security.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,10 +58,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             Long userId = jwtUtil.getUserId(token);
                             accessor.setUser(() -> userId.toString());
                         } else {
-                            return null;
+                            log.error("유효하지 않은 JWT 토큰");
+                            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
                         }
                     } else {
-                        log.warn("❌ Authorization 헤더 없음 또는 형식 오류");
+                        log.warn("Authorization 헤더 없음 또는 형식 오류");
                         return null;
                     }
                 }
