@@ -59,15 +59,6 @@ public class ChatMessageController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
-    @GetMapping("/rooms/{roomId}/messages/{messageId}/reads")
-    @Operation(summary = "채팅방 메시지 읽음 상세 조회", description = "채팅방의 메시지를 읽은 멤버와 읽지 않은 멤버를 조회합니다.")
-    public ResponseEntity<ApiResponse<MessageReadDetailResponse>> getMessageReadDetail(@AuthenticationPrincipal UserJwtDto user,
-                                                                                       @PathVariable Long roomId,
-                                                                                       @PathVariable Long messageId) {
-        MessageReadDetailResponse response = chatMessageService.getMessageReadDetail(user.getUserId(), roomId, messageId);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
-    }
-
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "채팅방 파일/이미지 업로드", description = "채팅방에 이미지 또는 파일을 업로드합니다.")
     public ResponseEntity<ApiResponse<UploadResponse>> upload(
