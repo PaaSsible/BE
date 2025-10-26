@@ -3,16 +3,19 @@ package com.paassible.userservice.user.service;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.userservice.client.PositionClient;
+import com.paassible.userservice.user.dto.PortfolioPageResponse;
 import com.paassible.userservice.user.dto.PortfolioRequest;
 import com.paassible.userservice.user.dto.PortfolioResponse;
 import com.paassible.userservice.user.entity.Portfolio;
 import com.paassible.userservice.user.entity.User;
 import com.paassible.userservice.user.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -68,14 +71,16 @@ public class PortfolioService {
     }
 
     @Transactional(readOnly = true)
-    public List<PortfolioResponse> getPortfoliosByUser(Long userId) {
-        return portfolioRepository.findByUserId(userId)
-                .stream()
+    public PortfolioPageResponse getPortfoliosByUser(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<PortfolioResponse> portfolioResponses = portfolioRepository.findByUserId(userId, pageable)
                 .map(portfolio -> {
                     String positionName = positionClient.getPositionName(portfolio.getPositionId());
                     return PortfolioResponse.from(portfolio, positionName);
-                })
-                .toList();
+                });
+
+        return PortfolioPageResponse.from(portfolioResponses);
     }
 
     public void validatePortfolioOwner(Long userId, Portfolio portfolio) {

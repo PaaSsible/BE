@@ -3,18 +3,16 @@ package com.paassible.userservice.user.controller;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
+import com.paassible.userservice.user.dto.PortfolioPageResponse;
 import com.paassible.userservice.user.dto.PortfolioRequest;
 import com.paassible.userservice.user.dto.PortfolioResponse;
 import com.paassible.userservice.user.service.PortfolioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,9 +54,11 @@ public class PortfolioController {
     }
 
     @GetMapping("/{userId}/portfolios")
-    @Operation(summary = "포트폴리오 조회", description = "해당 유저의 포트폴리오를 조회한다.")
-    public ResponseEntity<ApiResponse<List<PortfolioResponse>>> getPortfoliosByUser(@PathVariable Long userId) {
-        List<PortfolioResponse> response = portfolioService.getPortfoliosByUser(userId);
+    public ResponseEntity<ApiResponse<PortfolioPageResponse>> getPortfoliosByUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PortfolioPageResponse response = portfolioService.getPortfoliosByUser(userId, page, size);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
