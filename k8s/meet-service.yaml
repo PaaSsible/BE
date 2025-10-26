@@ -32,6 +32,8 @@ spec:
                 name: meet-db-secret
             - secretRef:
                 name: meet-redis-secret
+            - secretRef:
+                name: livekit-secret
           resources:
             requests:
               cpu: 100m
