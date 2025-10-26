@@ -3,9 +3,9 @@ package com.paassible.userservice.user.controller;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
+import com.paassible.userservice.user.dto.PortfolioDetailResponse;
 import com.paassible.userservice.user.dto.PortfolioPageResponse;
 import com.paassible.userservice.user.dto.PortfolioRequest;
-import com.paassible.userservice.user.dto.PortfolioResponse;
 import com.paassible.userservice.user.service.PortfolioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,6 +54,7 @@ public class PortfolioController {
     }
 
     @GetMapping("/{userId}/portfolios")
+    @Operation(summary = "포트폴리오 조회", description = "포트폴리오를 조회한다.")
     public ResponseEntity<ApiResponse<PortfolioPageResponse>> getPortfoliosByUser(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
@@ -64,8 +65,8 @@ public class PortfolioController {
 
     @GetMapping("/portfolios/{portfolioId}")
     @Operation(summary = "포트폴리오 상세 조회", description = "해당 유저의 포트폴리오를 상세 조회한다.")
-    public ResponseEntity<ApiResponse<PortfolioResponse>> getPortfolioDetail(@PathVariable Long portfolioId) {
-        PortfolioResponse response = portfolioService.getPortfolioDetail(portfolioId);
+    public ResponseEntity<ApiResponse<PortfolioDetailResponse>> getPortfolioDetail(@PathVariable Long portfolioId) {
+        PortfolioDetailResponse response = portfolioService.getPortfolioDetail(portfolioId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }

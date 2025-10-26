@@ -3,6 +3,7 @@ package com.paassible.userservice.user.service;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.userservice.client.PositionClient;
+import com.paassible.userservice.user.dto.PortfolioDetailResponse;
 import com.paassible.userservice.user.dto.PortfolioPageResponse;
 import com.paassible.userservice.user.dto.PortfolioRequest;
 import com.paassible.userservice.user.dto.PortfolioResponse;
@@ -63,11 +64,11 @@ public class PortfolioService {
     }
 
     @Transactional(readOnly = true)
-    public PortfolioResponse getPortfolioDetail(Long portfolioId) {
+    public PortfolioDetailResponse getPortfolioDetail(Long portfolioId) {
         Portfolio portfolio = getPortfolio(portfolioId);
 
         String positionName = positionClient.getPositionName(portfolio.getPositionId());
-        return PortfolioResponse.from(portfolio, positionName);
+        return PortfolioDetailResponse.from(portfolio, positionName);
     }
 
     @Transactional(readOnly = true)
