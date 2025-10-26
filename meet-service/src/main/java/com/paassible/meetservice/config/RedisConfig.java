@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -41,12 +42,8 @@ public class RedisConfig {
 
     @Primary
     @Bean("stringRedis")
-    public RedisTemplate<String, String> stringRedisTemplate(RedisConnectionFactory cf) {
-        RedisTemplate<String, String> t = new RedisTemplate<>();
-        t.setConnectionFactory(cf);
-        t.setKeySerializer(new StringRedisSerializer());
-        t.setValueSerializer(new StringRedisSerializer());
-        t.afterPropertiesSet();
-        return t;
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory cf) {
+        return new StringRedisTemplate(cf);
     }
+
 }
