@@ -14,9 +14,9 @@ public class MessageReadAllResponse {
     private Long oldLastReadMessageId;
     private Long newLastReadMessageId;
 
-    public static MessageReadAllResponse from(Long userId, Long oldLastReadMessageId, Long newLastReadMessageId) {
+    public static MessageReadAllResponse from(Long userId, Long oldLastReadMessageId, Long newLastReadMessageId, ReadType type) {
         return MessageReadAllResponse.builder()
-                .type(ReadType.MESSAGE_READ_ALL)
+                .type(type)
                 .userId(userId)
                 .oldLastReadMessageId(oldLastReadMessageId)
                 .newLastReadMessageId(newLastReadMessageId)

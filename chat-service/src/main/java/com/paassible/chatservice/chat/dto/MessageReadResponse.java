@@ -13,9 +13,9 @@ public class MessageReadResponse {
     private Long userId;
     private Long messageId;
 
-    public static MessageReadResponse from(Long userId, Long messageId) {
+    public static MessageReadResponse from(Long userId, Long messageId, ReadType type) {
         return MessageReadResponse.builder()
-                .type(ReadType.MESSAGE_READ)
+                .type(type)
                 .userId(userId)
                 .messageId(messageId)
                 .build();

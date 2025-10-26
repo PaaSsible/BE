@@ -43,9 +43,9 @@ public class MessageReadService {
             if (!message.getSenderId().equals(userId)) {
                 Object response;
                 if (type == ReadType.MESSAGE_READ) {
-                    response = MessageReadResponse.from(userId, lastMessageId);
+                    response = MessageReadResponse.from(userId, lastMessageId, type);
                 } else {
-                    response = MessageReadAllResponse.from(userId, oldLastReadMessageId, lastMessageId);
+                    response = MessageReadAllResponse.from(userId, oldLastReadMessageId, lastMessageId, type);
                 }
                 messagingTemplate.convertAndSend("/topic/chats/rooms/" + roomId + "/read", response);
             }
