@@ -80,6 +80,14 @@ spec:
                 name: meet-service
                 port:
                   number: 8080
+          - path: /api/livekit
+            pathType: Prefix
+            backend:
+              service:
+                name: meet-service
+                port:
+                  number: 8080
+
 
 # --- LIVEKIT SERVER ---
 ---
