@@ -70,7 +70,7 @@ public class User {
         this.agreedToTerms = agreedToTerms;
     }
 
-    public void updateProfile(ProfileRequest req, List<Long> stackIds, String imageUrl) {
+    public void updateProfile(ProfileRequest req, List<Long> stackIds) {
         this.nickname = req.getNickname();
         this.positionId = req.getPositionId();
         this.stackIds.clear();
@@ -81,6 +81,6 @@ public class User {
         this.graduationStatus = req.getGraduationStatus();
         this.introductionTitle = req.getIntroductionTitle();
         this.introductionContent = req.getIntroductionContent();
-        this.profileImageUrl = imageUrl;
+        this.profileImageUrl = req.getProfileImageUrl();
     }
 }

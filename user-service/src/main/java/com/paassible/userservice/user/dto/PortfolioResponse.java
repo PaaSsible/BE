@@ -4,6 +4,8 @@ import com.paassible.userservice.user.entity.Portfolio;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 public class PortfolioResponse {
@@ -13,6 +15,7 @@ public class PortfolioResponse {
     private String title;
     private String summary;
     private String description;
+    private LocalDateTime createdAt;
 
     public static PortfolioResponse from(Portfolio portfolio, String positionName) {
         return PortfolioResponse.builder()
@@ -22,6 +25,7 @@ public class PortfolioResponse {
                 .title(portfolio.getTitle())
                 .summary(portfolio.getSummary())
                 .description(portfolio.getDescription())
+                .createdAt(portfolio.getCreatedAt())
                 .build();
     }
 }

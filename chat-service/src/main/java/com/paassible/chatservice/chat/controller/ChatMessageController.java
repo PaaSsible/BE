@@ -3,7 +3,7 @@ package com.paassible.chatservice.chat.controller;
 import com.paassible.chatservice.chat.dto.*;
 import com.paassible.chatservice.chat.entity.enums.MessageType;
 import com.paassible.chatservice.chat.service.ChatRoomMessageService;
-import com.paassible.common.dto.CursorPageResponse;
+import com.paassible.chatservice.chat.dto.CursorPageResponse;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
@@ -68,7 +68,7 @@ public class ChatMessageController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
-    @PostMapping(value = "/files/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "채팅방 파일/이미지 업로드", description = "채팅방에 이미지 또는 파일을 업로드합니다.")
     public ResponseEntity<ApiResponse<UploadResponse>> upload(
             @RequestParam("type") MessageType type,

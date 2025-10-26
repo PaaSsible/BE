@@ -8,7 +8,7 @@ import com.paassible.chatservice.chat.repository.ChatMessageRepository;
 import com.paassible.chatservice.client.user.UserClient;
 import com.paassible.chatservice.client.user.UserResponse;
 import com.paassible.chatservice.file.service.ObjectStorageService;
-import com.paassible.common.dto.CursorPageResponse;
+import com.paassible.chatservice.chat.dto.CursorPageResponse;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;

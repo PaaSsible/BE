@@ -35,7 +35,6 @@ public class ChatRoomService {
 
     private final RoomParticipantService roomParticipantService;
     private final UserClient userClient;
-    private final BoardClient boardClient;
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -175,7 +174,7 @@ public class ChatRoomService {
         ChatMessage systemMsg = ChatMessage.builder()
                 .roomId(roomId)
                 .type(MessageType.SYSTEM)
-                .content("사용자가 채팅방을 나갔습니다.")
+                .content(nickname + "님이 채팅방을 나갔습니다.")
                 .build();
         chatMessageRepository.save(systemMsg);
 

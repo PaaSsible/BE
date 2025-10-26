@@ -37,14 +37,13 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
-    @PutMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping("/profile")
     @Operation(summary = "유저 프로필 수정", description = "기존 프로필 정보를 등록/수정한다.")
     public ResponseEntity<ApiResponse<Void>> updateProfile(
             @AuthenticationPrincipal UserJwtDto user,
-            @RequestPart("request") ProfileRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
+            @RequestBody ProfileRequest request) {
 
-        userService.updateProfile(user.getUserId(), request, image);
+        userService.updateProfile(user.getUserId(), request);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.MODIFIED));
     }
 
