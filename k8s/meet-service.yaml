@@ -137,6 +137,9 @@ spec:
           args:
             - "--config"
             - "/etc/livekit/livekit.yaml"
+          env:
+            - name: LIVEKIT_PORT
+              value: "7880"
           envFrom:
             - secretRef:
                 name: livekit-secret
