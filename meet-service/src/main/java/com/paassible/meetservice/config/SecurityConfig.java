@@ -28,8 +28,8 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers("/ws/**");
+        return (web) -> web.ignoring();
+              //  .requestMatchers("/ws/**");
     }
 
     @Bean
@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        //.requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/ws/**").authenticated()
                         //.requestMatchers("/app/**").permitAll()
                         //.requestMatchers("/topic/**").permitAll()
                         //.requestMatchers("/queue/**").permitAll()
@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 "/meets/v3/api-docs/**"
                         )
                         .permitAll()
-                        .requestMatchers("/meets/**").authenticated()
+                        .requestMatchers("/meets/**", "/api/livekit/token").authenticated()
                         .anyRequest().authenticated()
                 )
 
