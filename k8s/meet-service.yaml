@@ -1,4 +1,6 @@
-# --- MEET SERVICE ---
+# =========================
+# MEET SERVICE (Deploy/Service/Ingress)
+# =========================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -88,14 +90,34 @@ spec:
                 port:
                   number: 8080
 
+# =========================
+# LIVEKIT (ConfigMap/Deploy/Service/Ingress)
+# =========================
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: livekit-config
+  namespace: meet-service
+data:
+  livekit.yaml: |
+    keys:
+      ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
 
-# --- LIVEKIT SERVER ---
+    port: 7880
+    bind_addresses:
+      - 0.0.0.0
+    rtc:
+      use_external_ip: true
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: livekit
   namespace: meet-service
+  labels:
+    app: livekit
 spec:
   replicas: 1
   selector:
@@ -109,12 +131,39 @@ spec:
       containers:
         - name: livekit
           image: livekit/livekit-server:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 7880
-          args: ["--dev", "--bind", "0.0.0.0"]
+          args:
+            - "--config"
+            - "/etc/livekit/livekit.yaml"
           envFrom:
             - secretRef:
                 name: livekit-secret
+          volumeMounts:
+            - name: livekit-config
+              mountPath: /etc/livekit/
+          livenessProbe:
+            tcpSocket:
+              port: 7880
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 7880
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 300m
+              memory: 400Mi
+      volumes:
+        - name: livekit-config
+          configMap:
+            name: livekit-config
 ---
 apiVersion: v1
 kind: Service
