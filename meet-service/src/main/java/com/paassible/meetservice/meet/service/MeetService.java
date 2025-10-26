@@ -143,7 +143,7 @@ public class MeetService {
             return LeaveResponse.ended();
         }
 
-        //호스트인 경우 - 위임 필요
+        //호스트인 경우 -  위임 필요
         if(isHost){
             List<Long> candidateIds = participantRepository
                     .findActiveUserIdsByMeetId(meetId, userId);
