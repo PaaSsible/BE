@@ -1,6 +1,8 @@
 package com.paassible.userservice.user.entity;
 
 import com.paassible.common.entity.BaseEntity;
+import com.paassible.userservice.user.entity.enums.MainCategory;
+import com.paassible.userservice.user.entity.enums.SubCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +26,16 @@ public class Portfolio extends BaseEntity {
     private String summary;
 
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private MainCategory mainCategory;
+
+    @Enumerated(EnumType.STRING)
+    private SubCategory subCategory;
+
+    private int contribution;
+
+    private boolean generatedByAi;
 
     public void updateInfo(Long positionId, String title, String summary, String description) {
         this.positionId = positionId;

@@ -10,25 +10,27 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class PortfolioResponse {
+public class PortfolioDetailResponse {
     private Long id;
     private Long userId;
     private String positionName;
     private String title;
     private String summary;
+    private String description;
     private MainCategory mainCategory;
     private SubCategory subCategory;
     private int contribution;
     private boolean generatedByAi;
     private LocalDateTime createdAt;
 
-    public static PortfolioResponse from(Portfolio portfolio, String positionName) {
-        return PortfolioResponse.builder()
+    public static PortfolioDetailResponse from(Portfolio portfolio, String positionName) {
+        return PortfolioDetailResponse.builder()
                 .id(portfolio.getId())
                 .userId(portfolio.getUserId())
                 .positionName(positionName)
                 .title(portfolio.getTitle())
                 .summary(portfolio.getSummary())
+                .description(portfolio.getDescription())
                 .mainCategory(portfolio.getMainCategory())
                 .subCategory(portfolio.getSubCategory())
                 .contribution(portfolio.getContribution())
