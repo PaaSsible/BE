@@ -6,5 +6,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MessageReadRequest {
-    private Long lastMessageId;
+    private Long messageId;
 }

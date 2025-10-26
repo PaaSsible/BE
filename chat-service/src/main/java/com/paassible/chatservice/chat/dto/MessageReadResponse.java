@@ -1,5 +1,6 @@
 package com.paassible.chatservice.chat.dto;
 
+import com.paassible.chatservice.chat.entity.enums.ReadType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,15 +9,15 @@ import lombok.Setter;
 @Setter
 @Builder
 public class MessageReadResponse {
+    private ReadType type;
     private Long userId;
-    private Long oldLastReadMessageId;
-    private Long newLastReadMessageId;
+    private Long messageId;
 
-    public static MessageReadResponse from(Long userId, Long oldLastReadMessageId, Long newLastReadMessageId) {
+    public static MessageReadResponse from(Long userId, Long messageId, ReadType type) {
         return MessageReadResponse.builder()
+                .type(type)
                 .userId(userId)
-                .oldLastReadMessageId(oldLastReadMessageId)
-                .newLastReadMessageId(newLastReadMessageId)
+                .messageId(messageId)
                 .build();
     }
 }
