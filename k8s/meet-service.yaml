@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: meet-service
+  namespace: meet-service
+  labels:
+    app: meet-service
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 300
+  selector:
+    matchLabels:
+      app: meet-service
+  template:
+    metadata:
+      labels:
+        app: meet-service
+    spec:
+      containers:
+        - name: meet-service
+          image: gyurihwang/contest-18-image-meet:{BUILD_DATE_TIME}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: prod
+          envFrom:
+            - secretRef:
+                name: meet-service-secret
+            - secretRef:
+                name: meet-db-secret
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 300m
+              memory: 400Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: meet-service
+  namespace: meet-service
+spec:
+  selector:
+    app: meet-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: meet-ingress
+  namespace: meet-service
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - meet.paassible.kro.kr
+      secretName: meet-tls
+  rules:
+    - host: meet.paassible.kro.kr
+      http:
+        paths:
+          - path: /meets
+            pathType: Prefix
+            backend:
+              service:
+                name: meet-service
+                port:
+                  number: 8080
