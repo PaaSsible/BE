@@ -1,3 +1,4 @@
+# --- MEET SERVICE ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -7,7 +8,6 @@ metadata:
     app: meet-service
 spec:
   replicas: 1
-  progressDeadlineSeconds: 300
   selector:
     matchLabels:
       app: meet-service
@@ -41,7 +41,6 @@ spec:
             limits:
               cpu: 300m
               memory: 400Mi
-
 ---
 apiVersion: v1
 kind: Service
@@ -52,11 +51,9 @@ spec:
   selector:
     app: meet-service
   ports:
-    - protocol: TCP
-      port: 8080
+    - port: 8080
       targetPort: 8080
   type: ClusterIP
-
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -66,7 +63,6 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-
 spec:
   ingressClassName: nginx
   tls:
@@ -84,7 +80,41 @@ spec:
                 name: meet-service
                 port:
                   number: 8080
+          - path: /api/livekit
+            pathType: Prefix
+            backend:
+              service:
+                name: meet-service
+                port:
+                  number: 8080
 
+
+# --- LIVEKIT SERVER ---
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livekit
+  namespace: meet-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: livekit
+  template:
+    metadata:
+      labels:
+        app: livekit
+    spec:
+      containers:
+        - name: livekit
+          image: livekit/livekit-server:latest
+          ports:
+            - containerPort: 7880
+          args: ["--dev", "--bind", "0.0.0.0"]
+          envFrom:
+            - secretRef:
+                name: livekit-secret
 ---
 apiVersion: v1
 kind: Service
@@ -97,3 +127,30 @@ spec:
   ports:
     - port: 7880
       targetPort: 7880
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: livekit-ingress
+  namespace: meet-service
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - livekit.paassible.kro.kr
+      secretName: livekit-tls
+  rules:
+    - host: livekit.paassible.kro.kr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: livekit
+                port:
+                  number: 7880
