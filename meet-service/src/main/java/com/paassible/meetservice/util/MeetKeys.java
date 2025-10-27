@@ -1,11 +1,32 @@
 package com.paassible.meetservice.util;
 
 public final class MeetKeys {
-    private MeetKeys() {}
-    public static String participants(long meetId)   { return "meeting:" + meetId + ":participants"; }
-    public static String speaking(long meetId)       { return "meeting:speaking:" + meetId; }          // Hash {userId -> lastTrue(ms)}
-    public static String lastSpokeAt(long meetId)    { return "meeting:" + meetId + ":lastSpokeAt"; }  // ZSET score=epochMillis
-    public static String silentSet(long meetId)      { return "meeting:" + meetId + ":silent"; }       // Set (optional, 이전 스냅샷)
-    public static String lastSpokeAtAnyPattern()     { return "meeting:*:lastSpokeAt"; }               // for SCAN
+
+    public static String participants(long meetId) {
+        return "meeting:" + meetId + ":participants";
+    }
+
+    public static String lastSpokeAt(long meetId)  {
+        return "meeting:" + meetId + ":lastSpokeAt";
+    }
+    public static String lastPicked(long meetId)   {
+        return "meeting:" + meetId + ":lastPicked";
+    }
+
+    public static String speaking(long meetId) {
+        return "meeting:" + meetId + ":speaking";
+    }
+
+    public static String lastSpokeAtPattern() {
+        return "meeting:*:lastSpokeAt";
+    }
+
+    public static String lastSpokeAtAnyPattern() {
+        return "meeting:*:lastSpokeAt";
+    }
+
+    public static String silentSet(long meetId) {
+        return "meeting:" + meetId + ":silent";
+    }
 }
 

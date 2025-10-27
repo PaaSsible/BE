@@ -18,11 +18,12 @@ import com.paassible.meetservice.meet.event.ParticipantJoinedEvent;
 import com.paassible.meetservice.meet.event.ParticipantLeftEvent;
 import com.paassible.meetservice.meet.repository.MeetRepository;
 import com.paassible.meetservice.meet.repository.ParticipantRepository;
+import com.paassible.meetservice.util.MeetKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,11 +44,14 @@ public class MeetService {
     private final ApplicationEventPublisher eventPublisher;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final BoardClient boardClient;
-    private final RedisTemplate<String,String> redisTemplate;
-    private final RedisTemplate<String,String> chatRedisTemplate;
-    private final RedisTemplate<String, String> stringRedis;
-    private final RedisTemplate<String, ChatMessage> chatRedis;
-    private final MeetCacheEventHandler meetCacheEventHandler;
+
+    @Qualifier("stringRedis")
+    private final org.springframework.data.redis.core.StringRedisTemplate stringRedis;
+
+    @Qualifier("chatRedis")
+    private final org.springframework.data.redis.core.RedisTemplate<String, ChatMessage> chatRedis; // [KEEP] 채팅 전용(JSON)
+
+
     private final UserClient userClient;
 
     public MeetCreateResponse createMeet(Long userId, MeetCreateRequest request) {
@@ -173,7 +177,7 @@ public class MeetService {
     public void endMeet(Long meetId){
 
         try{
-            chatRedisTemplate.delete(ChatKeys.publicChat(meetId));
+            chatRedis.delete(ChatKeys.publicChat(meetId));
         }catch (Exception e){
             log.error("종료된 회의의 공개 채팅 히스토리를 삭제하는데 실패 meetId={}", meetId,e);
         }
@@ -189,6 +193,16 @@ public class MeetService {
         } catch (Exception e) {
             log.error("Failed to delete DM chats. meetId={}", meetId, e);
         }
+
+        try {
+            stringRedis.delete(MeetKeys.participants(meetId));
+            stringRedis.delete(MeetKeys.speaking(meetId));
+            stringRedis.delete(MeetKeys.lastSpokeAt(meetId));
+            stringRedis.delete(MeetKeys.silentSet(meetId));
+            stringRedis.delete(MeetKeys.lastPicked(meetId));
+        } catch (Exception e) {
+            log.warn("회의 종료 캐시 키 정리 실패 meetId={}: {}", meetId, e.getMessage(), e);
+        }
     }
 
 
@@ -203,14 +217,15 @@ public class MeetService {
             return null;
         }
 
-        Set<String> redisMembers = redisTemplate.opsForSet().members("meeting:" + meet.getId() + ":participants");
-        List<Long> joinedIds = redisMembers == null
-                ?List.of()
-                :redisMembers.stream().map(Long::valueOf).toList();
+        Set<String> redisMembers = stringRedis.opsForSet().members(MeetKeys.participants(meet.getId()));
+
+        Set<Long> joinedIdSet = (redisMembers == null)
+                ? java.util.Collections.emptySet()
+                : redisMembers.stream().map(Long::valueOf).collect(java.util.stream.Collectors.toSet());
 
         List<BoardMemberResponse> allMembers = boardClient.getBoardMembers(meet.getBoardId());
         List<BoardMemberResponse> presentMembers = allMembers.stream()
-                .filter(member -> joinedIds.contains(member.getUserId()))
+                .filter(member -> joinedIdSet.contains(member.getUserId()))
                 .toList();
 
         return MeetOngoingResponse.from(meet, presentMembers);
