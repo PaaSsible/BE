@@ -89,6 +89,13 @@ spec:
                 name: meet-service
                 port:
                   number: 8080
+          - path: /meets/ws/meet
+            pathType: Prefix
+            backend:
+              service:
+                name: meet-service
+                port:
+                    number: 8080
 
 # =========================
 # LIVEKIT (ConfigMap/Deploy/Service/Ingress)
