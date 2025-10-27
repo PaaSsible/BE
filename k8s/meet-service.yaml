@@ -95,7 +95,7 @@ spec:
               service:
                 name: meet-service
                 port:
-                    number: 8080
+                  number: 8080
 
 # =========================
 # LIVEKIT (ConfigMap/Deploy/Service/Ingress)
@@ -116,7 +116,6 @@ data:
       - 0.0.0.0
     rtc:
       use_external_ip: true
-
 ---
 apiVersion: apps/v1
 kind: Deployment
