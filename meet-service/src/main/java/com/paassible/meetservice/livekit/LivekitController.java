@@ -20,7 +20,7 @@ public class LivekitController {
 
 
 
-    @GetMapping("/token")
+    @PostMapping("/token")
     public TokenResponse getToken(@RequestBody TokenRequest request,
                           @AuthenticationPrincipal UserJwtDto user) {
 

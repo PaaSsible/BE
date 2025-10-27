@@ -20,7 +20,6 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class TimerService {
 
-    private final MeetRepository meetRepository;
     private final MeetValidator meetValidator;
     private final SimpMessagingTemplate messagingTemplate;
 
