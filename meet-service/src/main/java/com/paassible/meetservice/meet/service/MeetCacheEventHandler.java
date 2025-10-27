@@ -6,6 +6,7 @@ import com.paassible.meetservice.client.board.BoardMemberResponse;
 import com.paassible.meetservice.meet.event.ParticipantLeftEvent;
 import com.paassible.meetservice.meet.event.ParticipantJoinedEvent;
 import com.paassible.meetservice.meet.message.ParticipantStatusMessage;
+import com.paassible.meetservice.util.MeetKeys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -36,6 +37,13 @@ public class MeetCacheEventHandler {
         String key = participantsKey(event.meetId());
         try{
             redisTemplate.opsForSet().add(key, event.userId().toString());
+
+            //입장 시 lastSpokeAt 초기화
+            String lastKey = MeetKeys.lastSpokeAt(event.meetId());
+            long now = System.currentTimeMillis();
+            redisTemplate.opsForZSet().add(lastKey, event.userId().toString(), (double) now);
+
+
             broadcastCurrentStatus(event.meetId(),event.boardId());
         }catch(Exception e){
             log.warn("Redis 업데이트 실패(meetId={}, userId={})",
