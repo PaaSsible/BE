@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/meets/ws/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         //.requestMatchers("/app/**").permitAll()
                         //.requestMatchers("/topic/**").permitAll()
@@ -70,7 +71,8 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "https://paassible.kro.kr"
+                "https://paassible.kro.kr",
+                "https://meet.paassible.kro.kr"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

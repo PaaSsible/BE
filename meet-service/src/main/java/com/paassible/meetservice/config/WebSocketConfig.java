@@ -14,9 +14,12 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -29,7 +32,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/meet")
-                .setAllowedOriginPatterns("*");
+                .setAllowedOriginPatterns(
+                        "http://localhost:*",
+                        "http://127.0.0.1:*",
+                        "https://paassible.kro.kr",
+                        "https://meet.paassible.kro.kr"
+                );
     }
 
     @Override
@@ -51,20 +59,26 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String authHeader = accessor.getFirstNativeHeader("Authorization");
 
-                    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                        String token = authHeader.substring(7);
-
-                        if (jwtUtil.validateToken(token)) {
-                            Long userId = jwtUtil.getUserId(token);
-                            accessor.setUser(() -> userId.toString());
-                        } else {
-                            log.error("유효하지 않은 JWT 토큰");
-                            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
-                        }
-                    } else {
+                    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                         log.warn("Authorization 헤더 없음 또는 형식 오류");
-                        return null;
+                        throw new CustomException(ErrorCode.APPLICATION_UNAUTHORIZED);
                     }
+
+
+                    String token = authHeader.substring(7);
+                    if (!jwtUtil.validateToken(token)) {
+                        log.error("유효하지 않은 JWT 토큰");
+                        throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
+                    }
+
+                    Long userId = jwtUtil.getUserId(token);
+
+                    // Principal을 Authentication으로 명시 세팅
+                    accessor.setUser(new UsernamePasswordAuthenticationToken(
+                            userId.toString(), null, List.of()
+                    ));
+
+                    log.debug("STOMP CONNECT 인증 성공 userId={}", userId);
                 }
                 return message;
             }
