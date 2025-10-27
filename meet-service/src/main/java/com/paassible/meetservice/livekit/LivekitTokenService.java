@@ -25,7 +25,7 @@ public class LivekitTokenService {
                 new RoomName(room)
 
         );
-        token.setTtl(10 * 60 * 1000L);
+        token.setTtl(10 * 60);
         return token.toJwt();
     }
 }
