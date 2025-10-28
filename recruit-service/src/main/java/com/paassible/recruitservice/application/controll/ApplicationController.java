@@ -67,8 +67,20 @@ public class ApplicationController {
 
     @Operation(summary = "모집 결과 확인")
     @GetMapping("/my")
-    public List<MyApplicationListResponse> getMyApplications( @AuthenticationPrincipal UserJwtDto user) {
-        return applicationService.getMyApplications(user.getUserId());
+    public ApiResponse<List<MyApplicationListResponse>> getMyApplications( @AuthenticationPrincipal UserJwtDto user) {
+        List<MyApplicationListResponse> response = applicationService.getMyApplications(user.getUserId());
+        return ApiResponse.success(SuccessCode.OK, response);
     }
+
+    @Operation(summary = "모집 지원 취소")
+    @DeleteMapping("/{applicationId}/cancel")
+    public ApiResponse<Void> cancelApplication(
+            @PathVariable Long applicationId,
+            @AuthenticationPrincipal UserJwtDto user
+    ) {
+        applicationService.cancel(applicationId,user.getUserId());
+        return ApiResponse.success(SuccessCode.DELETED);
+    }
+
 
 }

@@ -128,6 +128,7 @@ public class ApplicantionService {
             List<RecruitInfo> recruits = recruitMap.getOrDefault(post.getId(), Collections.emptyList());
 
             return new MyApplicationListResponse(
+                    app.getId(),
                     post.getId(),
                     post.getTitle(),
                     post.getMainCategory(),
@@ -159,6 +160,24 @@ public class ApplicantionService {
                                         .toList()
                         )
                 ));
+    }
+
+    @Transactional
+    public void cancel(Long applicationId, Long userId) {
+
+        Application application = applicationRepository
+                .findById(applicationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+
+        if (application.getStatus() == ApplicationStatus.ACCEPTED) {
+            throw new CustomException(ErrorCode.CANNOT_CANCEL_ACCEPTED_APPLICATION);
+        }
+
+        if(!application.getApplicantId().equals(userId)){
+            throw new CustomException(ErrorCode.APPLICATION_UNAUTHORIZED_CANCEL);
+        }
+
+        applicationRepository.delete(application);
     }
 
 }
