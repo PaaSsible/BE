@@ -1,10 +1,12 @@
 package com.paassible.boardservice.client;
 
+import com.paassible.boardservice.board.dto.CommunicationResponse;
 import com.paassible.boardservice.chat.dto.ChatRoomIdResponse;
 import com.paassible.boardservice.chat.dto.ChatRoomInviteRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomResponse;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,6 +43,8 @@ public interface ChatClient {
                    @RequestParam("boardId") Long boardId,
                    @PathVariable("roomId") Long roomId);
 
-
+    @GetMapping("/chats/internal/communication")
+    CommunicationResponse getCommunicationFrequency(@RequestParam("userId") Long userId,
+                                                    @RequestParam("boardId") Long boardId);
 
 }

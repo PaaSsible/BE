@@ -1,4 +1,4 @@
-package com.paassible.boardservice.task.dto;
+package com.paassible.boardservice.board.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ public class ContributionResponse {
     @Getter
     @AllArgsConstructor
     public static class CommunicationFrequency {
-        private int value;
-        private int total;
+        private long value;
+        private long total;
     }
 }

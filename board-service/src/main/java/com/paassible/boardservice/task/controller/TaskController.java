@@ -1,7 +1,6 @@
 package com.paassible.boardservice.task.controller;
 
 import com.paassible.boardservice.task.dto.*;
-import com.paassible.boardservice.task.service.ContributionService;
 import com.paassible.boardservice.task.service.TaskManagementService;
 import com.paassible.boardservice.task.service.TaskVisualizationService;
 import com.paassible.common.response.ApiResponse;
@@ -24,7 +23,6 @@ public class TaskController {
 
     private final TaskManagementService taskManagementService;
     private final TaskVisualizationService taskVisualizationService;
-    private final ContributionService contributionService;
 
     @PostMapping("/tasks")
     @Operation(summary = "업무 생성", description = "새로운 업무를 생성합니다.")
@@ -106,15 +104,4 @@ public class TaskController {
         WeeklyGoalResponse response = taskVisualizationService.getWeeklyGoalRate(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
-
-    @GetMapping("/contribution")
-    @Operation(summary = "기여도", description = "기여도를 시각화합니다.")
-    public ResponseEntity<ApiResponse<List<ContributionResponse>>> getUserContribution(
-            @PathVariable Long boardId){
-        List<ContributionResponse> response = contributionService.getContributions(boardId);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
-
-    }
-
-
 }

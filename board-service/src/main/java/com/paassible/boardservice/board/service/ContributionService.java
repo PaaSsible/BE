@@ -1,13 +1,15 @@
-package com.paassible.boardservice.task.service;
+package com.paassible.boardservice.board.service;
 
+import com.paassible.boardservice.board.dto.CommunicationResponse;
 import com.paassible.boardservice.board.entity.BoardMember;
-import com.paassible.boardservice.board.service.BoardMemberService;
+import com.paassible.boardservice.client.ChatClient;
 import com.paassible.boardservice.client.MeetClient;
 import com.paassible.boardservice.client.PositionClient;
 import com.paassible.boardservice.client.UserClient;
-import com.paassible.boardservice.task.dto.ContributionResponse;
+import com.paassible.boardservice.board.dto.ContributionResponse;
 import com.paassible.boardservice.task.entity.Task;
 import com.paassible.boardservice.task.entity.enums.TaskStatus;
+import com.paassible.boardservice.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class ContributionService {
     private final UserClient userClient;
     private final PositionClient positionClient;
     private final MeetClient meetClient;
+    private final ChatClient chatClient;
 
     public List<ContributionResponse> getContributions(Long boardId) {
 
@@ -38,33 +41,25 @@ public class ContributionService {
         return responses;
     }
 
-
     public ContributionResponse getContributionForMember(Long userId, Long boardId, Long positionId) {
 
-        int totalCommunication = 100;
-
-        // 업무 완료율 계산
         List<Task> tasks = taskService.getAssigneeTasks(userId, boardId);
         long completed = tasks.stream()
                 .filter(t -> t.getStatus() == TaskStatus.COMPLETED)
                 .count();
         double taskCompletion = tasks.isEmpty() ? 0 : (completed * 100.0 / tasks.size());
 
-        // 회의 참석률 (추후 로직 변경 가능)
         double attendanceRate = meetClient.getContribution(userId, boardId);
 
+        CommunicationResponse response = chatClient.getCommunicationFrequency(userId, boardId);
+        long commValue = response.getValue();
+        long totalCommunication = response.getTotal();
 
-
-        // 커뮤니케이션 횟수 (임시 값)
-        int commValue = 20;
-
-        // 최종 기여도 계산
         double contribution =
                 (taskCompletion * 0.5) +
                         (attendanceRate * 0.3) +
                         ((commValue / (double) totalCommunication) * 100 * 0.2);
 
-        // 응답 객체 생성
         return ContributionResponse.builder()
                 .id(userId)
                 .memberName(userClient.getUser(userId).getNickname())
@@ -77,9 +72,5 @@ public class ContributionService {
                 .contribution(Math.round(contribution))
                 .build();
     }
-
-
-
-
 }
 
