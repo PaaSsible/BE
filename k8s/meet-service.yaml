@@ -174,7 +174,7 @@ spec:
           args:
             - "--config"
             - "/etc/livekit/livekit.yaml"
-          # envFrom 제거 - LIVEKIT_PORT 같은 불필요한 환경변수 방지
+          env: []
           volumeMounts:
             - name: livekit-config
               mountPath: /etc/livekit/
@@ -206,7 +206,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: livekit
+  name: livekit-svc
   namespace: meet-service
 spec:
   selector:
@@ -228,7 +228,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/websocket-services: "livekit"
+    nginx.ingress.kubernetes.io/websocket-services: "livekit-svc"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -248,6 +248,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: livekit
+                name: livekit-svc
                 port:
                   number: 7880
