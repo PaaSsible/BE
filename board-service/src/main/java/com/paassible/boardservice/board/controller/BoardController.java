@@ -4,6 +4,8 @@ import com.paassible.boardservice.board.dto.*;
 import com.paassible.boardservice.board.entity.enums.BoardStatus;
 import com.paassible.boardservice.board.service.BoardManagementService;
 import com.paassible.boardservice.board.service.BoardMemberService;
+import com.paassible.boardservice.board.service.ContributionService;
+import com.paassible.boardservice.board.dto.ContributionResponse;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
@@ -24,6 +26,7 @@ public class BoardController {
 
     private final BoardManagementService boardManagementService;
     private final BoardMemberService boardMemberService;
+    private final ContributionService contributionService;
 
     @PostMapping
     @Operation(summary = "보드 생성", description = "새로운 프로젝트 보드를 생성합니다.")
@@ -99,5 +102,13 @@ public class BoardController {
                                                                       @PathVariable Long boardId) {
         BoardEntryResponse response = boardManagementService.enterBoard(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK,response));
+    }
+
+    @GetMapping("/{boardId}/members/scores")
+    @Operation(summary = "기여도", description = "기여도를 시각화합니다.")
+    public ResponseEntity<ApiResponse<List<ContributionResponse>>> getUserContribution(
+            @PathVariable Long boardId){
+        List<ContributionResponse> response = contributionService.getContributions(boardId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }
