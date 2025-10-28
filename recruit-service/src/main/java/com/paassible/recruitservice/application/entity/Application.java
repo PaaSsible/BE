@@ -43,4 +43,5 @@ public class Application  extends BaseEntity {
         this.rejectReason = reason.rejectReason();
     }
 
+
 }

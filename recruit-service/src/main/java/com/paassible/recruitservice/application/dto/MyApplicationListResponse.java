@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record MyApplicationListResponse(
+        Long applicationId,
         Long postId,
         String title,
         MainCategory mainCategory,
