@@ -111,6 +111,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: livekit
+                name: livekit-svc
                 port:
                   number: 7880
