@@ -49,4 +49,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<Long> searchIdsByKeyword(
             @Param("roomId") Long roomId,
             @Param("keyword") String keyword);
+
+    long countByRoomIdAndSenderId(Long roomId, Long senderId);
 }

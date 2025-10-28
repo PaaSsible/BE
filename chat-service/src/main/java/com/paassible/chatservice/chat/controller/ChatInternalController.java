@@ -1,10 +1,8 @@
 package com.paassible.chatservice.chat.controller;
 
-import com.paassible.chatservice.chat.dto.ChatRoomIdResponse;
-import com.paassible.chatservice.chat.dto.ChatRoomInviteRequest;
-import com.paassible.chatservice.chat.dto.ChatRoomRequest;
-import com.paassible.chatservice.chat.dto.ChatRoomResponse;
+import com.paassible.chatservice.chat.dto.*;
 import com.paassible.chatservice.chat.service.ChatRoomService;
+import com.paassible.chatservice.chat.service.CommunicationService;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +17,7 @@ import java.util.List;
 public class ChatInternalController {
 
     private final ChatRoomService chatRoomService;
+    private final CommunicationService communicationService;
 
     @PostMapping("/board")
     public ResponseEntity<Void> createGroupChat(@RequestParam("userId") Long userId,
@@ -65,5 +64,12 @@ public class ChatInternalController {
                                               @PathVariable("roomId") Long roomId) {
         chatRoomService.leaveRoom(userId, boardId, roomId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/communication")
+    public ResponseEntity<CommunicationResponse> getCommunicationFrequency(@RequestParam("userId") Long userId,
+                                                                           @RequestParam("boardId") Long boardId) {
+        CommunicationResponse response = communicationService.getCommunicationFrequency(userId, boardId);
+        return ResponseEntity.ok(response);
     }
 }
