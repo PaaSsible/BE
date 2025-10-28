@@ -133,20 +133,32 @@ spec:
             - sh
             - -c
             - |
+              # 환경변수를 실제 값으로 치환 (중괄호 없이)
               cat > /config/livekit.yaml <<EOF
               keys:
-                ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
+                $LIVEKIT_API_KEY: $LIVEKIT_API_SECRET
               port: 7880
               bind_addresses:
                 - 0.0.0.0
               rtc:
                 use_external_ip: true
+                port_range_start: 50000
+                port_range_end: 60000
               EOF
-              echo "LiveKit config generated successfully"
+              echo "=== LiveKit config generated ==="
               cat /config/livekit.yaml
-          envFrom:
-            - secretRef:
-                name: livekit-secret
+              echo "================================"
+          env:
+            - name: LIVEKIT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-secret
+                  key: LIVEKIT_API_KEY
+            - name: LIVEKIT_API_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: livekit-secret
+                  key: LIVEKIT_API_SECRET
           volumeMounts:
             - name: livekit-config
               mountPath: /config
@@ -156,25 +168,30 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 7880
+              name: http
+            - containerPort: 7881
+              name: rtc-tcp
           args:
             - "--config"
             - "/etc/livekit/livekit.yaml"
-          envFrom:
-            - secretRef:
-                name: livekit-secret
+          # envFrom 제거 - LIVEKIT_PORT 같은 불필요한 환경변수 방지
           volumeMounts:
             - name: livekit-config
               mountPath: /etc/livekit/
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /
+              port: 7880
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
               port: 7880
             initialDelaySeconds: 10
-            periodSeconds: 10
-          readinessProbe:
-            tcpSocket:
-              port: 7880
-            initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 3
           resources:
             requests:
               cpu: 100m
@@ -197,6 +214,10 @@ spec:
   ports:
     - port: 7880
       targetPort: 7880
+      name: http
+    - port: 7881
+      targetPort: 7881
+      name: rtc-tcp
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
