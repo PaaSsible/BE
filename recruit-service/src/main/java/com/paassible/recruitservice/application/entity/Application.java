@@ -1,5 +1,6 @@
 package com.paassible.recruitservice.application.entity;
 
+import com.paassible.common.entity.BaseEntity;
 import com.paassible.recruitservice.application.dto.RejectRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,7 +8,7 @@ import lombok.Getter;
 @Entity
 @Table(name = "applications")
 @Getter
-public class Application {
+public class Application  extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
