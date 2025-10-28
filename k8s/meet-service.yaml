@@ -1,5 +1,5 @@
 # =========================
-# MEET SERVICE (Deploy/Service/Ingress)
+# MEET SERVICE (Deployment / Service / Ingress)
 # =========================
 apiVersion: apps/v1
 kind: Deployment
@@ -10,6 +10,7 @@ metadata:
     app: meet-service
 spec:
   replicas: 1
+  progressDeadlineSeconds: 300
   selector:
     matchLabels:
       app: meet-service
@@ -38,11 +39,12 @@ spec:
                 name: livekit-secret
           resources:
             requests:
-              cpu: 200m
-              memory: 512Mi
+              cpu: 100m
+              memory: 200Mi
             limits:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 300m
+              memory: 400Mi
+
 ---
 apiVersion: v1
 kind: Service
@@ -56,6 +58,7 @@ spec:
     - port: 8080
       targetPort: 8080
   type: ClusterIP
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -83,6 +86,7 @@ spec:
     - host: meet.paassible.kro.kr
       http:
         paths:
+          # WebSocket endpoint
           - path: /meets/ws/meet
             pathType: Prefix
             backend:
@@ -90,6 +94,7 @@ spec:
                 name: meet-service
                 port:
                   number: 8080
+          # REST endpoints
           - path: /meets
             pathType: Prefix
             backend:
@@ -104,150 +109,3 @@ spec:
                 name: meet-service
                 port:
                   number: 8080
-
-# =========================
-# LIVEKIT (Deploy/Service/Ingress)
-# =========================
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: livekit
-  namespace: meet-service
-  labels:
-    app: livekit
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: livekit
-  template:
-    metadata:
-      labels:
-        app: livekit
-    spec:
-      initContainers:
-        - name: config-generator
-          image: busybox
-          command:
-            - sh
-            - -c
-            - |
-              # 환경변수를 실제 값으로 치환 (중괄호 없이)
-              cat > /config/livekit.yaml <<EOF
-              keys:
-                $LIVEKIT_API_KEY: $LIVEKIT_API_SECRET
-              port: 7880
-              bind_addresses:
-                - 0.0.0.0
-              rtc:
-                use_external_ip: true
-                port_range_start: 50000
-                port_range_end: 60000
-              EOF
-              echo "=== LiveKit config generated ==="
-              cat /config/livekit.yaml
-              echo "================================"
-          env:
-            - name: LIVEKIT_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: livekit-secret
-                  key: LIVEKIT_API_KEY
-            - name: LIVEKIT_API_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: livekit-secret
-                  key: LIVEKIT_API_SECRET
-          volumeMounts:
-            - name: livekit-config
-              mountPath: /config
-      containers:
-        - name: livekit
-          image: livekit/livekit-server:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 7880
-              name: http
-            - containerPort: 7881
-              name: rtc-tcp
-          args:
-            - "--config"
-            - "/etc/livekit/livekit.yaml"
-          env: []
-          volumeMounts:
-            - name: livekit-config
-              mountPath: /etc/livekit/
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 7880
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 7880
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 3
-          resources:
-            requests:
-              cpu: 100m
-              memory: 200Mi
-            limits:
-              cpu: 300m
-              memory: 400Mi
-      volumes:
-        - name: livekit-config
-          emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: livekit-svc
-  namespace: meet-service
-spec:
-  selector:
-    app: livekit
-  ports:
-    - port: 7880
-      targetPort: 7880
-      name: http
-    - port: 7881
-      targetPort: 7881
-      name: rtc-tcp
-  type: ClusterIP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: livekit-ingress
-  namespace: meet-service
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/websocket-services: "livekit-svc"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "https://paassible.kro.kr, http://localhost:5173"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - livekit.paassible.kro.kr
-      secretName: livekit-tls
-  rules:
-    - host: livekit.paassible.kro.kr
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: livekit-svc
-                port:
-                  number: 7880
