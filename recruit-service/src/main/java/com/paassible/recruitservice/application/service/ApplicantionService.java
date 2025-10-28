@@ -7,6 +7,8 @@ import com.paassible.recruitservice.application.entity.Application;
 import com.paassible.recruitservice.application.entity.ApplicationStatus;
 import com.paassible.recruitservice.application.repository.ApplicantionRepository;
 import com.paassible.recruitservice.client.BoardClient;
+import com.paassible.recruitservice.client.UserClient;
+import com.paassible.recruitservice.client.UserResponse;
 import com.paassible.recruitservice.post.dto.RecruitInfo;
 import com.paassible.recruitservice.post.entity.Post;
 import com.paassible.recruitservice.post.entity.Recruitment;
@@ -30,6 +32,7 @@ public class ApplicantionService {
     private final PostRepository postRepository;
     private final BoardClient boardClient;
     private final RecruitmentRepository recruitmentRepository;
+    private final UserClient userClient;
 
     @Transactional
     public void apply(Long postId, Long userId) {
@@ -63,7 +66,10 @@ public class ApplicantionService {
         List<Application> applications = applicationRepository.findAllByPostIdAndStatus(postId, ApplicationStatus.PENDING);
 
         return applications.stream()
-                .map(ApplicantResponse::from)
+                .map(app->{
+                    UserResponse user = userClient.getUser(app.getApplicantId());
+                    return ApplicantResponse.from(app,user);
+                })
                 .toList();
 
     }
