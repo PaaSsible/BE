@@ -2,6 +2,7 @@ package com.paassible.boardservice.task.service;
 
 import com.paassible.boardservice.board.entity.BoardMember;
 import com.paassible.boardservice.board.service.BoardMemberService;
+import com.paassible.boardservice.client.MeetClient;
 import com.paassible.boardservice.client.PositionClient;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.task.dto.ContributionResponse;
@@ -22,6 +23,7 @@ public class ContributionService {
 
     private final UserClient userClient;
     private final PositionClient positionClient;
+    private final MeetClient meetClient;
 
     public List<ContributionResponse> getContributions(Long boardId) {
 
@@ -49,7 +51,9 @@ public class ContributionService {
         double taskCompletion = tasks.isEmpty() ? 0 : (completed * 100.0 / tasks.size());
 
         // 회의 참석률 (추후 로직 변경 가능)
-        double attendanceRate = 50;
+        double attendanceRate = meetClient.getContribution(userId, boardId);
+
+
 
         // 커뮤니케이션 횟수 (임시 값)
         int commValue = 20;
@@ -73,6 +77,9 @@ public class ContributionService {
                 .contribution(Math.round(contribution))
                 .build();
     }
+
+
+
 
 }
 

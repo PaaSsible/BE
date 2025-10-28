@@ -34,4 +34,12 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
         AND p.userId != :excludeUserId 
     """)
     List<Long> findActiveUserIdsByMeetId(Long meetId,Long excludeUserId);
+
+    @Query("""
+        SELECT COUNT(DISTINCT p.meetId)
+        FROM Participant p
+        JOIN Meet m ON p.meetId = m.id
+        WHERE m.boardId = :boardId AND p.userId = :userId
+    """)
+    Long countUserMeetParticipation(@Param("boardId") Long boardId, @Param("userId") Long userId);
 }
