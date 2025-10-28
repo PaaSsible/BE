@@ -1,5 +1,6 @@
 package com.paassible.boardservice.client;
 
+import com.paassible.boardservice.chat.dto.ChatRoomIdResponse;
 import com.paassible.boardservice.chat.dto.ChatRoomInviteRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomResponse;
@@ -21,9 +22,9 @@ public interface ChatClient {
                         @RequestParam("boardId") Long boardId);
 
     @PostMapping("/chats/internal/rooms")
-    void createChatRoom(@RequestParam("userId") Long userId,
-                        @RequestParam("boardId") Long boardId,
-                        @RequestBody ChatRoomRequest request);
+    ChatRoomIdResponse createChatRoom(@RequestParam("userId") Long userId,
+                                      @RequestParam("boardId") Long boardId,
+                                      @RequestBody ChatRoomRequest request);
 
     @PostMapping("/chats/internal/rooms/{roomId}/invite")
     void inviteParticipants(@RequestParam("userId") Long userId,
