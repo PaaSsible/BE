@@ -46,3 +46,7 @@ meet-service:
 
 recruit-service:
   url: http://recruit-service.recruit-service:8080
+
+google:
+  gemini:
+    api-key: ${GEMINI_API_KEY}
