@@ -20,4 +20,7 @@ public interface MeetRepository extends JpaRepository<Meet, Long> {
 
     Optional<Meet> findByBoardIdAndStatus(Long boardId, MeetingStatus status);
 
+    @Query("SELECT COUNT(m) FROM Meet m WHERE m.boardId = :boardId")
+    Long countByBoardId(@Param("boardId") Long boardId);
+
 }
