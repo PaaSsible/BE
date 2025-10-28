@@ -61,7 +61,7 @@ public enum ErrorCode implements BaseResponseCode {
     COMMENT_UPDATE_FORBIDDEN(HttpStatus.FORBIDDEN, "P008", "댓글 수정 권한이 없습니다."),
     COMMENT_DELETE_FORBIDDEN(HttpStatus.FORBIDDEN, "P009", "댓글 삭제 권한이 없습니다."),
 
-    APPLICATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 신청한 지원입니다."),
+    APPLICATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 지원한 모집글입니다."),
     APPLICATION_UNAUTHORIZED(HttpStatus.FORBIDDEN, "A002", "해당 게시글의 지원자 관련 기능에 접근할 권한이 없습니다."),
     APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "A003", "존재하지 않는 지원입니다."),
     APPLICATION_MISMATCH(HttpStatus.BAD_REQUEST, "A004", "해당 모집글의 지원이 아닙니다."),
