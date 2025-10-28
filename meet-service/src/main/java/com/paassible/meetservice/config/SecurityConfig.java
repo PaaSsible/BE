@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/meets/internal/**").permitAll()
                         .requestMatchers("/meets/ws/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         //.requestMatchers("/app/**").permitAll()

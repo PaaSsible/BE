@@ -14,4 +14,5 @@ public class UserResponse {
     private String major;
     private String profileImageUrl;
     private String role;
+    private Long positionId;
 }
