@@ -1,5 +1,6 @@
 package com.paassible.chatservice.chat.controller;
 
+import com.paassible.chatservice.chat.dto.ChatRoomIdResponse;
 import com.paassible.chatservice.chat.dto.ChatRoomInviteRequest;
 import com.paassible.chatservice.chat.dto.ChatRoomRequest;
 import com.paassible.chatservice.chat.dto.ChatRoomResponse;
@@ -35,11 +36,11 @@ public class ChatInternalController {
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity<Void> createChatRoom(@RequestParam("userId") Long userId,
-                                               @RequestParam("boardId") Long boardId,
-                                               @RequestBody ChatRoomRequest request) {
-        chatRoomService.createChatRoom(userId, boardId, request);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<ChatRoomIdResponse> createChatRoom(@RequestParam("userId") Long userId,
+                                                             @RequestParam("boardId") Long boardId,
+                                                             @RequestBody ChatRoomRequest request) {
+        ChatRoomIdResponse response = chatRoomService.createChatRoom(userId, boardId, request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/rooms/{roomId}/invite")

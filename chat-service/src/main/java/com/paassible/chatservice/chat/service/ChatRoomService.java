@@ -1,9 +1,6 @@
 package com.paassible.chatservice.chat.service;
 
-import com.paassible.chatservice.chat.dto.ChatRoomInviteRequest;
-import com.paassible.chatservice.chat.dto.ChatRoomRequest;
-import com.paassible.chatservice.chat.dto.ChatRoomResponse;
-import com.paassible.chatservice.chat.dto.SystemMessageResponse;
+import com.paassible.chatservice.chat.dto.*;
 import com.paassible.chatservice.chat.entity.ChatMessage;
 import com.paassible.chatservice.chat.entity.ChatRoom;
 import com.paassible.chatservice.chat.entity.RoomParticipant;
@@ -66,7 +63,7 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void createChatRoom(Long userId, Long boardId, ChatRoomRequest request) {
+    public ChatRoomIdResponse createChatRoom(Long userId, Long boardId, ChatRoomRequest request) {
         List<Long> participantIds = request.getParticipantIds();
         if (!participantIds.contains(userId)) {
             participantIds.add(userId);
@@ -96,6 +93,8 @@ public class ChatRoomService {
         for (Long id : participantIds) {
             roomParticipantService.saveRoomParticipant(savedRoom.getId(), id);
         }
+
+        return new ChatRoomIdResponse(savedRoom.getId());
     }
 
     @Transactional

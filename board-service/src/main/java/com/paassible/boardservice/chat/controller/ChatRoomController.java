@@ -1,5 +1,6 @@
 package com.paassible.boardservice.chat.controller;
 
+import com.paassible.boardservice.chat.dto.ChatRoomIdResponse;
 import com.paassible.boardservice.chat.dto.ChatRoomInviteRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomResponse;
@@ -24,13 +25,13 @@ public class ChatRoomController {
 
     @PostMapping("/rooms")
     @Operation(summary = "보드 내 채팅방 생성", description = "보드 안에서 새로운 채팅방을 생성한다.")
-    public ResponseEntity<ApiResponse<Void>> createChatRoom(
+    public ResponseEntity<ApiResponse<ChatRoomIdResponse>> createChatRoom(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long boardId,
             @RequestBody ChatRoomRequest request) {
 
-        chatClient.createChatRoom(user.getUserId(), boardId,  request);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED));
+        ChatRoomIdResponse response = chatClient.createChatRoom(user.getUserId(), boardId,  request);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.CREATED, response));
     }
 
     @PostMapping("/rooms/{roomId}/invite")
