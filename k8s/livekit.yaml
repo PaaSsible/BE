@@ -1,3 +1,6 @@
+# =========================
+# LIVEKIT (Deployment / Service / Ingress)
+# =========================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,56 +32,69 @@ spec:
             - -c
             - |
               echo "Generating livekit.yaml..."
-              cat > /config/livekit.yaml <<'EOF'
-keys:
-  $LIVEKIT_API_KEY: $LIVEKIT_API_SECRET
+              cat > /config/livekit.yaml <<EOF
+              keys:
+                $LIVEKIT_API_KEY: $LIVEKIT_API_SECRET
 
-port: 7880
-bind_addresses:
-  - 0.0.0.0
+              port: 7880
+              bind_addresses:
+                - 0.0.0.0
 
-rtc:
-  use_external_ip: true
-  port_range_start: 50000
-  port_range_end: 60000
-  tcp_port: 7881
-  use_turn: true
+              rtc:
+                tcp_port: 7881
+                port_range_start: 50000
+                port_range_end: 60000
+                use_external_ip: true
+              
+                # STUN 서버 설정
+                stun_servers:
+                  - stun:stun.l.google.com:19302
+                  - stun:stun1.l.google.com:19302
+              
+                # TURN 서버 설정 (공개 무료 서버)
+                turn_servers:
+                  - host: stun:stun.l.google.com:19302
+                    protocol: udp
+                  - host: turn:openrelay.metered.ca:80
+                    username: openrelayproject
+                    credential: openrelayproject
+                    protocol: udp
+                  - host: turn:openrelay.metered.ca:443
+                    username: openrelayproject
+                    credential: openrelayproject
+                    protocol: tcp
+              EOF
+              echo "=== Generated Config ==="
+              cat /config/livekit.yaml
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+      containers:
+        - name: livekit
+          image: livekit/livekit-server:latest
+          args: ["--config", "/config/livekit.yaml"]
+          ports:
+            - containerPort: 7880
+              name: http
+            - containerPort: 7881
+              name: rtc-tcp
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+          envFrom:
+            - secretRef:
+                name: livekit-secret
+          env:
+            - name: LIVEKIT_PORT
+              value: "7880"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 
-  stun_servers:
-    - stun:stun.l.google.com:19302
-    - stun:stun1.l.google.com:19302
-  EOF
-  echo "=== Generated Config ==="
-  cat /config/livekit.yaml
-volumeMounts:
-    - name: config-volume
-      mountPath: /config
-
-containers:
-  - name: livekit
-    image: livekit/livekit-server:latest
-    args: ["--config", "/config/livekit.yaml"]
-    ports:
-      - containerPort: 7880
-        name: http
-      - containerPort: 7881
-        name: rtc-tcp
-    volumeMounts:
-      - name: config-volume
-        mountPath: /config
-    envFrom:
-      - secretRef:
-          name: livekit-secret
-    env:
-      - name: LIVEKIT_PORT
-        value: "7880"
-    resources:
-      requests:
-        cpu: 100m
-        memory: 200Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -98,6 +114,7 @@ spec:
       protocol: TCP
       name: rtc-tcp
   type: ClusterIP
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -110,6 +127,9 @@ metadata:
     nginx.ingress.kubernetes.io/websocket-services: "livekit-svc"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
 spec:
   ingressClassName: nginx
   tls:
