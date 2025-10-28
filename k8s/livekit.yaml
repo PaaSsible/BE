@@ -89,7 +89,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: livekit-svc
+  name: livekit-service
   namespace: meet-service
 spec:
   selector:
@@ -113,7 +113,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/websocket-services: "livekit-svc"
+    nginx.ingress.kubernetes.io/websocket-services: "livekit-service"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
@@ -130,6 +130,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: livekit-svc
+                name: livekit-service
                 port:
                   number: 7880
