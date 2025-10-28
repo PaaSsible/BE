@@ -29,8 +29,6 @@ public class UserService {
     private final PositionClient positionClient;
     private final StackClient stackClient;
 
-    private final ObjectStorageService fileStorageService;
-
     public static final String DEFAULT_PROFILE_IMAGE_URL = "https://example.com/images/default-profile.png";
 
     public User getUser(Long userId) {

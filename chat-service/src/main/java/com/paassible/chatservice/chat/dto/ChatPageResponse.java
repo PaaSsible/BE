@@ -18,9 +18,9 @@ public class ChatPageResponse {
     private boolean hasPrevious;
     private int size;
 
-    public static ChatPageResponse from(Page<ChatMessageResponse> page) {
+    public static ChatPageResponse from(Page<ChatMessageResponse> page, List<ChatMessageResponse> messages) {
         return ChatPageResponse.builder()
-                .messages(page.getContent())
+                .messages(messages)
                 .currentPage(page.getNumber())
                 .totalPages(page.getTotalPages())
                 .totalElements(page.getTotalElements())

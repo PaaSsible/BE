@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,13 +56,19 @@ public class ChatRoomMessageService {
         chatRoomService.validateRoom(roomId);
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
         Page<ChatMessageResponse> messagePage =
                 chatMessageRepository.findByRoomId(roomId, pageable)
-                .map(chatMessageMapper::toResponse);
+                        .map(chatMessageMapper::toResponse);
 
-        return ChatPageResponse.from(messagePage);
+        List<ChatMessageResponse> sortedMessages = messagePage
+                .getContent()
+                .stream()
+                .sorted(Comparator.comparing(ChatMessageResponse::getCreatedAt))
+                .toList();
+
+        return ChatPageResponse.from(messagePage, sortedMessages);
     }
 
     public MessageSearchResponse searchMessages(Long userId, Long roomId, String keyword) {
