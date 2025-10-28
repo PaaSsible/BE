@@ -3,12 +3,11 @@ package com.paassible.userservice.user.service;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.userservice.client.PositionClient;
-import com.paassible.userservice.user.dto.PortfolioDetailResponse;
-import com.paassible.userservice.user.dto.PortfolioPageResponse;
-import com.paassible.userservice.user.dto.PortfolioRequest;
-import com.paassible.userservice.user.dto.PortfolioResponse;
+import com.paassible.userservice.user.dto.*;
 import com.paassible.userservice.user.entity.Portfolio;
 import com.paassible.userservice.user.entity.User;
+import com.paassible.userservice.user.entity.enums.MainCategory;
+import com.paassible.userservice.user.entity.enums.SubCategory;
 import com.paassible.userservice.user.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,6 +45,23 @@ public class PortfolioService {
 
         portfolioRepository.save(portfolio);
     }
+
+    @Transactional
+    public void createPortfolioAi(PortfolioAiRequest request) {
+        Portfolio portfolio = Portfolio.builder()
+                .userId(request.getUserId())
+                .positionId(request.getPositionId())
+                .title(request.getTitle())
+                .summary(request.getSummary())
+                .description(request.getDescription())
+                .mainCategory(MainCategory.valueOf(request.getMainCategory()))
+                .subCategory(SubCategory.valueOf(request.getSubCategory()))
+                .contribution(request.getContribution())
+                .build();
+
+        portfolioRepository.save(portfolio);
+    }
+
 
     @Transactional
     public void updatePortfolio(Long userId, Long portfolioId, PortfolioRequest request) {
