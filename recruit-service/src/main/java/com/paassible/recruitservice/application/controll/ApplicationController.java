@@ -43,7 +43,7 @@ public class ApplicationController {
     @PostMapping("/{postId}/applications/{applicationId}/reject")
     public ApiResponse<Void> rejectApplication(
             @PathVariable("postId") Long postId,
-            @PathVariable("applicantId") Long applicantId,
+            @PathVariable("applicationId") Long applicantId,
             @AuthenticationPrincipal UserJwtDto user,
             @RequestBody RejectRequest request){
         applicationService.reject(postId,applicantId, request, user.getUserId());
