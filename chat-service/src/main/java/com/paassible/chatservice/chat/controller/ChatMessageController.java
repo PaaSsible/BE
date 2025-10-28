@@ -3,7 +3,7 @@ package com.paassible.chatservice.chat.controller;
 import com.paassible.chatservice.chat.dto.*;
 import com.paassible.chatservice.chat.entity.enums.MessageType;
 import com.paassible.chatservice.chat.service.ChatRoomMessageService;
-import com.paassible.chatservice.chat.dto.CursorPageResponse;
+import com.paassible.chatservice.chat.dto.ChatPageResponse;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
@@ -48,14 +48,12 @@ public class ChatMessageController {
 
     @GetMapping("/rooms/{roomId}/messages")
     @Operation(summary = "채팅방 상세 조회", description = "채팅방의 메시지 목록을 조회한다.")
-    public ResponseEntity<ApiResponse<CursorPageResponse<ChatMessageResponse>>> getMessages(
+    public ResponseEntity<ApiResponse<ChatPageResponse>> getMessages(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long roomId,
-            @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "5") int size,
-            String direction
-    ) {
-        CursorPageResponse<ChatMessageResponse> response = chatMessageService.getMessages(user.getUserId(), roomId, cursor, size, direction);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        ChatPageResponse response = chatMessageService.getMessages(user.getUserId(), roomId, page, size);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
