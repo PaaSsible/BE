@@ -75,4 +75,8 @@ public class TaskService {
     public List<Task> getTasksByBoard(Long boardId) {
         return taskRepository.findByBoardId(boardId);
     }
+
+    public List<Task> getAssigneeTasks(Long userId, Long boardId) {
+        return taskRepository.findAssignedTasks(boardId, userId);
+    }
 }
