@@ -27,6 +27,9 @@ dependencies {
 
     // openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // gemini
+    implementation 'com.google.genai:google-genai:1.0.0'
 }
 
 dependencyManagement {

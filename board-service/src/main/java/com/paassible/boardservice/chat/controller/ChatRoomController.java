@@ -9,6 +9,7 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/boards/{boardId}/chats")
 @RequiredArgsConstructor
+@Tag(name = "보드 내 채팅 API", description = "채팅방 생성, 초대, 조회, 퇴장")
 public class ChatRoomController {
 
     private final ChatClient chatClient;

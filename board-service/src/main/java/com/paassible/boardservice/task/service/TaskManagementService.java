@@ -107,4 +107,5 @@ public class TaskManagementService {
 
         return TaskResponse.from(task, positions, assignees);
     }
+
 }

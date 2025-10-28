@@ -26,4 +26,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // 이번 주 마감 포함 완료된 업무 수
     long countByBoardIdAndDueDateBetweenAndStatus(Long boardId, LocalDate start, LocalDate end, TaskStatus status);
 
+    @Query("""
+        SELECT t
+        FROM Task t
+        JOIN TaskAssignee a ON t.id = a.taskId
+        WHERE t.boardId = :boardId
+        AND a.userId = :userId
+    """)
+    List<Task> findAssignedTasks(@Param("boardId") Long boardId, @Param("userId") Long userId);
+
 }
