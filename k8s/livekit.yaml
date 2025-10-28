@@ -29,9 +29,9 @@ spec:
             - -c
             - |
               echo "Generating livekit.yaml..."
-              cat > /config/livekit.yaml <<'EOF'
+              cat > /config/livekit.yaml <<EOF
               keys:
-                $LIVEKIT_API_KEY: $LIVEKIT_API_SECRET
+                ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
 
               port: 7880
               bind_addresses:
@@ -42,10 +42,8 @@ spec:
                 port_range_start: 50000
                 port_range_end: 60000
                 tcp_port: 7881
-              
+
                 turn_servers:
-                  - host: stun.l.google.com:19302
-                    protocol: udp
                   - host: openrelay.metered.ca:80
                     username: openrelayproject
                     credential: openrelayproject
@@ -56,8 +54,8 @@ spec:
                     protocol: tcp
 
                 stun_servers:
-                  - stun:stun.l.google.com:19302
-                  - stun:stun1.l.google.com:19302
+                  - stun.l.google.com:19302
+                  - stun1.l.google.com:19302
               EOF
               echo "=== Generated Config ==="
               cat /config/livekit.yaml
@@ -80,9 +78,6 @@ spec:
           envFrom:
             - secretRef:
                 name: livekit-secret
-          env:
-            - name: LIVEKIT_PORT
-              value: "7880"
           resources:
             requests:
               cpu: 100m
