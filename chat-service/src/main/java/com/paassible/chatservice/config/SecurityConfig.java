@@ -49,7 +49,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/chats/swagger-ui/**",
                                 "/chats/v3/api-docs/**",
-                                "/chats/internal/**"
+                                "/chats/internal/**",
+                                "/chats/ws-chat/**"
                         ).permitAll()
                         .requestMatchers("/chats/**").authenticated()
                         .anyRequest().permitAll()
