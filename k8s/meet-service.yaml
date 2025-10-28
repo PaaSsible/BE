@@ -38,11 +38,11 @@ spec:
                 name: livekit-secret
           resources:
             requests:
-              cpu: 100m
-              memory: 200Mi
+              cpu: 200m
+              memory: 512Mi
             limits:
-              cpu: 300m
-              memory: 400Mi
+              cpu: 500m
+              memory: 1Gi
 ---
 apiVersion: v1
 kind: Service
@@ -65,10 +65,9 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/websocket-services: "meet-service"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/websocket-services: "meet-service"
-
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "https://paassible.kro.kr, http://localhost:5173"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
@@ -106,26 +105,9 @@ spec:
                 port:
                   number: 8080
 
-
 # =========================
-# LIVEKIT (ConfigMap/Deploy/Service/Ingress)
+# LIVEKIT (Deploy/Service/Ingress)
 # =========================
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: livekit-config
-  namespace: meet-service
-data:
-  livekit.yaml: |
-    keys:
-      ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
-
-    port: 7880
-    bind_addresses:
-      - 0.0.0.0
-    rtc:
-      use_external_ip: true
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -144,6 +126,30 @@ spec:
       labels:
         app: livekit
     spec:
+      initContainers:
+        - name: config-generator
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              cat > /config/livekit.yaml <<EOF
+              keys:
+                ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
+              port: 7880
+              bind_addresses:
+                - 0.0.0.0
+              rtc:
+                use_external_ip: true
+              EOF
+              echo "LiveKit config generated successfully"
+              cat /config/livekit.yaml
+          envFrom:
+            - secretRef:
+                name: livekit-secret
+          volumeMounts:
+            - name: livekit-config
+              mountPath: /config
       containers:
         - name: livekit
           image: livekit/livekit-server:latest
@@ -153,9 +159,6 @@ spec:
           args:
             - "--config"
             - "/etc/livekit/livekit.yaml"
-          env:
-            - name: LIVEKIT_PORT
-              value: "7880"
           envFrom:
             - secretRef:
                 name: livekit-secret
@@ -165,12 +168,12 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 7880
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
               port: 7880
-            initialDelaySeconds: 3
+            initialDelaySeconds: 5
             periodSeconds: 5
           resources:
             requests:
@@ -181,8 +184,7 @@ spec:
               memory: 400Mi
       volumes:
         - name: livekit-config
-          configMap:
-            name: livekit-config
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -205,6 +207,12 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/websocket-services: "livekit"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://paassible.kro.kr, http://localhost:5173"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
 spec:
   ingressClassName: nginx
   tls:
