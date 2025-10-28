@@ -57,6 +57,7 @@ public class PortfolioService {
                 .mainCategory(MainCategory.valueOf(request.getMainCategory()))
                 .subCategory(SubCategory.valueOf(request.getSubCategory()))
                 .contribution(request.getContribution())
+                .generatedByAi(true)
                 .build();
 
         portfolioRepository.save(portfolio);
