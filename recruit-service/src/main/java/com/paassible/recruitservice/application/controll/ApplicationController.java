@@ -3,10 +3,7 @@ package com.paassible.recruitservice.application.controll;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
-import com.paassible.recruitservice.application.dto.AcceptRequest;
-import com.paassible.recruitservice.application.dto.ApplicantResponse;
-import com.paassible.recruitservice.application.dto.MyApplicationListResponse;
-import com.paassible.recruitservice.application.dto.RejectRequest;
+import com.paassible.recruitservice.application.dto.*;
 import com.paassible.recruitservice.application.service.ApplicantionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -81,6 +78,17 @@ public class ApplicationController {
         applicationService.cancel(applicationId,user.getUserId());
         return ApiResponse.success(SuccessCode.DELETED);
     }
+
+    @Operation(summary = "모집 거절 이유 확인")
+    @GetMapping("/{applicationId}/reject-reason")
+    public ApiResponse<RejectReasonResponse> getRejectReason(
+            @PathVariable Long applicationId,
+            @AuthenticationPrincipal UserJwtDto user
+    ) {
+        RejectReasonResponse response = applicationService.getRejectReason(applicationId, user.getUserId());
+        return ApiResponse.success(SuccessCode.OK, response);
+    }
+
 
 
 }

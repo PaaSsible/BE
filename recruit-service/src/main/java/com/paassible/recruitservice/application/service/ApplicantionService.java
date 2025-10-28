@@ -180,4 +180,22 @@ public class ApplicantionService {
         applicationRepository.delete(application);
     }
 
+    @Transactional(readOnly = true)
+    public RejectReasonResponse getRejectReason(Long applicationId, Long userId) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.APPLICATION_NOT_FOUND));
+
+        if (!application.getApplicantId().equals(userId)) {
+            throw new CustomException(ErrorCode.APPLICATION_REJECT_REASON_FORBIDDEN);
+        }
+
+        if (application.getStatus() != ApplicationStatus.REJECTED) {
+            throw new CustomException(ErrorCode.APPLICATION_NOT_REJECTED);
+        }
+
+        return RejectReasonResponse.from(application.getId(), application.getRejectReason());
+    }
+
+
+
 }

@@ -68,6 +68,9 @@ public enum ErrorCode implements BaseResponseCode {
     CANNOT_APPLY_TO_OWN_POST(HttpStatus.FORBIDDEN, "A005", "자신이 작성한 모집글에는 지원할 수 없습니다."),
     CANNOT_CANCEL_ACCEPTED_APPLICATION(HttpStatus.BAD_REQUEST, "A006", "수락된 지원은 취소할 수 없습니다."),
     APPLICATION_UNAUTHORIZED_CANCEL(HttpStatus.FORBIDDEN, "A007", "본인이 지원한 내역만 취소할 수 있습니다."),
+    APPLICATION_REJECT_REASON_FORBIDDEN(HttpStatus.FORBIDDEN, "A004", "본인이 지원한 내역의 거절 사유만 확인할 수 있습니다."),
+    APPLICATION_NOT_REJECTED(HttpStatus.BAD_REQUEST, "A005", "거절된 지원만 사유를 확인할 수 있습니다."),
+
 
 
     //meet
