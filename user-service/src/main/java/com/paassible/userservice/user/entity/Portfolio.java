@@ -25,6 +25,7 @@ public class Portfolio extends BaseEntity {
 
     private String summary;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)

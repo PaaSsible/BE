@@ -49,7 +49,6 @@ public class PortfolioAiService {
         userClient.generatePortfolioAi(request);
 
         return request;
-
     }
 
     public PortfolioAiRequest createPortfolio(Long userId, Long boardId, GenerateContentResponse response) {
@@ -82,13 +81,14 @@ public class PortfolioAiService {
                 .map(task -> new PortfolioTemplate.FeatureData(task.getTitle(), task.getDescription()))
                 .toList();
 
-        // 이것도 기여도에서 구성 요소니까
-        String achievements ="- 회의 출석률: 95%\n" +
-                "- 작업 처리율: 12개 중 11개 완료\n" +
-                "- 최종 결과: 전국 대학생 공모전 제출";
+        ContributionResponse response = contributionService.getContributionForMember(userId, boardId, positionId);
 
-        double contribution = contributionService.getContributionForMember(userId, boardId, positionId).getContribution();
+        String taskCompletion = String.valueOf(response.getTaskCompletion());
+        String attendanceRate = String.valueOf(response.getAttendanceRate());
+        String value = String.valueOf(response.getCommunicationFrequency().getValue());
+        String total = String.valueOf(response.getCommunicationFrequency().getTotal());
+        String contribution = String.valueOf(response.getContribution());
 
-        return portfolioTemplate.buildPrompt(projectName, position, features, achievements, String.valueOf(contribution));
+        return portfolioTemplate.buildPrompt(projectName, position, features, taskCompletion, attendanceRate, value, total, contribution);
     }
 }

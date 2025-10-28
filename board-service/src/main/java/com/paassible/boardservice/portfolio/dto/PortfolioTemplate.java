@@ -12,7 +12,10 @@ public class PortfolioTemplate {
             String projectName,
             String position,
             List<FeatureData> features,
-            String achievements,
+            String taskCompletion,
+            String attendanceRate,
+            String value,
+            String total,
             String contribution
     ) {
         StringBuilder featureSection = new StringBuilder();
@@ -40,7 +43,6 @@ public class PortfolioTemplate {
         }
 
         return String.format("""
-            너는 개발자 포트폴리오를 작성하는 전문가다.
             아래 프로젝트 정보를 기반으로 Markdown 형식의 구조화된 포트폴리오를 완성하라.
 
             ---
@@ -61,10 +63,10 @@ public class PortfolioTemplate {
 
             ---
             📈 성과
-            %s
-
-            ⭐️ 기여도
-            %s
+            작업률 : %s
+            회의 참석률 : %s
+            커뮤니케이션 빈도 : %s/%s
+            기여도 : %s
 
             💬 기술 스택
             기능 설명 기반으로 자동 분석
@@ -79,7 +81,10 @@ public class PortfolioTemplate {
                 projectName,
                 position,
                 featureSection,
-                achievements,
+                taskCompletion,
+                attendanceRate,
+                value,
+                total,
                 contribution
         );
     }
