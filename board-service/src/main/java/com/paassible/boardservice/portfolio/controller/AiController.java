@@ -1,6 +1,7 @@
 package com.paassible.boardservice.portfolio.controller;
 
 import com.paassible.boardservice.portfolio.dto.PortfolioAiRequest;
+import com.paassible.boardservice.portfolio.dto.PortfolioAiResponse;
 import com.paassible.boardservice.portfolio.service.PortfolioAiService;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
@@ -25,11 +26,11 @@ public class AiController {
 
     @PostMapping("/{boardId}/portfolio")
     @Operation(summary = "프로젝트 AI 포트폴리오 생성", description = "해당 프로젝트 보드의 포트폴리오를 AI가 생성한다.")
-    public ResponseEntity<ApiResponse<PortfolioAiRequest>> generatePortfolio(
+    public ResponseEntity<ApiResponse<PortfolioAiResponse>> generatePortfolio(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long boardId
     ) {
-        PortfolioAiRequest response = portfolioAiService.generatePortfolioByAi(user.getUserId(), boardId);
+        PortfolioAiResponse response = portfolioAiService.generatePortfolioByAi(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }

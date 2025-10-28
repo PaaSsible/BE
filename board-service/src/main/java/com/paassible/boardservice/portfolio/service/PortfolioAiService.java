@@ -11,6 +11,7 @@ import com.paassible.boardservice.board.service.ContributionService;
 import com.paassible.boardservice.client.PositionClient;
 import com.paassible.boardservice.client.UserClient;
 import com.paassible.boardservice.portfolio.dto.PortfolioAiRequest;
+import com.paassible.boardservice.portfolio.dto.PortfolioAiResponse;
 import com.paassible.boardservice.portfolio.dto.PortfolioTemplate;
 import com.paassible.boardservice.board.dto.ContributionResponse;
 import com.paassible.boardservice.task.entity.Task;
@@ -38,7 +39,7 @@ public class PortfolioAiService {
 
     private final TaskService taskService;
 
-    public PortfolioAiRequest generatePortfolioByAi(Long userId, Long boardId) {
+    public PortfolioAiResponse generatePortfolioByAi(Long userId, Long boardId) {
 
         String prompt = generatePromptTemplate(userId, boardId);
 
@@ -48,7 +49,8 @@ public class PortfolioAiService {
         PortfolioAiRequest request = createPortfolio(userId, boardId, response);
         userClient.generatePortfolioAi(request);
 
-        return request;
+        String positionName = positionClient.getPositionName(request.getPositionId());
+        return PortfolioAiResponse.from(request, positionName);
     }
 
     public PortfolioAiRequest createPortfolio(Long userId, Long boardId, GenerateContentResponse response) {
