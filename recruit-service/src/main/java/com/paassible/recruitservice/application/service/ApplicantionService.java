@@ -2,20 +2,25 @@ package com.paassible.recruitservice.application.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
-import com.paassible.recruitservice.application.dto.AcceptRequest;
-import com.paassible.recruitservice.application.dto.ApplicantResponse;
-import com.paassible.recruitservice.application.dto.RejectRequest;
+import com.paassible.recruitservice.application.dto.*;
 import com.paassible.recruitservice.application.entity.Application;
 import com.paassible.recruitservice.application.entity.ApplicationStatus;
 import com.paassible.recruitservice.application.repository.ApplicantionRepository;
 import com.paassible.recruitservice.client.BoardClient;
+import com.paassible.recruitservice.post.dto.RecruitInfo;
 import com.paassible.recruitservice.post.entity.Post;
+import com.paassible.recruitservice.post.entity.Recruitment;
 import com.paassible.recruitservice.post.repository.PostRepository;
+import com.paassible.recruitservice.post.repository.RecruitmentRepository;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,7 @@ public class ApplicantionService {
     private final ApplicantionRepository applicationRepository;
     private final PostRepository postRepository;
     private final BoardClient boardClient;
+    private final RecruitmentRepository recruitmentRepository;
 
     @Transactional
     public void apply(Long postId, Long userId) {
@@ -103,6 +109,56 @@ public class ApplicantionService {
         boardClient.addMember(acceptRequest.boardId(), application.getApplicantId());
     }
 
+    @Transactional(readOnly = true)
+    public List<MyApplicationListResponse> getMyApplications(Long userId) {
 
+        List<Application> myApps = applicationRepository.findAllByApplicantIdOrderByUpdatedAtDesc(userId);
+
+        List<Long> postIds = myApps.stream()
+                .map(Application::getPostId)
+                .toList();
+
+
+        Map<Long, List<RecruitInfo>> recruitMap = getRecruitmentsByPostIds(postIds);
+
+        return myApps.stream().map(app -> {
+            Post post = postRepository.findById(app.getPostId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+            List<RecruitInfo> recruits = recruitMap.getOrDefault(post.getId(), Collections.emptyList());
+
+            return new MyApplicationListResponse(
+                    post.getId(),
+                    post.getTitle(),
+                    post.getMainCategory(),
+                    post.getSubCategory(),
+                    post.getCreatedAt(),
+                    post.getUpdatedAt(),
+                    post.getDeadline(),
+                    post.getViewCount(),
+                    post.getApplicationCount(),
+                    recruits,
+                    app.getStatus()
+            );
+        }).toList();
+    }
+
+    private Map<Long, List<RecruitInfo>> getRecruitmentsByPostIds(List<Long> postIds) {
+        var recruitmentList = recruitmentRepository.findByPostIdIn(postIds);
+
+        return recruitmentList.stream()
+                .collect(Collectors.groupingBy(
+                        Recruitment::getPostId,
+                        Collectors.collectingAndThen(
+                                Collectors.groupingBy(
+                                        Recruitment::getPositionId,
+                                        Collectors.mapping(Recruitment::getStackId, Collectors.toList())
+                                ),
+                                map -> map.entrySet().stream()
+                                        .map(e -> new RecruitInfo(e.getKey(), e.getValue()))
+                                        .toList()
+                        )
+                ));
+    }
 
 }
