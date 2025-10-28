@@ -31,7 +31,7 @@ public class MeetController {
     }
 
     @PostMapping("/{meetId}/participants")
-    @Operation(summary = "회의  참가", description = "회의 참가를 요쳥합니다.")
+    @Operation(summary = "회의 참가", description = "회의 참가를 요쳥합니다.")
     public ResponseEntity<ApiResponse<MeetJoinResponse>> joinMeet(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long meetId){
