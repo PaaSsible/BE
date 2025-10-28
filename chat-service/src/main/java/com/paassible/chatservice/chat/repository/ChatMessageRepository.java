@@ -2,6 +2,7 @@ package com.paassible.chatservice.chat.repository;
 
 import com.paassible.chatservice.chat.entity.ChatMessage;
 import com.paassible.chatservice.chat.entity.enums.MessageType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,7 +15,7 @@ import java.util.List;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    List<ChatMessage> findByRoomIdOrderByCreatedAtDesc(Long roomId, Pageable pageable);
+    Page<ChatMessage> findByRoomId(Long roomId, Pageable pageable);
 
     @Query("SELECT m FROM ChatMessage m " +
             "WHERE m.roomId = :roomId " +

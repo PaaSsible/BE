@@ -7,10 +7,11 @@ import com.paassible.chatservice.chat.repository.ChatMessageRepository;
 import com.paassible.chatservice.client.user.UserClient;
 import com.paassible.chatservice.client.user.UserResponse;
 import com.paassible.chatservice.file.service.ObjectStorageService;
-import com.paassible.chatservice.chat.dto.CursorPageResponse;
+import com.paassible.chatservice.chat.dto.ChatPageResponse;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -50,44 +51,17 @@ public class ChatRoomMessageService {
         return ChatMessageResponse.from(msg, user, 0L);
     }
 
-    public CursorPageResponse<ChatMessageResponse> getMessages(Long userId, Long roomId, Long cursor, int size, String direction) {
+    public ChatPageResponse getMessages(Long userId, Long roomId, int page, int size) {
         chatRoomService.validateRoom(roomId);
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
-        List<ChatMessage> messages;
-        Pageable pageable = PageRequest.of(0, size+1);
+        Pageable pageable = PageRequest.of(page, size);
 
-        if (cursor == null) {
-            messages = chatMessageRepository.findByRoomIdOrderByCreatedAtDesc(roomId, pageable);
-        } else {
-            ChatMessage cursorMessage = chatMessageRepository.findById(cursor)
-                    .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CURSOR));
+        Page<ChatMessageResponse> messagePage =
+                chatMessageRepository.findByRoomId(roomId, pageable)
+                .map(chatMessageMapper::toResponse);
 
-            if ("down".equals(direction)) {
-                messages = chatMessageRepository.findMessagesAfter(roomId, cursorMessage.getCreatedAt(), pageable);
-            } else {
-                messages = chatMessageRepository.findMessagesBefore(roomId, cursorMessage.getCreatedAt(), pageable);
-            }
-        }
-
-        boolean hasNext = messages.size() > size;
-        if (hasNext) {
-            messages = messages.subList(0, size);
-        }
-
-        messages.sort(Comparator.comparing(ChatMessage::getCreatedAt));
-
-        Long nextCursor = null;
-        if (!messages.isEmpty()) {
-            if ("down".equals(direction)) {
-                nextCursor = messages.get(messages.size() - 1).getId();
-            } else {
-                nextCursor = messages.get(0).getId();
-            }
-        }
-
-        List<ChatMessageResponse> responseItems = chatMessageMapper.toResponseList(messages);
-        return new CursorPageResponse<>(responseItems, nextCursor, hasNext);
+        return ChatPageResponse.from(messagePage);
     }
 
     public MessageSearchResponse searchMessages(Long userId, Long roomId, String keyword) {
