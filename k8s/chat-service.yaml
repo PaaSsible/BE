@@ -32,12 +32,11 @@ spec:
                 name: chat-db-secret
           resources:
             requests:
-              cpu: 50m
-              memory: 128Mi
-            limits:
               cpu: 150m
-              memory: 256Mi
-
+              memory: 384Mi
+            limits:
+              cpu: 300m
+              memory: 768Mi
 ---
 apiVersion: v1
 kind: Service
