@@ -52,4 +52,13 @@ public class BoardInternalController {
         List<BoardMemberResponse> response = boardManagementService.getUsersInBoard(boardId);
         return ResponseEntity.ok(response);
     }
+
+    @Hidden
+    @GetMapping("/{boardId}/name")
+    public ResponseEntity<String> getBoardName(@PathVariable Long boardId) {
+        String name = boardService.getBoardName(boardId);
+        return ResponseEntity.ok(name);
+    }
+
+
 }
