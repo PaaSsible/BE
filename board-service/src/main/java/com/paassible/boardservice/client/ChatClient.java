@@ -6,7 +6,6 @@ import com.paassible.boardservice.chat.dto.ChatRoomInviteRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomRequest;
 import com.paassible.boardservice.chat.dto.ChatRoomResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,11 +36,6 @@ public interface ChatClient {
     @GetMapping("/chats/internal/rooms")
     List<ChatRoomResponse> getChatRooms(@RequestParam("userId") Long userId,
                                         @RequestParam("boardId") Long boardId);
-
-    @DeleteMapping("/chats/internal/rooms/{roomId}")
-    void leaveRoom(@RequestParam("userId") Long userId,
-                   @RequestParam("boardId") Long boardId,
-                   @PathVariable("roomId") Long roomId);
 
     @GetMapping("/chats/internal/communication")
     CommunicationResponse getCommunicationFrequency(@RequestParam("userId") Long userId,
