@@ -57,7 +57,8 @@ public class SecurityConfig {
                                 "/users/v3/api-docs/**",
                                 "/users/auth/**",
                                 "/users/test/**",
-                                "/users/internal/**"
+                                "/users/internal/**",
+                                "/users/notifications/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/users/**").authenticated()

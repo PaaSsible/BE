@@ -35,6 +35,8 @@ public class ChatRoomService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
+    private final ChatPublisher publisher;
+
     @Transactional(readOnly = true)
     public List<ChatRoomResponse> getChatRooms(Long userId, Long boardId) {
         List<RoomParticipant> roomParticipants = roomParticipantService.getRoomParticipantsByBoardId(userId, boardId);
@@ -93,6 +95,8 @@ public class ChatRoomService {
         for (Long id : participantIds) {
             roomParticipantService.saveRoomParticipant(savedRoom.getId(), id);
         }
+
+        publisher.publishChatRoomCreated(participantIds, roomName);
 
         return new ChatRoomIdResponse(savedRoom.getId());
     }
