@@ -45,6 +45,9 @@ dependencies {
     //livekit
     implementation 'io.livekit:livekit-server:0.6.1'
 
+    // RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
 
 
 }
