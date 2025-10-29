@@ -58,14 +58,6 @@ public class ChatInternalController {
         return ResponseEntity.ok(chatRoomService.getChatRooms(userId, boardId));
     }
 
-    @DeleteMapping("/rooms/{roomId}")
-    public ResponseEntity<Void> leaveChatRoom(@RequestParam("userId") Long userId,
-                                              @RequestParam("boardId") Long boardId,
-                                              @PathVariable("roomId") Long roomId) {
-        chatRoomService.leaveRoom(userId, boardId, roomId);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping("/communication")
     public ResponseEntity<CommunicationResponse> getCommunicationFrequency(@RequestParam("userId") Long userId,
                                                                            @RequestParam("boardId") Long boardId) {

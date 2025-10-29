@@ -58,14 +58,4 @@ public class ChatRoomController {
                 chatClient.getChatRooms(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
-
-    @DeleteMapping("/rooms/{roomId}")
-    @Operation(summary = "채팅방 퇴장", description = "유저가 참여중인 채팅방에서 퇴장한다.")
-    public ResponseEntity<ApiResponse<Void>> leaveRoom(
-            @AuthenticationPrincipal UserJwtDto user,
-            @PathVariable Long boardId,
-            @PathVariable Long roomId) {
-        chatClient.leaveRoom(user.getUserId(), boardId, roomId);
-        return ResponseEntity.ok(ApiResponse.success(SuccessCode.LEAVED));
-    }
 }

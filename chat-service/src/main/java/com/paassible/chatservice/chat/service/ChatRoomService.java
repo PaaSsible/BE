@@ -155,15 +155,12 @@ public class ChatRoomService {
     }
 
     @Transactional
-    public void leaveRoom(Long userId, Long boardId, Long roomId) {
+    public void leaveRoom(Long userId, Long roomId) {
         validateRoom(roomId);
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
         ChatRoom room = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
-        if (!room.getBoardId().equals(boardId)) {
-            throw new CustomException(ErrorCode.FORBIDDEN_ROOM_ACCESS);
-        }
 
         String nickname = userClient.getUser(userId).getNickname();
         String updatedName = Arrays.stream(room.getName().split(","))
