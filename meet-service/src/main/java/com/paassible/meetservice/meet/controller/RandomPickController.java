@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/meets")
+@RequestMapping("/meets")
 public class RandomPickController {
 
     private final RandomSpeakerService randomSpeakerService;
