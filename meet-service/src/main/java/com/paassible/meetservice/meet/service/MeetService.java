@@ -2,6 +2,7 @@ package com.paassible.meetservice.meet.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
+import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.meetservice.chat.dto.ChatMessage;
 import com.paassible.meetservice.client.board.BoardClient;
 import com.paassible.meetservice.client.board.BoardMemberResponse;
@@ -266,5 +267,37 @@ public class MeetService {
 
 
     }
+
+
+    @Transactional(readOnly = true)
+    public ParticipantStatusResponse getAttendanceStatus(Long meetId, Long userId) {
+
+        UserResponse user = userClient.getUser(userId);
+
+        Meet meet = meetRepository.findById(meetId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_FOUND));
+
+        Boolean isHostUser = meet.getHostId().equals(userId)?true:false;
+
+        Long boardId = meet.getBoardId();
+
+        List<BoardMemberResponse> allMembers = boardClient.getBoardMembers(boardId);
+
+        List<Long> joinedIds = participantRepository.findActiveUserIdsByMeetId(meetId);
+
+
+        List<AttendeeResponse> present = allMembers.stream()
+                .filter(m -> joinedIds.contains(m.getUserId()))
+                .map(m -> new AttendeeResponse(m.getUserId(), m.getUserName(), m.getProfileImageUrl()))
+                .toList();
+
+        List<AttendeeResponse> absent = allMembers.stream()
+                .filter(m -> !joinedIds.contains(m.getUserId()))
+                .map(m -> new AttendeeResponse(m.getUserId(), m.getUserName(), m.getProfileImageUrl()))
+                .toList();
+
+        return new ParticipantStatusResponse(user.getId(),user.getNickname(),user.getProfileImageUrl(),isHostUser , present,absent);
+    }
+
 
 }
