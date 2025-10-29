@@ -43,7 +43,12 @@ public class ChatController {
             Meet meet = meetValidator.validateMeetOngoing(meetId);
             meetValidator.validateUserInBoard(meet.getBoardId(), authUserId);
 
+            Long chatId = stringRedis.opsForValue()
+                    .increment("chat:meet:" + meetId + ":id-seq");
+
+
             ChatMessage enriched = new ChatMessage(
+                    chatId,
                     meetId,
                     authUserId,
                     message.senderName(),

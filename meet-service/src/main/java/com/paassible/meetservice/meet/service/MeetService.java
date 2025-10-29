@@ -176,11 +176,6 @@ public class MeetService {
     @Transactional
     public void endMeet(Long meetId){
 
-        try{
-            chatRedis.delete(ChatKeys.publicChat(meetId));
-        }catch (Exception e){
-            log.error("종료된 회의의 공개 채팅 히스토리를 삭제하는데 실패 meetId={}", meetId,e);
-        }
 
         try {
             Set<String> dmUsers = stringRedis.opsForSet().members(ChatKeys.dmUsersIndex(meetId));
@@ -200,6 +195,8 @@ public class MeetService {
             stringRedis.delete(MeetKeys.lastSpokeAt(meetId));
             stringRedis.delete(MeetKeys.silentSet(meetId));
             stringRedis.delete(MeetKeys.lastPicked(meetId));
+            chatRedis.delete(ChatKeys.publicChat(meetId));
+            stringRedis.delete("chat:meet:" + meetId + ":id-seq");
         } catch (Exception e) {
             log.warn("회의 종료 캐시 키 정리 실패 meetId={}: {}", meetId, e.getMessage(), e);
         }
