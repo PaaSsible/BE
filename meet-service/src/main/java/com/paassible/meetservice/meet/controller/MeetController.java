@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/meets")
 @RequiredArgsConstructor
@@ -69,6 +71,17 @@ public class MeetController {
             @RequestBody @Valid HostTransferRequest request){
         meetService.transferAndLeave(meetId, user.getUserId(), request.newHostId());
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.HOST_TRANSFERRED));
+    }
+
+    @GetMapping("/{meetId}/attendance")
+    @Operation(summary = "회의 참석자, 결석자 조회", description = "회의 참석자와 결석자를 조회합니다.")
+    public ApiResponse<ParticipantStatusResponse> getAttendanceStatus(
+            @PathVariable Long meetId,
+            @AuthenticationPrincipal UserJwtDto user) {
+
+        ParticipantStatusResponse response = meetService.getAttendanceStatus(meetId,user.getUserId());
+
+        return ApiResponse.success(SuccessCode.OK,response);
     }
 
 }

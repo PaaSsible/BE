@@ -42,4 +42,8 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
         WHERE m.boardId = :boardId AND p.userId = :userId
     """)
     Long countUserMeetParticipation(@Param("boardId") Long boardId, @Param("userId") Long userId);
+
+    @Query("SELECT p.userId FROM Participant p WHERE p.meetId = :meetId AND p.status = 'JOINED'")
+    List<Long> findActiveUserIdsByMeetId(@Param("meetId") Long meetId);
+
 }
