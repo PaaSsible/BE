@@ -9,10 +9,10 @@ public class MeetNotificationPublisher {
 
     private final NotificationPublisher publisher;
 
-    public void sendApplication(Long leaderId, String applicantName, String title) {
+    public void startMeet(Long memberId, String applicantName, String title) {
         publisher.sendNotification(
-                leaderId,
-                "RECRUIT",
+                memberId,
+                "MEET",
                 "새로운 지원이 도착했어요!",
                 applicantName + "님이 [" + title + "]에 지원서를 제출했어요.\n함께할 팀원을 검토해 보세요"
         );
