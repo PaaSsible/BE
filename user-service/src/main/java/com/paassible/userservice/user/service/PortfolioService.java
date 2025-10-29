@@ -3,6 +3,7 @@ package com.paassible.userservice.user.service;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import com.paassible.userservice.client.PositionClient;
+import com.paassible.userservice.file.service.ObjectStorageService;
 import com.paassible.userservice.user.dto.*;
 import com.paassible.userservice.user.entity.Portfolio;
 import com.paassible.userservice.user.entity.User;
@@ -26,6 +27,8 @@ public class PortfolioService {
 
     private final PositionClient positionClient;
 
+    private final ObjectStorageService storageService;;
+
     public Portfolio getPortfolio(Long portfolioId) {
         return portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PORTFOLIO_NOT_FOUND));
@@ -41,6 +44,7 @@ public class PortfolioService {
                 .title(request.getTitle())
                 .summary(request.getSummary())
                 .description(request.getDescription())
+                .image(request.getImage())
                 .build();
 
         portfolioRepository.save(portfolio);
@@ -57,6 +61,7 @@ public class PortfolioService {
                 .mainCategory(MainCategory.valueOf(request.getMainCategory()))
                 .subCategory(SubCategory.valueOf(request.getSubCategory()))
                 .contribution(request.getContribution())
+                .image(null)
                 .generatedByAi(true)
                 .build();
 
@@ -69,7 +74,7 @@ public class PortfolioService {
         Portfolio portfolio = getPortfolio(portfolioId);
         validatePortfolioOwner(userId, portfolio);
 
-        portfolio.updateInfo(request.getPositionId(), request.getTitle(), request.getSummary(), request.getDescription());
+        portfolio.updateInfo(request.getPositionId(), request.getTitle(), request.getSummary(), request.getDescription(), request.getImage());
     }
 
     @Transactional
@@ -85,7 +90,8 @@ public class PortfolioService {
         Portfolio portfolio = getPortfolio(portfolioId);
 
         String positionName = positionClient.getPositionName(portfolio.getPositionId());
-        return PortfolioDetailResponse.from(portfolio, positionName);
+        String imageName = storageService.extractFileName(portfolio.getImage());
+        return PortfolioDetailResponse.from(portfolio, positionName, imageName);
     }
 
     @Transactional(readOnly = true)
@@ -95,7 +101,8 @@ public class PortfolioService {
         Page<PortfolioResponse> portfolioResponses = portfolioRepository.findByUserId(userId, pageable)
                 .map(portfolio -> {
                     String positionName = positionClient.getPositionName(portfolio.getPositionId());
-                    return PortfolioResponse.from(portfolio, positionName);
+                    String imageName = storageService.extractFileName(portfolio.getImage());
+                    return PortfolioResponse.from(portfolio, positionName, imageName);
                 });
 
         return PortfolioPageResponse.from(portfolioResponses);

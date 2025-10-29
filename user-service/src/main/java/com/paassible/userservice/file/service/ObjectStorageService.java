@@ -62,4 +62,20 @@ public class ObjectStorageService {
 
         s3Client.deleteObject(deleteObjectRequest);
     }
+
+    public String extractFileName(String url) {
+        if (url == null || !url.contains("/")) return null;
+
+        String lastSegment = url.substring(url.lastIndexOf('/') + 1);
+
+        int underscoreIndex = lastSegment.indexOf('_');
+        String nameWithExt = (underscoreIndex != -1)
+                ? lastSegment.substring(underscoreIndex + 1)
+                : lastSegment;
+
+        int dotIndex = nameWithExt.lastIndexOf('.');
+        return (dotIndex != -1)
+                ? nameWithExt.substring(0, dotIndex)
+                : nameWithExt;
+    }
 }

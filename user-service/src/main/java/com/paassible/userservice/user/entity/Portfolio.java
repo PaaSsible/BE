@@ -36,12 +36,15 @@ public class Portfolio extends BaseEntity {
 
     private int contribution;
 
+    private String image;
+
     private boolean generatedByAi;
 
-    public void updateInfo(Long positionId, String title, String summary, String description) {
+    public void updateInfo(Long positionId, String title, String summary, String description, String image) {
         this.positionId = positionId;
         this.title = title;
         this.summary = summary;
         this.description = description;
+        this.image = image;
     }
 }

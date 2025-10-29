@@ -19,10 +19,12 @@ public class PortfolioResponse {
     private MainCategory mainCategory;
     private SubCategory subCategory;
     private int contribution;
+    private String imageUrl;
+    private String imageName;
     private boolean generatedByAi;
     private LocalDateTime createdAt;
 
-    public static PortfolioResponse from(Portfolio portfolio, String positionName) {
+    public static PortfolioResponse from(Portfolio portfolio, String positionName, String imageName) {
         return PortfolioResponse.builder()
                 .id(portfolio.getId())
                 .userId(portfolio.getUserId())
@@ -32,6 +34,8 @@ public class PortfolioResponse {
                 .mainCategory(portfolio.getMainCategory())
                 .subCategory(portfolio.getSubCategory())
                 .contribution(portfolio.getContribution())
+                .imageUrl(portfolio.getImage())
+                .imageName(imageName)
                 .generatedByAi(portfolio.isGeneratedByAi())
                 .createdAt(portfolio.getCreatedAt())
                 .build();

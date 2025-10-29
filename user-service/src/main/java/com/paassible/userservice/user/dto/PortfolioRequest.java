@@ -8,4 +8,5 @@ public class PortfolioRequest {
     private String title;
     private String summary;
     private String description;
+    private String image;
 }
