@@ -4,7 +4,7 @@ import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
 import com.paassible.common.security.dto.UserJwtDto;
 import com.paassible.recruitservice.application.dto.*;
-import com.paassible.recruitservice.application.service.ApplicantionService;
+import com.paassible.recruitservice.application.service.ApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "팀원 모집 지원 API", description = "팀원 모집 지원, 조회, 수락, 거절")
 public class ApplicationController {
 
-    private final ApplicantionService applicationService;
+    private final ApplicationService applicationService;
 
     @Operation(summary = "지원하기")
     @PostMapping("/{postId}/applications")

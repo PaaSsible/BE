@@ -21,6 +21,12 @@ spring:
       password: ${REDIS_PASSWORD}
       timeout: 6000
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
 server:
   port: 8080
 
@@ -34,6 +40,9 @@ jwt:
   secret: ${JWT_SECRET}
   access-expiration: ${JWT_ACCESS_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
+
+
 
 user-service:
   url: http://user-service.user-service:8080

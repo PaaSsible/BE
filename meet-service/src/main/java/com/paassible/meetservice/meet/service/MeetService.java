@@ -9,6 +9,7 @@ import com.paassible.meetservice.client.board.BoardMemberResponse;
 import com.paassible.meetservice.client.user.UserClient;
 import com.paassible.meetservice.client.user.UserResponse;
 import com.paassible.meetservice.meet.message.HostChangedMessage;
+import com.paassible.meetservice.notification.MeetNotificationPublisher;
 import com.paassible.meetservice.util.ChatKeys;
 import com.paassible.meetservice.meet.dto.*;
 import com.paassible.meetservice.meet.entity.Meet;
@@ -45,6 +46,7 @@ public class MeetService {
     private final ApplicationEventPublisher eventPublisher;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final BoardClient boardClient;
+    private final MeetNotificationPublisher publisher;
 
     @Qualifier("stringRedis")
     private final org.springframework.data.redis.core.StringRedisTemplate stringRedis;
@@ -76,6 +78,8 @@ public class MeetService {
                     savedMeet.getId(),
                     savedMeet.getBoardId(),
                     userId));
+            notifyMeetStarted(savedMeet.getId());
+
 
             return MeetCreateResponse.from(savedMeet, host);
 
@@ -83,6 +87,33 @@ public class MeetService {
             throw new CustomException(ErrorCode.MEET_ALREADY_EXISTS);
         }
     }
+
+
+    @Transactional
+    public void notifyMeetStarted(Long meetId) {
+
+        Meet meet = meetRepository.findById(meetId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEET_NOT_FOUND));
+
+        Long boardId = meet.getBoardId();
+
+
+        String boardName = boardClient.getBoardName(boardId);
+
+
+        List<BoardMemberResponse> members = boardClient.getBoardMembers(boardId);
+
+
+        for (BoardMemberResponse member : members) {
+            publisher.notifyMeetStarted(
+
+                    member.getUserId(),
+                    boardName
+            );
+        }
+
+    }
+
 
 
 

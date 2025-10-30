@@ -5,6 +5,7 @@ import com.paassible.boardservice.board.entity.Board;
 import com.paassible.boardservice.board.entity.enums.BoardStatus;
 import com.paassible.boardservice.board.exception.BoardException;
 import com.paassible.boardservice.board.repository.BoardRepository;
+import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -63,4 +64,12 @@ public class BoardService {
             throw new BoardException(ErrorCode.BOARD_NOT_FOUND);
         }
     }
+
+    @Transactional(readOnly = true)
+    public String getBoardName(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+        return board.getName();
+    }
+
 }

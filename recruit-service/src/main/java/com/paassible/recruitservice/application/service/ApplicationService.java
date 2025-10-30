@@ -9,6 +9,7 @@ import com.paassible.recruitservice.application.repository.ApplicantionRepositor
 import com.paassible.recruitservice.client.BoardClient;
 import com.paassible.recruitservice.client.UserClient;
 import com.paassible.recruitservice.client.UserResponse;
+import com.paassible.recruitservice.notification.PostNotificationPublisher;
 import com.paassible.recruitservice.post.dto.RecruitInfo;
 import com.paassible.recruitservice.post.entity.Post;
 import com.paassible.recruitservice.post.entity.Recruitment;
@@ -26,13 +27,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicantionService {
+public class ApplicationService {
 
     private final ApplicantionRepository applicationRepository;
     private final PostRepository postRepository;
     private final BoardClient boardClient;
     private final RecruitmentRepository recruitmentRepository;
     private final UserClient userClient;
+    private final PostNotificationPublisher publisher;
 
     @Transactional
     public void apply(Long postId, Long userId) {
@@ -52,6 +54,10 @@ public class ApplicantionService {
         applicationRepository.save(application);
 
         post.increaseApplicationCount();
+
+        UserResponse user = userClient.getUser(userId);
+
+        publisher.sendApplication(post.getWriterId(),user.getNickname(),post.getTitle());
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +95,9 @@ public class ApplicantionService {
             throw new CustomException(ErrorCode.APPLICATION_MISMATCH);
         }
 
+        publisher.sendRejected(application.getApplicantId(),post.getTitle());
         application.reject(rejectRequest);
+
     }
 
     @Transactional
@@ -113,6 +121,7 @@ public class ApplicantionService {
         application.accept();
 
         boardClient.addMember(acceptRequest.boardId(), application.getApplicantId());
+        publisher.sendAccepted(application.getApplicantId(),post.getTitle());
     }
 
     @Transactional(readOnly = true)
