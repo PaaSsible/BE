@@ -107,8 +107,9 @@ public class BoardController {
     @GetMapping("/{boardId}/members/scores")
     @Operation(summary = "기여도", description = "기여도를 시각화합니다.")
     public ResponseEntity<ApiResponse<List<ContributionResponse>>> getUserContribution(
+            @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long boardId){
-        List<ContributionResponse> response = contributionService.getContributions(boardId);
+        List<ContributionResponse> response = contributionService.getContributions(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }
