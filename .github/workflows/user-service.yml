@@ -1,0 +1,49 @@
+name: user-service-deploy
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'user-service/**'
+      - 'common/**'
+
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Docker login
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and push image
+        run: |
+          TAG=$(date +%Y%m%d%H%M%S)
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          docker build -f ./user-service/Dockerfile -t user-service:latest .
+          docker tag user-service:latest docker.io/${{ secrets.DOCKERHUB_USERNAME }}/contest-18-image-user:$TAG
+          docker push docker.io/${{ secrets.DOCKERHUB_USERNAME }}/contest-18-image-user:$TAG
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.29.0
+
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+
+      - name: Deploy manifest
+        run: |
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3.raw" \
+            https://raw.githubusercontent.com/PaaSsible/BE/main/k8s/user-service.yaml \
+            -o user-service.yaml
+
+          sed -i "s|{BUILD_DATE_TIME}|${TAG}|g" user-service.yaml
+
+          kubectl apply -f user-service.yaml
