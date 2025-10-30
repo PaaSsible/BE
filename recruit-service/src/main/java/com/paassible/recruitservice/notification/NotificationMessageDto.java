@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class NotificationMessageDto {
+    private Long id;
     private Long userId;
     private String type;
     private String title;
