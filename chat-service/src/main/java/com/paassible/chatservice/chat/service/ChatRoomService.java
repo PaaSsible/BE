@@ -208,6 +208,19 @@ public class ChatRoomService {
                 .toList();
     }
 
+    public RoomParticipantResponse getRoomParticipantIds(Long userId, Long roomId) {
+        validateRoom(roomId);
+        roomParticipantService.validateRoomParticipant(roomId, userId);
+
+        List<RoomParticipant> roomParticipants = roomParticipantService.getAllByRoomId(roomId);
+
+        List<Long> participantUserIds = roomParticipants.stream()
+                .map(RoomParticipant::getUserId)
+                .toList();
+
+        return new RoomParticipantResponse(participantUserIds);
+    }
+
     public void validateRoom(Long roomId) {
         if (!chatRoomRepository.existsById(roomId)) {
             throw new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND);
