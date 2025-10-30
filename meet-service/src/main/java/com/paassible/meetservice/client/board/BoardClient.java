@@ -17,4 +17,7 @@ public interface BoardClient {
 
     @GetMapping("/boards/internal/{boardId}/members")
     List<BoardMemberResponse> getBoardMembers(@PathVariable Long boardId);
+
+    @GetMapping("/boards/internal/{boardId}/name")
+    String getBoardName(@PathVariable("boardId") Long boardId);
 }
