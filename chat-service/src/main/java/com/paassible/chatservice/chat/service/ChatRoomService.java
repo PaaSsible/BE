@@ -208,17 +208,17 @@ public class ChatRoomService {
                 .toList();
     }
 
-    public RoomParticipantResponse getRoomParticipantIds(Long userId, Long roomId) {
+    public List<InviteMemberResponse> getRoomParticipants(Long userId, Long roomId) {
         validateRoom(roomId);
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
         List<RoomParticipant> roomParticipants = roomParticipantService.getAllByRoomId(roomId);
 
-        List<Long> participantUserIds = roomParticipants.stream()
+        return roomParticipants.stream()
                 .map(RoomParticipant::getUserId)
+                .map(userClient::getUser)
+                .map(user -> new InviteMemberResponse(user.getId(), user.getNickname()))
                 .toList();
-
-        return new RoomParticipantResponse(participantUserIds);
     }
 
     public void validateRoom(Long roomId) {
