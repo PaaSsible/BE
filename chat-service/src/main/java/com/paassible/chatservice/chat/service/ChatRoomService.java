@@ -189,22 +189,23 @@ public class ChatRoomService {
         }
     }
 
-    public List<InviteMemberResponse> getInvitableMembers(Long userId, List<Long> boardMemberIds, Long roomId) {
+    public List<InviteMemberResponse> getInvitableMembers(Long userId, Long roomId) {
         validateRoom(roomId);
         roomParticipantService.validateRoomParticipant(roomId, userId);
 
+        ChatRoom room = chatRoomRepository.findById(roomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        List<BoardMemberResponse> boardMembers = boardClient.getBoardMembers(room.getBoardId());
         List<RoomParticipant> roomParticipants = roomParticipantService.getAllByRoomId(roomId);
 
-        Set<Long> participantUserIds = roomParticipants.stream()
+        Set<Long> participantIds = roomParticipants.stream()
                 .map(RoomParticipant::getUserId)
                 .collect(Collectors.toSet());
 
-        return boardMemberIds.stream()
-                .filter(id -> !participantUserIds.contains(id))
-                .map(id -> {
-                    UserResponse user = userClient.getUser(id);
-                    return new InviteMemberResponse(user.getId(), user.getNickname());
-                })
+        return boardMembers.stream()
+                .filter(m -> !participantIds.contains(m.getUserId()))
+                .map(m -> new InviteMemberResponse(m.getUserId(), m.getUserName()))
                 .toList();
     }
 

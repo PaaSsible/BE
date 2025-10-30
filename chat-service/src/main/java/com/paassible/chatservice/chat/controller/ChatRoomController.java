@@ -30,19 +30,18 @@ public class ChatRoomController {
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.LEAVED));
     }
 
-    @PostMapping("/rooms/{roomId}/member")
+    @GetMapping("/rooms/{roomId}/member/invite")
     @Operation(summary = "채팅방 초대 팀원 목록", description = "유저가 참여중인 채팅방에 초대할 팀원 목록을 조회한다.")
     public ResponseEntity<ApiResponse<List<InviteMemberResponse>>> getInvitableMembers(
             @AuthenticationPrincipal UserJwtDto user,
-            @PathVariable Long roomId,
-            @RequestBody InviteMemberRequest request) {
-        List<InviteMemberResponse> response = chatRoomService.getInvitableMembers(user.getUserId(), request.getBoardMemberIds(), roomId);
+            @PathVariable Long roomId) {
+        List<InviteMemberResponse> response = chatRoomService.getInvitableMembers(user.getUserId(), roomId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 
     @GetMapping("/rooms/{roomId}/member")
     @Operation(summary = "현재 채팅방 팀원 목록", description = "유저가 참여중인 채팅방의 팀원 목록을 조회한다.")
-    public ResponseEntity<ApiResponse<List<InviteMemberResponse>>> getInvitableMembers(
+    public ResponseEntity<ApiResponse<List<InviteMemberResponse>>> getRoomParticipants(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long roomId) {
         List<InviteMemberResponse> response = chatRoomService.getRoomParticipants(user.getUserId(), roomId);
