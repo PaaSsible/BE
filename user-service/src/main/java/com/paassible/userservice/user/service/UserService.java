@@ -5,7 +5,6 @@ import com.paassible.common.security.jwt.Role;
 import com.paassible.userservice.auth.oauth.GoogleUserInfo;
 import com.paassible.userservice.client.PositionClient;
 import com.paassible.userservice.client.StackClient;
-import com.paassible.userservice.file.service.ObjectStorageService;
 import com.paassible.userservice.user.dto.ProfileRequest;
 import com.paassible.userservice.user.dto.UserResponse;
 import com.paassible.userservice.user.entity.User;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
