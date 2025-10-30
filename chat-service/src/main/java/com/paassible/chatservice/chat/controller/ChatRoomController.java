@@ -2,7 +2,6 @@ package com.paassible.chatservice.chat.controller;
 
 import com.paassible.chatservice.chat.dto.InviteMemberRequest;
 import com.paassible.chatservice.chat.dto.InviteMemberResponse;
-import com.paassible.chatservice.chat.dto.RoomParticipantResponse;
 import com.paassible.chatservice.chat.service.ChatRoomService;
 import com.paassible.common.response.ApiResponse;
 import com.paassible.common.response.SuccessCode;
@@ -43,10 +42,10 @@ public class ChatRoomController {
 
     @GetMapping("/rooms/{roomId}/member")
     @Operation(summary = "현재 채팅방 팀원 목록", description = "유저가 참여중인 채팅방의 팀원 목록을 조회한다.")
-    public ResponseEntity<ApiResponse<RoomParticipantResponse>> getInvitableMembers(
+    public ResponseEntity<ApiResponse<List<InviteMemberResponse>>> getInvitableMembers(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long roomId) {
-        RoomParticipantResponse response = chatRoomService.getRoomParticipantIds(user.getUserId(),-roomId);
+        List<InviteMemberResponse> response = chatRoomService.getRoomParticipants(user.getUserId(), roomId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
 }
