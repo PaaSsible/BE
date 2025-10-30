@@ -109,6 +109,7 @@ public class BoardController {
     public ResponseEntity<ApiResponse<List<ContributionResponse>>> getUserContribution(
             @AuthenticationPrincipal UserJwtDto user,
             @PathVariable Long boardId){
+        System.out.println("board 컨트롤러");
         List<ContributionResponse> response = contributionService.getContributions(user.getUserId(), boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.OK, response));
     }
