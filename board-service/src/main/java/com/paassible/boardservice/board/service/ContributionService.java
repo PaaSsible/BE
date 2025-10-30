@@ -28,7 +28,8 @@ public class ContributionService {
     private final MeetClient meetClient;
     private final ChatClient chatClient;
 
-    public List<ContributionResponse> getContributions(Long boardId) {
+    public List<ContributionResponse> getContributions(Long userId, Long boardId) {
+        boardMemberService.validateUserInBoard(userId, boardId);
 
         List<BoardMember> members = boardMemberService.getBoardMembersByBoard(boardId);
         List<ContributionResponse> responses = new ArrayList<>();
@@ -37,7 +38,6 @@ public class ContributionService {
             ContributionResponse response = getContributionForMember(member.getUserId(), member.getBoardId(), member.getPositionId());
             responses.add(response);
         }
-
         return responses;
     }
 
