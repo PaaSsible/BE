@@ -3,6 +3,7 @@ package com.paassible.common.security.jwt;
 import com.paassible.common.security.token.RefreshTokenRepository;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -31,11 +32,15 @@ public class JwtUtil {
     private final RefreshTokenRepository refreshTokenRepository;
 
     private SecretKey key;
+    JwtParser parser;
 
     @PostConstruct
     public void init() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.parser = Jwts.parser()
+                .verifyWith(key)
+                .build();
     }
 
     public String createAccessToken(Long userId, String username, Role role, boolean agreedToTerms) {
@@ -121,7 +126,7 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
+            parser.parseSignedClaims(token);
 
             return true;
         } catch (JwtException | IllegalArgumentException e) {
