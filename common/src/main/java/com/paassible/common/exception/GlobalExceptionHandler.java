@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.INVALID_INPUT.getHttpStatus())
                 .body(ApiResponse.fail(ErrorCode.INVALID_INPUT, details));
     }
-
+/*
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiResponse<Void>> handleMissingParamException(
             MissingServletRequestParameterException ex) {
@@ -59,6 +59,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ErrorCode.MISSING_PARAMETER.getHttpStatus())
                 .body(ApiResponse.fail(ErrorCode.MISSING_PARAMETER, details));
     }
+
+ */
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidJsonException(
