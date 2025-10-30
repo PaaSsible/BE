@@ -11,6 +11,7 @@ import com.paassible.chatservice.chat.repository.ChatMessageRepository;
 import com.paassible.chatservice.chat.repository.ChatRoomRepository;
 import com.paassible.chatservice.client.board.BoardClient;
 import com.paassible.chatservice.client.user.UserClient;
+import com.paassible.chatservice.client.user.UserResponse;
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,7 @@ public class ChatRoomService {
     private final SimpMessagingTemplate messagingTemplate;
 
     private final ChatPublisher publisher;
+    private final BoardClient boardClient;
 
     @Transactional(readOnly = true)
     public List<ChatRoomResponse> getChatRooms(Long userId, Long boardId) {
@@ -186,6 +189,24 @@ public class ChatRoomService {
         }
     }
 
+    public List<InviteMemberResponse> getInvitableMembers(Long userId, List<Long> boardMemberIds, Long roomId) {
+        validateRoom(roomId);
+        roomParticipantService.validateRoomParticipant(roomId, userId);
+
+        List<RoomParticipant> roomParticipants = roomParticipantService.getAllByRoomId(roomId);
+
+        Set<Long> participantUserIds = roomParticipants.stream()
+                .map(RoomParticipant::getUserId)
+                .collect(Collectors.toSet());
+
+        return boardMemberIds.stream()
+                .filter(id -> !participantUserIds.contains(id))
+                .map(id -> {
+                    UserResponse user = userClient.getUser(id);
+                    return new InviteMemberResponse(user.getId(), user.getNickname());
+                })
+                .toList();
+    }
 
     public void validateRoom(Long roomId) {
         if (!chatRoomRepository.existsById(roomId)) {

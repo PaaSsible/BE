@@ -12,5 +12,4 @@ public interface BoardClient {
 
     @GetMapping("/boards/internal/{boardId}/user/{userId}/exists")
     void validateUserInBoard(@PathVariable Long boardId, @PathVariable Long userId);
-
 }
