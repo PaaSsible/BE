@@ -7,6 +7,8 @@ import com.paassible.recruitservice.comment.dto.CommentListResponse;
 import com.paassible.recruitservice.comment.dto.CommentResponse;
 import com.paassible.recruitservice.comment.entity.Comment;
 import com.paassible.recruitservice.comment.repository.CommentRepository;
+import com.paassible.recruitservice.notification.PostNotificationPublisher;
+import com.paassible.recruitservice.post.entity.Post;
 import com.paassible.recruitservice.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,11 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+    private final PostNotificationPublisher postNotificationPublisher;
 
     public void createComment(Long postId, CommentCreateRequest request,Long userId, String userName) {
 
-        postRepository.findById(postId).orElseThrow(
+        Post post = postRepository.findById(postId).orElseThrow(
                 ()->new CustomException(ErrorCode.POST_NOT_FOUND));
 
         if(request.parentId() != null){
@@ -44,6 +47,8 @@ public class CommentService {
         );
 
         commentRepository.save(comment);
+
+        postNotificationPublisher.sendComment(post.getWriterId(), post.getTitle());
     }
 
     public CommentListResponse getComments(Long postId, Long userId) {
