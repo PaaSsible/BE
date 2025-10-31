@@ -15,7 +15,7 @@ public class TaskResponse {
     private String title;
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING,
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            pattern = "yyyy-MM-dd",
             timezone = "Asia/Seoul")
     private LocalDate dueDate;
     private String status;
