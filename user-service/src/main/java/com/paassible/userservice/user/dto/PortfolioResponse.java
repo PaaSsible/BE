@@ -1,5 +1,6 @@
 package com.paassible.userservice.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.paassible.userservice.user.entity.Portfolio;
 import com.paassible.userservice.user.entity.enums.MainCategory;
 import com.paassible.userservice.user.entity.enums.SubCategory;
@@ -22,6 +23,9 @@ public class PortfolioResponse {
     private String imageUrl;
     private String imageName;
     private boolean generatedByAi;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public static PortfolioResponse from(Portfolio portfolio, String positionName, String imageName) {
