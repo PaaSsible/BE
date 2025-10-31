@@ -27,7 +27,8 @@ public class UserService {
     private final PositionClient positionClient;
     private final StackClient stackClient;
 
-    public static final String DEFAULT_PROFILE_IMAGE_URL = "https://example.com/images/default-profile.png";
+    public static final String DEFAULT_PROFILE_IMAGE_URL =
+            "https://kr1-api-object-storage.nhncloudservice.com/v1/AUTH_d79feebdd8e5457b94efbaf85d00c171/contest18-object-storage/user/cedea122-9869-47de-a6ea-1cbeeb100a7d_member.png";
 
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
@@ -51,6 +52,7 @@ public class UserService {
                                             .socialId(info.getSub())
                                             .email(info.getEmail())
                                             .nickname(info.getName())
+                                            .profileImageUrl(DEFAULT_PROFILE_IMAGE_URL)
                                             .role(Role.PENDING)
                                             .agreedToTerms(false)
                                             .deleted(false)

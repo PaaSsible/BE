@@ -2,6 +2,8 @@ package com.paassible.recruitservice.comment.service;
 
 import com.paassible.common.exception.CustomException;
 import com.paassible.common.response.ErrorCode;
+import com.paassible.recruitservice.client.UserClient;
+import com.paassible.recruitservice.client.UserResponse;
 import com.paassible.recruitservice.comment.dto.CommentCreateRequest;
 import com.paassible.recruitservice.comment.dto.CommentListResponse;
 import com.paassible.recruitservice.comment.dto.CommentResponse;
@@ -23,9 +25,11 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+
+    private final UserClient userClient;
     private final PostNotificationPublisher postNotificationPublisher;
 
-    public void createComment(Long postId, CommentCreateRequest request,Long userId, String userName) {
+    public void createComment(Long postId, CommentCreateRequest request, Long userId) {
 
         Post post = postRepository.findById(postId).orElseThrow(
                 ()->new CustomException(ErrorCode.POST_NOT_FOUND));
@@ -38,10 +42,13 @@ public class CommentService {
                 throw new CustomException(ErrorCode.INVALID_COMMENT_DEPTH);
             }
         }
+
+        UserResponse user = userClient.getUser(userId);
         Comment comment = Comment.create(
                 request.content(),
                 userId,
-                userName,
+                user.getNickname(),
+                user.getProfileImageUrl(),
                 postId,
                 request.parentId()
         );
