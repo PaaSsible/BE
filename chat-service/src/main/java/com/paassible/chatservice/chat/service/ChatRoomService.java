@@ -91,7 +91,7 @@ public class ChatRoomService {
 
         publisher.publishChatRoomCreated(participantIds, roomName);
 
-        return new ChatRoomIdResponse(savedRoom.getId());
+        return new ChatRoomIdResponse(savedRoom.getId(), savedRoom.getName());
     }
 
     @Transactional
