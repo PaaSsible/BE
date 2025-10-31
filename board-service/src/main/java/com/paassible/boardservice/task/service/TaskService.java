@@ -25,6 +25,7 @@ public class TaskService {
     public Task createTask(Long boardId, TaskRequest request) {
         Task task = Task.builder()
                 .title(request.getTitle())
+                .description(request.getDescription())
                 .dueDate(request.getDueDate())
                 .status(TaskStatus.PENDING)
                 .boardId(boardId).build();
