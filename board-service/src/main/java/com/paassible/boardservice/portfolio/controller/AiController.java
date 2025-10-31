@@ -1,6 +1,5 @@
 package com.paassible.boardservice.portfolio.controller;
 
-import com.paassible.boardservice.portfolio.dto.PortfolioAiRequest;
 import com.paassible.boardservice.portfolio.dto.PortfolioAiResponse;
 import com.paassible.boardservice.portfolio.service.PortfolioAiService;
 import com.paassible.common.response.ApiResponse;

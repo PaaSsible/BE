@@ -49,10 +49,8 @@ public class ContributionService {
                 .count();
         double taskCompletion = tasks.isEmpty() ? 0 : (completed * 100.0 / tasks.size());
 
-        System.out.println("meetClient");
         double attendanceRate = meetClient.getContribution(userId, boardId);
 
-        System.out.println("chatClient");
         CommunicationResponse response = chatClient.getCommunicationFrequency(userId, boardId);
         long commValue = response.getValue();
         long totalCommunication = response.getTotal();
