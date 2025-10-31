@@ -29,7 +29,7 @@ public class CommentController {
             @Valid @RequestBody CommentCreateRequest request,
             @AuthenticationPrincipal UserJwtDto user
     ) {
-        commentService.createComment(postId, request, user.getUserId(),user.getUsername());
+        commentService.createComment(postId, request, user.getUserId());
         return ApiResponse.success(SuccessCode.OK);
     }
 
