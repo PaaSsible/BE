@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 public class TaskRequest {
     private String title;
+    private String description;
     private LocalDate dueDate;
     private List<Long> assigneeIds;
     private List<Long> positionIds;
