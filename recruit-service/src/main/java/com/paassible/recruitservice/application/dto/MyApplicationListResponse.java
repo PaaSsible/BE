@@ -24,7 +24,7 @@ public record MyApplicationListResponse(
                 timezone = "Asia/Seoul")
         LocalDateTime modifiedAt,
         @JsonFormat(shape = JsonFormat.Shape.STRING,
-                pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                pattern = "yyyy-MM-dd",
                 timezone = "Asia/Seoul")
         LocalDate deadline,
         int viewCount,
