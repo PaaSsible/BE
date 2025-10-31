@@ -35,5 +35,14 @@ public class PostNotificationPublisher {
                 "아쉽지만 ["+ title +"] 팀과는 이번에 함께하지 못하게 되었어요.\n팀의 결정 사유를 확인해 주세요."
         );
     }
+
+    public void sendComment(Long hostId, String title) {
+        publisher.sendNotification(
+                hostId,
+                "RECRUIT",
+                "작성한 게시글에 댓글이 등록되었어요. ",
+                "["+ title +"]   게시글에 새로운 댓글이 등록됐어요."
+        );
+    }
 }
 
