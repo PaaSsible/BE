@@ -1,5 +1,6 @@
 package com.paassible.boardservice.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,6 +12,9 @@ public class ChatRoomResponse {
     private Long roomId;
     private String roomName;
     private String lastMessage;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            timezone = "Asia/Seoul")
     private LocalDateTime lastMessageTime;
     private int unreadCount;
 

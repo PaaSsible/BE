@@ -1,5 +1,6 @@
 package com.paassible.boardservice.task.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.paassible.boardservice.task.entity.Task;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,9 @@ public class TaskResponse {
     private Long id;
     private String title;
     private String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            timezone = "Asia/Seoul")
     private LocalDate dueDate;
     private String status;
     private Long boardId;

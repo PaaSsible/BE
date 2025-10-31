@@ -1,5 +1,6 @@
 package com.paassible.chatservice.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.paassible.chatservice.chat.entity.ChatMessage;
 import com.paassible.chatservice.chat.entity.enums.MessageType;
 import lombok.Builder;
@@ -16,6 +17,9 @@ public class SystemMessageResponse {
     private Long roomId;
     private String content;
     private MessageType type;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 
     public static SystemMessageResponse from(ChatMessage message) {
