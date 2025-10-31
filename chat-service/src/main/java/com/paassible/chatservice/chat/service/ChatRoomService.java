@@ -74,19 +74,9 @@ public class ChatRoomService {
             participantIds.add(userId);
         }
 
-        String roomName;
-        if (participantIds.size() == 2) {
-            Long otherId = participantIds.stream()
-                    .filter(id -> !id.equals(userId))
-                    .findFirst()
-                    .orElseThrow();
-            roomName = userClient.getUser(otherId).getNickname();
-        } else {
-            roomName = participantIds.stream()
-                    .filter(id -> !id.equals(userId))
-                    .map(id -> userClient.getUser(id).getNickname())
-                    .collect(Collectors.joining(", "));
-        }
+        String roomName = participantIds.stream()
+                .map(id -> userClient.getUser(id).getNickname())
+                .collect(Collectors.joining(", "));
 
         ChatRoom newRoom = ChatRoom.builder()
                 .type(RoomType.SUB)
