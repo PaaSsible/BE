@@ -25,6 +25,8 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: prod
+            - name: TZ
+              value: "Asia/Seoul"
           envFrom:
             - secretRef:
                 name: recruit-service-secret
