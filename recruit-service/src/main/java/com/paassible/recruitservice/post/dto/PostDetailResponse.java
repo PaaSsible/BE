@@ -1,5 +1,6 @@
 package com.paassible.recruitservice.post.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.paassible.recruitservice.post.entity.MainCategory;
 import com.paassible.recruitservice.post.entity.ProjectDuration;
 import com.paassible.recruitservice.post.entity.SubCategory;
@@ -14,11 +15,20 @@ public record PostDetailResponse (
         Long postId,
         String title,
         String content,
+        @JsonFormat(shape = JsonFormat.Shape.STRING,
+                pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                timezone = "Asia/Seoul")
         LocalDate deadline,
         ProjectDuration projectDuration,
         Long writerId,
         String writerName,
+        @JsonFormat(shape = JsonFormat.Shape.STRING,
+                pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                timezone = "Asia/Seoul")
         LocalDateTime createdAt,
+        @JsonFormat(shape = JsonFormat.Shape.STRING,
+                pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                timezone = "Asia/Seoul")
         LocalDateTime updatedAt,
         int viewCount,
         int applicationCount,

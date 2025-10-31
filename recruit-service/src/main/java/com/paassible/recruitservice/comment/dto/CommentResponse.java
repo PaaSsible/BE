@@ -1,5 +1,6 @@
 package com.paassible.recruitservice.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.paassible.recruitservice.comment.entity.Comment;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,13 @@ public record CommentResponse(
         String writerName,
         String writerImageUrl,
         boolean deleted,
+        @JsonFormat(shape = JsonFormat.Shape.STRING,
+                pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                timezone = "Asia/Seoul")
         LocalDateTime createdAt,
+        @JsonFormat(shape = JsonFormat.Shape.STRING,
+                pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                timezone = "Asia/Seoul")
         LocalDateTime updatedAt,
         List<CommentResponse> children
 ) {
