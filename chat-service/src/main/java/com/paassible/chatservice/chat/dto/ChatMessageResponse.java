@@ -1,5 +1,6 @@
 package com.paassible.chatservice.chat.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.paassible.chatservice.chat.entity.ChatMessage;
 import com.paassible.chatservice.chat.entity.enums.MessageType;
 import com.paassible.chatservice.client.user.UserResponse;
@@ -20,6 +21,9 @@ public class ChatMessageResponse {
     private String senderImage;
     private String content;
     private MessageType type;
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS",
+            timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
     private Long readCount;
 
