@@ -45,13 +45,13 @@ jwt:
 
 
 user-service:
-  url: http://user-service.user-service:8080
+  url: http://user-service:8080
 
 chat-service:
-  url: http://chat-service.chat-service:8080
+  url: http://chat-service:8080
 
 meet-service:
-  url: http://meet-service.meet-service:8080
+  url: http://meet-service:8080
 
 board-service:
-  url: http://board-service.board-service:8080
+  url: http://board-service:8080
