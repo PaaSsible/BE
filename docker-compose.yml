@@ -6,7 +6,7 @@ services:
   # USER SERVICE
   ##########################################
   user-service:
-    image: yourhub/user-service
+    image: gyurihwang/contest-18-image-user:latest
     container_name: user-service
     expose:
       - "8080"
@@ -46,7 +46,7 @@ services:
   # BOARD SERVICE
   ##########################################
   board-service:
-    image: yourhub/board-service
+    image: gyurihwang/contest-18-image-board:latest
     container_name: board-service
     expose:
       - "8080"
@@ -61,7 +61,7 @@ services:
   # RECRUIT SERVICE
   ##########################################
   recruit-service:
-    image: yourhub/recruit-service
+    image: gyurihwang/contest-18-image-recruit:latest
     container_name: recruit-service
     expose:
       - "8080"
@@ -89,7 +89,7 @@ services:
   # MEET SERVICE
   ##########################################
   meet-service:
-    image: yourhub/meet-service
+    image: gyurihwang/contest-18-image-meet:latest
     container_name: meet-service
     expose:
       - "8080"
@@ -109,7 +109,7 @@ services:
   # CHAT SERVICE
   ##########################################
   chat-service:
-    image: yourhub/chat-service
+    image: gyurihwang/contest-18-image-chat:latest
     container_name: chat-service
     expose:
       - "8080"
