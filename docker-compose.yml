@@ -56,6 +56,10 @@ services:
       BOARD_DB_USERNAME: ${BOARD_DB_USERNAME}
       BOARD_DB_PASSWORD: ${BOARD_DB_PASSWORD}
 
+
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+
       GEMINI_API_KEY: ${GEMINI_API_KEY}
     depends_on:
       - mysql
@@ -142,6 +146,12 @@ services:
       S3_REGION: ${S3_REGION}
       S3_BUCKET: ${S3_BUCKET}
       S3_TENANT_ID: ${S3_TENANT_ID}
+
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION}
+
     depends_on:
       - redis
 
