@@ -43,3 +43,8 @@ recruit-service:
 google:
   gemini:
     api-key: ${GEMINI_API_KEY}
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: ${JWT_ACCESS_EXPIRATION}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
