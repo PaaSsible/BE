@@ -13,14 +13,6 @@ spring:
       hibernate:
         format_sql: true
 
-  data:
-    redis:
-      host: ${REDIS_URL}
-      port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
-      password: ${REDIS_PASSWORD}
-      timeout: 6000
-
 server:
   port: 8080
 
@@ -29,11 +21,6 @@ springdoc:
     path: /boards/v3/api-docs
   swagger-ui:
     path: /boards/swagger-ui.html
-
-jwt:
-  secret: ${JWT_SECRET}
-  access-expiration: ${JWT_ACCESS_EXPIRATION}
-  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 user-service:
   url: http://user-service:8080
