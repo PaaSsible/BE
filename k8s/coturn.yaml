@@ -1,0 +1,117 @@
+# =========================
+# COTURN CONFIG TEMPLATE
+# =========================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coturn-config-template
+  namespace: meet-service
+data:
+  turnserver.conf: |
+    listening-ip=0.0.0.0
+    listening-port=3478
+
+    relay-ip=0.0.0.0
+    external-ip=133.186.213.194
+
+    min-port=49152
+    max-port=49252
+
+    realm=paassible.kro.kr
+
+    lt-cred-mech
+
+    no-tls
+    no-dtls
+    fingerprint
+
+    allowed-peer-ip=0.0.0.0-255.255.255.255
+
+    verbose
+    log-file=stdout
+
+---
+
+# =========================
+# COTURN DEPLOYMENT
+# =========================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coturn
+  namespace: meet-service
+  labels:
+    app: coturn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coturn
+  template:
+    metadata:
+      labels:
+        app: coturn
+    spec:
+      volumes:
+        - name: config-volume
+          emptyDir: {}
+        - name: config-template
+          configMap:
+            name: coturn-config-template
+
+      initContainers:
+        - name: config-generator
+          image: busybox
+          envFrom:
+            - secretRef:
+                name: coturn-secret
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+            - name: config-template
+              mountPath: /template
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              # 템플릿 복사 후 user 라인 추가
+              cat /template/turnserver.conf > /config/turnserver.conf
+              echo "user=${TURN_USERNAME}:${TURN_PASSWORD}" >> /config/turnserver.conf
+
+      containers:
+        - name: coturn
+          image: instrumentisto/coturn:latest
+          args:
+            - "-c"
+            - "/config/turnserver.conf"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+
+---
+
+# =========================
+# COTURN SERVICE
+# =========================
+apiVersion: v1
+kind: Service
+metadata:
+  name: coturn-service
+  namespace: meet-service
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  selector:
+    app: coturn
+  ports:
+    - name: turn-udp
+      protocol: UDP
+      port: 3478
+      targetPort: 3478
+      nodePort: 32478
+    - name: turn-tcp
+      protocol: TCP
+      port: 3478
+      targetPort: 3478
+      nodePort: 32562

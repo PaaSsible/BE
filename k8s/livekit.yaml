@@ -1,3 +1,46 @@
+# =========================
+# LIVEKIT CONFIG TEMPLATE
+# =========================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: livekit-config-template
+  namespace: meet-service
+data:
+  livekit.yaml: |
+    port: 7880
+    bind_addresses:
+      - "0.0.0.0"
+    
+    rtc:
+      use_external_ip: true
+      node_ip: "133.186.213.194"
+
+      port_range_start: 50000
+      port_range_end: 50001
+      tcp_port: 7881
+
+      stun_servers:
+        - stun.l.google.com:19302
+        - stun1.l.google.com:19302
+
+      turn_servers:
+        - host: 133.186.213.194
+          port: 32478
+          protocol: udp
+          username: ${TURN_USERNAME}
+          credential: ${TURN_PASSWORD}
+        - host: 133.186.213.194
+          port: 32562
+          protocol: tcp
+          username: ${TURN_USERNAME}
+          credential: ${TURN_PASSWORD}
+
+---
+
+# =========================
+# LIVEKIT DEPLOYMENT
+# =========================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,122 +57,58 @@ spec:
     metadata:
       labels:
         app: livekit
+      annotations:
+        livekit-refresh: "v2025-10-29-hostnetwork-final"
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+
       volumes:
         - name: config-volume
           emptyDir: {}
+        - name: config-template
+          configMap:
+            name: livekit-config-template
+
       initContainers:
         - name: config-generator
           image: busybox
           envFrom:
             - secretRef:
                 name: livekit-secret
+            - secretRef:
+                name: coturn-secret
+          volumeMounts:
+            - name: config-volume
+              mountPath: /config
+            - name: config-template
+              mountPath: /template
           command:
             - sh
             - -c
             - |
-              echo "Generating livekit.yaml..."
-              cat > /config/livekit.yaml <<EOF
-              keys:
-                ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}
-
-              port: 7880
-              bind_addresses:
-                - 0.0.0.0
-
-              rtc:
-                use_external_ip: true
-                port_range_start: 50000
-                port_range_end: 60000
-                tcp_port: 7881
-
-                turn_servers:
-                  - host: openrelay.metered.ca:80
-                    username: openrelayproject
-                    credential: openrelayproject
-                    protocol: udp
-                  - host: openrelay.metered.ca:443
-                    username: openrelayproject
-                    credential: openrelayproject
-                    protocol: tcp
-
-                stun_servers:
-                  - stun.l.google.com:19302
-                  - stun1.l.google.com:19302
-              EOF
-              echo "=== Generated Config ==="
-              cat /config/livekit.yaml
-          volumeMounts:
-            - name: config-volume
-              mountPath: /config
+              set -eu
+              echo "keys:" > /config/livekit.yaml
+              echo "  ${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}" >> /config/livekit.yaml
+              echo "" >> /config/livekit.yaml
+              cat /template/livekit.yaml >> /config/livekit.yaml
 
       containers:
         - name: livekit
-          image: livekit/livekit-server:latest
-          args: ["--config", "/config/livekit.yaml"]
+          image: livekit/livekit-server:v1.9.2
+          args:
+            - --config
+            - /config/livekit.yaml
           ports:
             - containerPort: 7880
-              name: http
             - containerPort: 7881
-              name: rtc-tcp
+            - containerPort: 50000
+            - containerPort: 50001
           volumeMounts:
             - name: config-volume
               mountPath: /config
           envFrom:
             - secretRef:
                 name: livekit-secret
-          resources:
-            requests:
-              cpu: 100m
-              memory: 200Mi
-            limits:
-              cpu: 500m
-              memory: 512Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: livekit-service
-  namespace: meet-service
-spec:
-  selector:
-    app: livekit
-  ports:
-    - port: 7880
-      targetPort: 7880
-      protocol: TCP
-      name: http
-    - port: 7881
-      targetPort: 7881
-      protocol: TCP
-      name: rtc-tcp
-  type: ClusterIP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: livekit-ingress
-  namespace: meet-service
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/websocket-services: "livekit-service"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - livekit.paassible.kro.kr
-      secretName: livekit-tls
-  rules:
-    - host: livekit.paassible.kro.kr
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: livekit-service
-                port:
-                  number: 7880
+            - secretRef:
+                name: coturn-secret
