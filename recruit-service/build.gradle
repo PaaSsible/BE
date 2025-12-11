@@ -22,9 +22,6 @@ dependencies {
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 
-    // security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-
     // openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
