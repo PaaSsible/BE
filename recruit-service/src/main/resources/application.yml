@@ -15,7 +15,7 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_URL}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT}
 
   rabbitmq:
