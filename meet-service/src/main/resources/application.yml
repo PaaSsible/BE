@@ -15,11 +15,8 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_URL}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
-      password: ${REDIS_PASSWORD}
-      timeout: 6000
 
   rabbitmq:
     host: ${RABBITMQ_HOST}
@@ -35,12 +32,6 @@ springdoc:
     path: /meets/v3/api-docs
   swagger-ui:
     path: /meets/swagger-ui.html
-
-jwt:
-  secret: ${JWT_SECRET}
-  access-expiration: ${JWT_ACCESS_EXPIRATION}
-  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
-
 
 
 user-service:

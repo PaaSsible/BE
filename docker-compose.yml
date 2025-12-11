@@ -55,6 +55,8 @@ services:
       BOARD_DB_URL: ${BOARD_DB_URL}
       BOARD_DB_USERNAME: ${BOARD_DB_USERNAME}
       BOARD_DB_PASSWORD: ${BOARD_DB_PASSWORD}
+
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     depends_on:
       - mysql
 
@@ -79,8 +81,6 @@ services:
       RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
 
-      JWT_SECRET: ${JWT_SECRET}
-
     depends_on:
       - mysql
       - redis
@@ -95,16 +95,25 @@ services:
     ports:
       - "8084:8080"
     environment:
-      MEET_DB_URL: ${MEET_DB_URL}
-      MEET_DB_USERNAME: ${MEET_DB_USERNAME}
-      MEET_DB_PASSWORD: ${MEET_DB_PASSWORD}
+        MEET_DB_URL: ${MEET_DB_URL}
+        MEET_DB_USERNAME: ${MEET_DB_USERNAME}
+        MEET_DB_PASSWORD: ${MEET_DB_PASSWORD}
 
-      LIVEKIT_URL: ${LIVEKIT_URL}
-      LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
-      LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
+        REDIS_HOST: ${REDIS_HOST}
+        REDIS_PORT: ${REDIS_PORT}
 
+        RABBITMQ_HOST: ${RABBITMQ_HOST}
+        RABBITMQ_PORT: ${RABBITMQ_PORT}
+        RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+        RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+
+        LIVEKIT_URL: ${LIVEKIT_URL}
+        LIVEKIT_API_KEY: ${LIVEKIT_API_KEY}
+        LIVEKIT_API_SECRET: ${LIVEKIT_API_SECRET}
     depends_on:
       - postgres
+      - redis
+      - rabbitmq
 
   ##########################################
   # CHAT SERVICE
