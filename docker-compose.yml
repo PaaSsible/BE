@@ -9,7 +9,7 @@ services:
     image: gyurihwang/contest-18-image-user:latest
     container_name: user-service
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       USER_DB_URL: ${USER_DB_URL}
       USER_DB_USERNAME: ${USER_DB_USERNAME}
@@ -49,7 +49,7 @@ services:
     image: gyurihwang/contest-18-image-board:latest
     container_name: board-service
     ports:
-      - "8080:8080"
+      - "8082:8080"
     environment:
       BOARD_DB_URL: ${BOARD_DB_URL}
       BOARD_DB_USERNAME: ${BOARD_DB_USERNAME}
@@ -64,7 +64,7 @@ services:
     image: gyurihwang/contest-18-image-recruit:latest
     container_name: recruit-service
     ports:
-      - "8080:8080"
+      - "8083:8080"
     environment:
       RECRUIT_DB_URL: ${RECRUIT_DB_URL}
       RECRUIT_DB_USERNAME: ${RECRUIT_DB_USERNAME}
@@ -92,7 +92,7 @@ services:
     image: gyurihwang/contest-18-image-meet:latest
     container_name: meet-service
     ports:
-      - "8080:8080"
+      - "8084:8080"
     environment:
       MEET_DB_URL: ${MEET_DB_URL}
       MEET_DB_USERNAME: ${MEET_DB_USERNAME}
@@ -112,7 +112,7 @@ services:
     image: gyurihwang/contest-18-image-chat:latest
     container_name: chat-service
     ports:
-      - "8080:8080"
+      - "8085:8080"
     environment:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
