@@ -17,10 +17,6 @@ spring:
     redis:
       host: ${REDIS_URL}
       port: ${REDIS_PORT}
-      username: ${REDIS_USERNAME}
-      password: ${REDIS_PASSWORD}
-      timeout: 6000
-
 
   rabbitmq:
     host: ${RABBITMQ_HOST}
@@ -36,11 +32,6 @@ springdoc:
     path: /chats/v3/api-docs
   swagger-ui:
     path: /chats/swagger-ui.html
-
-jwt:
-  secret: ${JWT_SECRET}
-  access-expiration: ${JWT_ACCESS_EXPIRATION}
-  refresh-expiration: ${JWT_REFRESH_EXPIRATION}
 
 nhncloud:
   s3:
