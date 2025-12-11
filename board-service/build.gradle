@@ -13,9 +13,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
 
-    // redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
     // mysql
     runtimeOnly 'com.mysql:mysql-connector-j'
 
