@@ -148,6 +148,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${USER_DB_PASSWORD}
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   ##########################################
   # INFRA — POSTGRES
@@ -161,6 +163,8 @@ services:
       POSTGRES_DB: meet_db
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   ##########################################
   # NGINX (서브도메인 라우팅)
@@ -178,3 +182,8 @@ services:
       - recruit-service
       - meet-service
       - chat-service
+
+volumes:
+  mysql_data:
+  postgres_data:
+
