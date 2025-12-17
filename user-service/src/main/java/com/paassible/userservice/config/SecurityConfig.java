@@ -58,7 +58,8 @@ public class SecurityConfig {
                                 "/users/auth/**",
                                 "/users/test/**",
                                 "/users/internal/**",
-                                "/users/notifications/**"
+                                "/users/notifications/**",
+                                "/login/oauth2/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/users/**").authenticated()
