@@ -219,12 +219,17 @@ services:
     image: nginx:latest
     container_name: nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"   # HTTP 포트
+      - "443:443" # HTTPS 포트
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      # 1. 아까 작성한 설정 파일(default.conf)이 들어있는 폴더 연결
       - ./nginx/conf.d:/etc/nginx/conf.d
+      
+      # 2. SSL 인증서가 저장된 서버의 폴더를 연결 (읽기 전용 :ro)
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      
+      # (참고) ./nginx/nginx.conf 파일은 따로 안 만드셨으면 이 줄은 지우는 게 좋습니다.
+      # 기본 설정을 쓰는 게 더 안전합니다.
     depends_on:
       - user-service
       - board-service
