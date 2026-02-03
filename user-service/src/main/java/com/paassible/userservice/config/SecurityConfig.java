@@ -77,7 +77,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of(
+        config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "https://paassible.netlify.app"
         ));
