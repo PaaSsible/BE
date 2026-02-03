@@ -35,7 +35,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                // 기본 보안 설정 OFF
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -64,8 +64,6 @@ public class SecurityConfig {
                         .requestMatchers("/users/**").authenticated()
                         .anyRequest().permitAll()
                 )
-
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // JWT 필터 등록
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),
