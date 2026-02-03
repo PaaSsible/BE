@@ -42,19 +42,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@v0.1.7
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_KEY }}
-        script: |
-          cd /home/user/paassible
-          
-          curl -o docker-compose.yml https://raw.githubusercontent.com/PaaSsible/BE/main/docker-compose.yml
-          
-          docker compose pull
-          docker compose up -d
-          
-          docker system prune -f
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            set -e
+            
+            echo "▶ DockerHub login on EC2"
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            
+            echo "▶ Move to project directory"
+            cd /home/user/paassible
+            
+            echo "▶ Pull latest images"
+            docker compose pull
+            
+            echo "▶ Recreate containers with latest images"
+            docker compose up -d --force-recreate
+            
+            echo "▶ Deployment completed"
           
