@@ -61,7 +61,6 @@ public class SecurityConfig {
                                 "/users/notifications/**",
                                 "/login/oauth2/**"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/users/**").authenticated()
                         .anyRequest().permitAll()
                 )
