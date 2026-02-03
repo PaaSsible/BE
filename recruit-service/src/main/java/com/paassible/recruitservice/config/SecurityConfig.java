@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
 
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                //.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),
                         UsernamePasswordAuthenticationFilter.class)

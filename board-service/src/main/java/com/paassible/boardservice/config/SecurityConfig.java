@@ -59,7 +59,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
 
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                //.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // JWT 필터 등록
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtUtil),
