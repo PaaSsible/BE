@@ -18,7 +18,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chats/ws-chat");
+        registry.addEndpoint("/chats/ws-chat")
+                .setAllowedOriginPatterns(
+                        "https://paassible.netlify.app"
+                );
     }
 
     @Override
