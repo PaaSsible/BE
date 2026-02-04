@@ -63,7 +63,7 @@ jobs:
 
   deploy:
     name: Deploy Changed Services to EC2
-    needs: build-and-push
+    needs: [detect-changes, build-and-push]
     runs-on: ubuntu-latest
 
     steps:
@@ -83,7 +83,7 @@ jobs:
             for service in ${{ needs.detect-changes.outputs.services }}; do
               echo "▶ Deploy $service"
               docker compose pull $service
-              docker compose up -d --no-deps --force-recreate --pull always user-service
+              docker compose up -d --no-deps --force-recreate --pull always  $service
             done
 
             echo "▶ Deployment completed"
