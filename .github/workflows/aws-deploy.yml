@@ -57,7 +57,7 @@ jobs:
         run: |
           for service in ${{ needs.detect-changes.outputs.services }}; do
             echo "▶ Build & Push $service"
-            docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/$service:latest ./$service
+            docker build -f $service/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/$service:latest .
             docker push ${{ secrets.DOCKERHUB_USERNAME }}/$service:latest
           done
 
