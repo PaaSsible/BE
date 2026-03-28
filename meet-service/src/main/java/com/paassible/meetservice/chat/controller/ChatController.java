@@ -33,7 +33,7 @@ public class ChatController {
                            Principal principal) {
 
         if (principal == null) {
-            log.warn("메시지 폐기: 인증되지 않은 사용자 meetId={}, content={}", meetId, message.content());
+            log.warn("메시지 폐기: 인증되지 않은 사용자입니다. meetId={}, content={}", meetId, message.content());
             return;
         }
 
